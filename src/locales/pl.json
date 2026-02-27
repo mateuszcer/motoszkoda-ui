@@ -1,0 +1,176 @@
+{
+  "app": {
+    "loading": "Wczytywanie...",
+    "loadError": "Nie udało się załadować zgłoszeń. Spróbuj ponownie.",
+    "notFound": "Nie znaleziono zgłoszenia.",
+    "home": "Strona główna"
+  },
+
+  "notification": {
+    "requestSubmittedTitle": "Zgłoszenie wysłane",
+    "requestSubmittedMessage": "Powiadamiamy pobliskie warsztaty."
+  },
+
+  "common": {
+    "back": "Wstecz",
+    "next": "Dalej",
+    "cancel": "Anuluj",
+    "remove": "Usuń",
+    "show": "Pokaż",
+    "hide": "Ukryj",
+    "close": "Zamknij"
+  },
+
+  "home": {
+    "eyebrow": "Panel kierowcy",
+    "headline": "Znajdź najlepszą wycenę naprawy",
+    "subheadline": "Opisz usterkę raz, otrzymaj wyceny z okolicznych warsztatów i wybierz najlepszą ofertę.",
+    "createRequest": "Nowe zgłoszenie",
+    "myRequests": "Moje zgłoszenia",
+    "statOpen": "Otwarte",
+    "statClosed": "Zamknięte",
+    "statTotal": "Wszystkie",
+    "activeRequests": "Aktywne zgłoszenia",
+    "updated": "Zaktualizowano {{date}}",
+    "quoteCount_one": "{{count}} wycena",
+    "quoteCount_few": "{{count}} wyceny",
+    "quoteCount_many": "{{count}} wycen"
+  },
+
+  "myRequests": {
+    "title": "Moje zgłoszenia",
+    "filterAll": "Wszystkie",
+    "noRequests": "Brak zgłoszeń.",
+    "updated": "Zaktualizowano {{date}}",
+    "quoteCount_one": "{{count}} wycena",
+    "quoteCount_few": "{{count}} wyceny",
+    "quoteCount_many": "{{count}} wycen",
+    "questionCount_one": "{{count}} pytanie",
+    "questionCount_few": "{{count}} pytania",
+    "questionCount_many": "{{count}} pytań"
+  },
+
+  "form": {
+    "newRequest": "Nowe zgłoszenie",
+    "done": "Gotowe",
+    "stepCar": "Auto",
+    "stepIssue": "Usterka",
+    "stepLocation": "Lokalizacja",
+    "titleCar": "Dane pojazdu",
+    "titleIssue": "Opisz usterkę",
+    "titleLocation": "Lokalizacja i zasięg",
+    "titleSubmitted": "Zgłoszenie wysłane",
+    "vin": "VIN",
+    "make": "Marka",
+    "model": "Model",
+    "variant": "Wariant",
+    "optional": "opcjonalne",
+    "year": "Rok",
+    "moreDetails": "Więcej szczegółów",
+    "hideMoreDetails": "Ukryj szczegóły",
+    "engineType": "Typ silnika",
+    "fuelType": "Rodzaj paliwa",
+    "mileageKm": "Przebieg (km)",
+    "issueQuestion": "Co się stało z autem?",
+    "issuePlaceholder": "Opisz dźwięki, kontrolki i kiedy pojawia się problem.",
+    "tagsLabel": "Kategorie",
+    "photosLabel": "Zdjęcia / Dokumenty",
+    "addFile": "+ Dodaj",
+    "noAddress": "Brak adresu",
+    "address": "Adres",
+    "addressPlaceholder": "Ulica i miasto",
+    "useCurrentLocation": "Użyj bieżącej lokalizacji",
+    "searchRadius": "Zasięg wyszukiwania:",
+    "radiusHelp": "Warsztaty w promieniu {{radius}} km otrzymają Twoje zgłoszenie.",
+    "submitting": "Wysyłanie...",
+    "submitRequest": "Wyślij zgłoszenie",
+    "confirmTitle": "Powiadamiamy pobliskie warsztaty",
+    "confirmMessage": "Twoje zgłoszenie zostało wysłane. Wkrótce otrzymasz wyceny.",
+    "viewRequest": "Zobacz zgłoszenie"
+  },
+
+  "detail": {
+    "radiusUpdated": "Zasięg {{radius}} km",
+    "updated": "Zaktualizowano {{date}}",
+    "quotesTab": "Wyceny ({{count}})",
+    "qnaTab": "Pytania ({{count}})",
+    "sortNewest": "Najnowsze",
+    "sortCheapest": "Najtańsze",
+    "sortClosest": "Najbliższe",
+    "filterInterested": "Zainteresowane",
+    "noShops": "Brak warsztatów.",
+    "kmAway": "{{distance}} km",
+    "stateDelivered": "Brak odpowiedzi",
+    "stateAcknowledged": "Warsztat przygotowuje wycenę",
+    "stateQuestionSent": "Warsztat zadał pytanie",
+    "stateQuoteSent": "Wycena dostępna",
+    "stateDeclined": "Warsztat odrzucił zgłoszenie",
+    "answer": "Odpowiedz",
+    "ignore": "Ignoruj",
+    "markInterested": "Zainteresowany",
+    "durationDays_one": "{{count}} dzień",
+    "durationDays_few": "{{count}} dni",
+    "durationDays_many": "{{count}} dni",
+    "validUntil": "Ważne do {{date}}",
+    "viewThread": "Pokaż wątek ({{count}} nowych)",
+    "requestClosed": "Zgłoszenie zamknięte.",
+    "noConversations": "Brak rozmów.",
+    "closeDialogTitle": "Zamknąć zgłoszenie?",
+    "closeDialogMessage": "Nowe wyceny i pytania zostaną wstrzymane. Tej operacji nie można cofnąć.",
+    "closing": "Zamykanie...",
+    "closeRequest": "Zamknij zgłoszenie",
+    "less": "Mniej",
+    "more": "Więcej",
+    "ignored": "Zignorowany"
+  },
+
+  "thread": {
+    "eyebrow": "Prywatny wątek",
+    "needsAnswer": "Wymaga odpowiedzi",
+    "placeholder": "Wpisz odpowiedź...",
+    "sending": "Wysyłanie...",
+    "send": "Wyślij",
+    "readOnly": "Zgłoszenie zamknięte. Pytania i odpowiedzi tylko do odczytu."
+  },
+
+  "attachment": {
+    "video": "Wideo",
+    "document": "Dokument"
+  },
+
+  "status": {
+    "open": "Otwarte",
+    "closed": "Zamknięte"
+  },
+
+  "quoteState": {
+    "delivered": "Oczekuje",
+    "acknowledged": "W przygotowaniu",
+    "question_sent": "Pytanie",
+    "quote_sent": "Wycena",
+    "declined": "Odrzucone"
+  },
+
+  "tags": {
+    "brakes": "hamulce",
+    "engine": "silnik",
+    "suspension": "zawieszenie",
+    "exhaust": "układ wydechowy",
+    "battery": "akumulator",
+    "transmission": "skrzynia biegów",
+    "electronics": "elektronika",
+    "air conditioning": "klimatyzacja"
+  },
+
+  "validation": {
+    "vinInvalid": "VIN musi mieć 17 znaków i nie może zawierać I, O ani Q.",
+    "makeRequired": "Marka jest wymagana.",
+    "modelRequired": "Model jest wymagany.",
+    "yearNotInteger": "Rok musi być liczbą całkowitą.",
+    "yearOutOfRange": "Rok musi być między {{min}} a {{max}}.",
+    "mileageInvalid": "Przebieg musi być liczbą dodatnią.",
+    "descriptionTooShort": "Podaj wystarczająco szczegółowy opis, aby warsztaty mogły wycenić naprawę.",
+    "addressRequired": "Adres jest wymagany.",
+    "radiusOutOfRange": "Zasięg musi być między {{min}} a {{max}} km."
+  }
+}

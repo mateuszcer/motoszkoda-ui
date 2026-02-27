@@ -1,0 +1,172 @@
+{
+  "app": {
+    "loading": "Loading...",
+    "loadError": "Could not load requests. Please retry.",
+    "notFound": "Repair Request not found.",
+    "home": "Home"
+  },
+
+  "notification": {
+    "requestSubmittedTitle": "Repair Request submitted",
+    "requestSubmittedMessage": "We are notifying nearby shops now."
+  },
+
+  "common": {
+    "back": "Back",
+    "next": "Next",
+    "cancel": "Cancel",
+    "remove": "Remove",
+    "show": "Show",
+    "hide": "Hide",
+    "close": "Close"
+  },
+
+  "home": {
+    "eyebrow": "Driver Portal",
+    "headline": "Find the best repair quote",
+    "subheadline": "Describe your car issue once, get quotes from nearby shops, and choose the best offer.",
+    "createRequest": "Create Repair Request",
+    "myRequests": "My Requests",
+    "statOpen": "Open",
+    "statClosed": "Closed",
+    "statTotal": "Total",
+    "activeRequests": "Active Requests",
+    "updated": "Updated {{date}}",
+    "quoteCount_one": "{{count}} quote",
+    "quoteCount_other": "{{count}} quotes"
+  },
+
+  "myRequests": {
+    "title": "My Requests",
+    "filterAll": "All",
+    "noRequests": "No requests found.",
+    "updated": "Updated {{date}}",
+    "quoteCount_one": "{{count}} quote",
+    "quoteCount_other": "{{count}} quotes",
+    "questionCount_one": "{{count}} question",
+    "questionCount_other": "{{count}} questions"
+  },
+
+  "form": {
+    "newRequest": "New Request",
+    "done": "Done",
+    "stepCar": "Car",
+    "stepIssue": "Issue",
+    "stepLocation": "Location",
+    "titleCar": "Car Details",
+    "titleIssue": "Describe the Issue",
+    "titleLocation": "Location & Radius",
+    "titleSubmitted": "Request Submitted",
+    "vin": "VIN",
+    "make": "Make",
+    "model": "Model",
+    "variant": "Variant",
+    "optional": "optional",
+    "year": "Year",
+    "moreDetails": "More details",
+    "hideMoreDetails": "Hide more details",
+    "engineType": "Engine Type",
+    "fuelType": "Fuel Type",
+    "mileageKm": "Mileage (km)",
+    "issueQuestion": "What's wrong with the car?",
+    "issuePlaceholder": "Describe sounds, warning lights, and when the issue appears.",
+    "tagsLabel": "Tags",
+    "photosLabel": "Photos / Documents",
+    "addFile": "+ Add",
+    "noAddress": "No address yet",
+    "address": "Address",
+    "addressPlaceholder": "Street and city",
+    "useCurrentLocation": "Use current location",
+    "searchRadius": "Search radius:",
+    "radiusHelp": "Shops within {{radius}} km will receive your request.",
+    "submitting": "Submitting...",
+    "submitRequest": "Submit Request",
+    "confirmTitle": "We're notifying nearby shops",
+    "confirmMessage": "Your request has been submitted. You'll receive quotes shortly.",
+    "viewRequest": "View Request"
+  },
+
+  "detail": {
+    "radiusUpdated": "{{radius}} km radius",
+    "updated": "Updated {{date}}",
+    "quotesTab": "Quotes ({{count}})",
+    "qnaTab": "Q&A ({{count}})",
+    "sortNewest": "Newest",
+    "sortCheapest": "Cheapest",
+    "sortClosest": "Closest",
+    "filterInterested": "Interested",
+    "noShops": "No shops to show.",
+    "kmAway": "{{distance}} km away",
+    "stateDelivered": "No response yet",
+    "stateAcknowledged": "Shop is preparing a quote",
+    "stateQuestionSent": "Shop asked a question",
+    "stateQuoteSent": "Quote is available",
+    "stateDeclined": "Shop declined this request",
+    "answer": "Answer",
+    "ignore": "Ignore",
+    "markInterested": "Mark Interested",
+    "durationDays_one": "{{count}} day",
+    "durationDays_other": "{{count}} days",
+    "validUntil": "Valid until {{date}}",
+    "viewThread": "View Thread ({{count}} new)",
+    "requestClosed": "Request is closed.",
+    "noConversations": "No conversations yet.",
+    "closeDialogTitle": "Close this request?",
+    "closeDialogMessage": "New quotes and questions will stop. This can't be undone.",
+    "closing": "Closing...",
+    "closeRequest": "Close Request",
+    "less": "Less",
+    "more": "More",
+    "ignored": "Ignored"
+  },
+
+  "thread": {
+    "eyebrow": "Private Thread",
+    "needsAnswer": "Needs your answer",
+    "placeholder": "Type your answer...",
+    "sending": "Sending...",
+    "send": "Send",
+    "readOnly": "Request is closed. Q&A is read-only."
+  },
+
+  "attachment": {
+    "video": "Video",
+    "document": "Document"
+  },
+
+  "status": {
+    "open": "Open",
+    "closed": "Closed"
+  },
+
+  "quoteState": {
+    "delivered": "Waiting",
+    "acknowledged": "Reviewing",
+    "question_sent": "Question",
+    "quote_sent": "Quote",
+    "declined": "Declined"
+  },
+
+  "tags": {
+    "brakes": "brakes",
+    "engine": "engine",
+    "suspension": "suspension",
+    "exhaust": "exhaust",
+    "battery": "battery",
+    "transmission": "transmission",
+    "electronics": "electronics",
+    "air conditioning": "air conditioning"
+  },
+
+  "validation": {
+    "vinInvalid": "VIN must be 17 characters and cannot include I, O, or Q.",
+    "makeRequired": "Make is required.",
+    "modelRequired": "Model is required.",
+    "yearNotInteger": "Year must be a whole number.",
+    "yearOutOfRange": "Year must be between {{min}} and {{max}}.",
+    "mileageInvalid": "Mileage must be a positive number.",
+    "descriptionTooShort": "Please provide enough detail for shops to quote accurately.",
+    "addressRequired": "Address is required.",
+    "radiusOutOfRange": "Radius must be between {{min}} and {{max}} km."
+  }
+}

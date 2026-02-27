@@ -1,0 +1,484 @@
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { Attachment, RepairRequest, ShopQuoteCard, SortQuotesBy } from '../domain/types'
+import { formatDateTime, formatQuoteRange } from '../utils/format'
+import { ShopThreadPanel } from './ShopThreadPanel'
+
+interface RepairRequestDetailProps {
+  request: RepairRequest
+  onBackHome: () => void
+  onMyRequests: () => void
+  onCloseRequest: (requestId: string) => Promise<void>
+  onMarkInterested: (requestId: string, shopId: string) => Promise<void>
+  onIgnoreShop: (requestId: string, shopId: string) => Promise<void>
+  onSendThreadMessage: (
+    requestId: string,
+    shopId: string,
+    text: string,
+    attachments: Attachment[],
+  ) => Promise<void>
+}
+
+type DetailTab = 'quotes' | 'qna'
+
+const sortQuotes = (quotes: ShopQuoteCard[], sortBy: SortQuotesBy): ShopQuoteCard[] => {
+  return [...quotes].sort((a, b) => {
+    if (a.interested !== b.interested) {
+      return a.interested ? -1 : 1
+    }
+
+    if (a.ignored !== b.ignored) {
+      return a.ignored ? 1 : -1
+    }
+
+    if (sortBy === 'cheapest') {
+      const aPrice = a.quote?.minPricePln ?? Number.POSITIVE_INFINITY
+      const bPrice = b.quote?.minPricePln ?? Number.POSITIVE_INFINITY
+      if (aPrice !== bPrice) {
+        return aPrice - bPrice
+      }
+    }
+
+    if (sortBy === 'closest') {
+      if (a.distanceKm !== b.distanceKm) {
+        return a.distanceKm - b.distanceKm
+      }
+    }
+
+    return Date.parse(b.lastUpdatedAt) - Date.parse(a.lastUpdatedAt)
+  })
+}
+
+const stateMessageKeys: Record<ShopQuoteCard['state'], string> = {
+  delivered: 'detail.stateDelivered',
+  acknowledged: 'detail.stateAcknowledged',
+  question_sent: 'detail.stateQuestionSent',
+  quote_sent: 'detail.stateQuoteSent',
+  declined: 'detail.stateDeclined',
+}
+
+const sortLabelKeys: Record<SortQuotesBy, string> = {
+  newest: 'detail.sortNewest',
+  cheapest: 'detail.sortCheapest',
+  closest: 'detail.sortClosest',
+}
+
+export function RepairRequestDetail({
+  request,
+  onBackHome,
+  onMyRequests,
+  onCloseRequest,
+  onMarkInterested,
+  onIgnoreShop,
+  onSendThreadMessage,
+}: RepairRequestDetailProps) {
+  const { t, i18n } = useTranslation()
+  const [activeTab, setActiveTab] = useState<DetailTab>('quotes')
+  const [sortBy, setSortBy] = useState<SortQuotesBy>('newest')
+  const [interestedOnly, setInterestedOnly] = useState(false)
+  const [expandedShops, setExpandedShops] = useState<Record<string, boolean>>({})
+  const [activeThreadShopId, setActiveThreadShopId] = useState<string | null>(null)
+  const [showCloseDialog, setShowCloseDialog] = useState(false)
+  const [closing, setClosing] = useState(false)
+  const [pendingShopAction, setPendingShopAction] = useState<string | null>(null)
+  const [summaryCollapsed, setSummaryCollapsed] = useState(false)
+
+  const isReadOnly = request.status === 'closed'
+
+  const displayedQuotes = useMemo(() => {
+    const filtered = interestedOnly
+      ? request.shopQuotes.filter((quote) => quote.interested)
+      : request.shopQuotes
+
+    return sortQuotes(filtered, sortBy)
+  }, [interestedOnly, request.shopQuotes, sortBy])
+
+  const activeThread = useMemo(() => {
+    if (!activeThreadShopId) {
+      return null
+    }
+
+    const existing = request.threads[activeThreadShopId]
+    if (existing) {
+      return existing
+    }
+
+    const shop = request.shopQuotes.find((item) => item.shopId === activeThreadShopId)
+    if (!shop) {
+      return null
+    }
+
+    return {
+      shopId: shop.shopId,
+      shopName: shop.shopName,
+      unreadCount: 0,
+      lastActivityAt: shop.lastUpdatedAt,
+      messages: [],
+    }
+  }, [activeThreadShopId, request.shopQuotes, request.threads])
+
+  const threadRows = useMemo(() => {
+    const rows = request.shopQuotes
+      .filter((shop) => request.threads[shop.shopId] || shop.state === 'question_sent')
+      .map((shop) => {
+        const thread = request.threads[shop.shopId]
+        const lastMessage = thread?.messages[thread.messages.length - 1]
+        return {
+          shop,
+          unreadCount: thread?.unreadCount ?? 0,
+          preview: lastMessage?.text ?? shop.questionPreview ?? 'No messages yet.',
+        }
+      })
+
+    return rows.sort((a, b) => {
+      const aActivity = request.threads[a.shop.shopId]?.lastActivityAt ?? a.shop.lastUpdatedAt
+      const bActivity = request.threads[b.shop.shopId]?.lastActivityAt ?? b.shop.lastUpdatedAt
+      return Date.parse(bActivity) - Date.parse(aActivity)
+    })
+  }, [request.shopQuotes, request.threads])
+
+  const toggleExpanded = (shopId: string) => {
+    setExpandedShops((previous) => ({
+      ...previous,
+      [shopId]: !previous[shopId],
+    }))
+  }
+
+  const openThread = (shopId: string) => {
+    setActiveThreadShopId(shopId)
+  }
+
+  const handleCloseRequest = async () => {
+    setClosing(true)
+    try {
+      await onCloseRequest(request.id)
+      setShowCloseDialog(false)
+    } finally {
+      setClosing(false)
+    }
+  }
+
+  const handleMarkInterested = async (shopId: string) => {
+    setPendingShopAction(shopId)
+    try {
+      await onMarkInterested(request.id, shopId)
+    } finally {
+      setPendingShopAction(null)
+    }
+  }
+
+  const handleIgnore = async (shopId: string) => {
+    setPendingShopAction(shopId)
+    try {
+      await onIgnoreShop(request.id, shopId)
+    } finally {
+      setPendingShopAction(null)
+    }
+  }
+
+  const shopCardClass = (shop: ShopQuoteCard) => {
+    const classes = ['shop-card']
+    if (shop.state === 'question_sent' && !shop.ignored) classes.push('card-question')
+    if (shop.interested) classes.push('card-interested')
+    return classes.join(' ')
+  }
+
+  return (
+    <section className="screen request-detail-screen">
+      {/* Collapsible request summary */}
+      <header className="request-header" style={summaryCollapsed ? { padding: 'var(--space-3) var(--space-5)' } : undefined}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center', marginBottom: 'var(--space-1)' }}>
+            <button className="btn btn-ghost" onClick={onBackHome} style={{ padding: 'var(--space-1) var(--space-2)' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span className={`pill pill-${request.status}`}>{t(`status.${request.status}`)}</span>
+          </div>
+          {!summaryCollapsed ? (
+            <>
+              <h2>
+                {request.car.make} {request.car.model} {request.car.variant}
+              </h2>
+              <p>{request.issue.description}</p>
+              <small>
+                {t('detail.radiusUpdated', { radius: request.location.radiusKm })} &middot; {t('detail.updated', { date: formatDateTime(request.updatedAt, i18n.language) })}
+              </small>
+            </>
+          ) : (
+            <h2 style={{ fontSize: '15px', margin: 0 }}>
+              {request.car.make} {request.car.model}
+            </h2>
+          )}
+        </div>
+
+        <div className="request-header-actions">
+          <button
+            className="btn btn-ghost"
+            onClick={() => setSummaryCollapsed((prev) => !prev)}
+            style={{ padding: 'var(--space-1) var(--space-2)', fontSize: '12px' }}
+          >
+            {summaryCollapsed ? t('common.show') : t('common.hide')}
+          </button>
+          {!isReadOnly ? (
+            <button
+              className="btn btn-danger"
+              onClick={() => {
+                setShowCloseDialog(true)
+              }}
+            >
+              {t('common.close')}
+            </button>
+          ) : null}
+        </div>
+      </header>
+
+      {/* Tabs */}
+      <div className="tab-strip" role="tablist" aria-label="Request sections">
+        <button
+          className={`tab-btn ${activeTab === 'quotes' ? 'tab-btn-active' : ''}`}
+          role="tab"
+          onClick={() => {
+            setActiveTab('quotes')
+          }}
+        >
+          {t('detail.quotesTab', { count: request.shopQuotes.filter((s) => s.state === 'quote_sent').length })}
+        </button>
+        <button
+          className={`tab-btn ${activeTab === 'qna' ? 'tab-btn-active' : ''}`}
+          role="tab"
+          onClick={() => {
+            setActiveTab('qna')
+          }}
+        >
+          {t('detail.qnaTab', { count: threadRows.length })}
+        </button>
+      </div>
+
+      {/* Quotes tab */}
+      {activeTab === 'quotes' ? (
+        <>
+          {/* Sort / filter chips */}
+          <div className="sort-chips">
+            {(['newest', 'cheapest', 'closest'] as SortQuotesBy[]).map((value) => (
+              <button
+                key={value}
+                className={`chip ${sortBy === value && !interestedOnly ? 'chip-active' : ''}`}
+                onClick={() => {
+                  setSortBy(value)
+                  setInterestedOnly(false)
+                }}
+              >
+                {t(sortLabelKeys[value])}
+              </button>
+            ))}
+            <button
+              className={`chip ${interestedOnly ? 'chip-active' : ''}`}
+              onClick={() => {
+                setInterestedOnly((prev) => !prev)
+              }}
+            >
+              {t('detail.filterInterested')}
+            </button>
+          </div>
+
+          <div className="cards-stack">
+            {displayedQuotes.length === 0 ? (
+              <article className="empty-state">{t('detail.noShops')}</article>
+            ) : null}
+
+            {displayedQuotes.map((shop) => {
+              const expanded = expandedShops[shop.shopId] ?? (shop.state === 'quote_sent' || shop.state === 'question_sent')
+              const thread = request.threads[shop.shopId]
+              const isBusy = pendingShopAction === shop.shopId
+
+              return (
+                <article className={shopCardClass(shop)} key={shop.shopId}>
+                  <header className="shop-card-header">
+                    <div>
+                      <h3>{shop.shopName}</h3>
+                      <small>{t('detail.kmAway', { distance: shop.distanceKm.toFixed(1) })}</small>
+                    </div>
+                    <div className="shop-card-badges">
+                      <span className={`pill state-${shop.state}`}>{t(`quoteState.${shop.state}`)}</span>
+                      {shop.interested ? <span className="pill pill-interested">{t('detail.filterInterested')}</span> : null}
+                      {shop.ignored ? <span className="pill pill-muted">{t('detail.ignored')}</span> : null}
+                      <button
+                        className="btn btn-ghost"
+                        onClick={() => {
+                          toggleExpanded(shop.shopId)
+                        }}
+                        style={{ padding: 'var(--space-1) var(--space-2)', minHeight: '32px', fontSize: '13px' }}
+                      >
+                        {expanded ? t('detail.less') : t('detail.more')}
+                      </button>
+                    </div>
+                  </header>
+
+                  {expanded ? (
+                    <div className="shop-card-body">
+                      <p>{t(stateMessageKeys[shop.state])}</p>
+
+                      {shop.state === 'question_sent' ? (
+                        <>
+                          <div className="question-preview">{shop.questionPreview}</div>
+                          <div className="split-actions">
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                openThread(shop.shopId)
+                              }}
+                              disabled={isReadOnly}
+                            >
+                              {t('detail.answer')}
+                            </button>
+                            <button
+                              className="btn btn-ghost"
+                              onClick={() => {
+                                void handleIgnore(shop.shopId)
+                              }}
+                              disabled={isReadOnly || isBusy}
+                            >
+                              {t('detail.ignore')}
+                            </button>
+                          </div>
+                        </>
+                      ) : null}
+
+                      {shop.state === 'quote_sent' && shop.quote ? (
+                        <div className="quote-highlight">
+                          <strong>{formatQuoteRange(shop.quote, i18n.language)}</strong>
+                          {shop.quote.comment ? <p>{shop.quote.comment}</p> : null}
+                          <div className="quote-meta">
+                            {shop.quote.durationDays ? (
+                              <small>{t('detail.durationDays', { count: shop.quote.durationDays })}</small>
+                            ) : null}
+                            {shop.quote.validUntil ? (
+                              <small>{t('detail.validUntil', { date: formatDateTime(shop.quote.validUntil, i18n.language) })}</small>
+                            ) : null}
+                          </div>
+                          {!shop.interested && !shop.ignored ? (
+                            <div className="split-actions">
+                              <button
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  void handleMarkInterested(shop.shopId)
+                                }}
+                                disabled={isReadOnly || isBusy}
+                              >
+                                {t('detail.markInterested')}
+                              </button>
+                              <button
+                                className="btn btn-ghost"
+                                onClick={() => {
+                                  void handleIgnore(shop.shopId)
+                                }}
+                                disabled={isReadOnly || isBusy}
+                              >
+                                {t('detail.ignore')}
+                              </button>
+                            </div>
+                          ) : null}
+                          {shop.interested && shop.phone ? (
+                            <div className="phone-reveal">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                              </svg>
+                              {shop.phone}
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
+
+                      {thread && thread.unreadCount > 0 ? (
+                        <button
+                          className="btn btn-secondary"
+                          onClick={() => {
+                            openThread(shop.shopId)
+                          }}
+                          style={{ marginTop: 'var(--space-3)' }}
+                        >
+                          {t('detail.viewThread', { count: thread.unreadCount })}
+                        </button>
+                      ) : null}
+
+                      {isReadOnly ? <small className="read-only-note">{t('detail.requestClosed')}</small> : null}
+                    </div>
+                  ) : null}
+                </article>
+              )
+            })}
+          </div>
+        </>
+      ) : null}
+
+      {/* Q&A tab */}
+      {activeTab === 'qna' ? (
+        <div className="cards-stack">
+          {threadRows.length === 0 ? <article className="empty-state">{t('detail.noConversations')}</article> : null}
+
+          {threadRows.map((row) => (
+            <article
+              className="thread-row"
+              key={row.shop.shopId}
+              onClick={() => {
+                openThread(row.shop.shopId)
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') openThread(row.shop.shopId)
+              }}
+            >
+              <div>
+                <h3>{row.shop.shopName}</h3>
+                <p>{row.preview}</p>
+              </div>
+              <div className="thread-row-actions">
+                {row.unreadCount > 0 ? <span className="pill pill-alert">{row.unreadCount}</span> : null}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : null}
+
+      {/* Close request dialog */}
+      {showCloseDialog ? (
+        <div className="dialog-backdrop" role="presentation">
+          <div className="dialog" role="dialog" aria-modal="true">
+            <h3>{t('detail.closeDialogTitle')}</h3>
+            <p>{t('detail.closeDialogMessage')}</p>
+            <div className="split-actions" style={{ justifyContent: 'flex-end' }}>
+              <button
+                className="btn btn-ghost"
+                onClick={() => {
+                  setShowCloseDialog(false)
+                }}
+              >
+                {t('common.cancel')}
+              </button>
+              <button className="btn btn-danger" onClick={() => void handleCloseRequest()} disabled={closing}>
+                {closing ? t('detail.closing') : t('detail.closeRequest')}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Thread panel */}
+      {activeThread ? (
+        <ShopThreadPanel
+          thread={activeThread}
+          readOnly={isReadOnly}
+          onClose={() => {
+            setActiveThreadShopId(null)
+          }}
+          onSend={async (text, attachments) => {
+            await onSendThreadMessage(request.id, activeThread.shopId, text, attachments)
+          }}
+        />
+      ) : null}
+    </section>
+  )
+}
