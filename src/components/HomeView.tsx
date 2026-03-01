@@ -9,6 +9,26 @@ interface HomeViewProps {
   onOpenRequest?: (requestId: string) => void
 }
 
+const CarSilhouette = () => (
+  <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M20 75h-6a6 6 0 01-6-6v-8l10-14h30l16 14h20l10 8v6a6 6 0 01-6 6h-6M20 75a6 6 0 1012 0M68 75a6 6 0 1012 0M32 75h36"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M38 47l4-8h20l4 8"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      opacity="0.5"
+    />
+  </svg>
+)
+
 export function HomeView({ requests, onCreateRequest, onMyRequests, onOpenRequest }: HomeViewProps) {
   const { t, i18n } = useTranslation()
   const openRequests = requests.filter((request) => request.status === 'open')
@@ -17,35 +37,40 @@ export function HomeView({ requests, onCreateRequest, onMyRequests, onOpenReques
 
   return (
     <section className="screen home-screen">
-      <header className="hero-card">
-        <p className="eyebrow">{t('home.eyebrow')}</p>
-        <h1>{t('home.headline')}</h1>
-        <p>
-          {t('home.subheadline')}
-        </p>
-        <div className="hero-actions">
-          <button className="btn btn-primary btn-lg" onClick={onCreateRequest}>
-            {t('home.createRequest')}
-          </button>
-          <button className="btn btn-secondary" onClick={onMyRequests}>
-            {t('home.myRequests')}
-          </button>
+      <header className="hero-section">
+        <div className="hero-content">
+          <p className="eyebrow">{t('home.eyebrow')}</p>
+          <h1>{t('home.headline')}</h1>
+          <p>{t('home.subheadline')}</p>
+          <div className="hero-actions">
+            <button className="btn btn-primary btn-lg" onClick={onCreateRequest}>
+              {t('home.createRequest')}
+            </button>
+            <button className="btn btn-secondary" onClick={onMyRequests}>
+              {t('home.myRequests')}
+            </button>
+          </div>
+        </div>
+        <div className="hero-illustration" aria-hidden="true">
+          <CarSilhouette />
         </div>
       </header>
 
-      <div className="stats-grid">
-        <article className="stat-card">
+      <div className="stats-row">
+        <div className="stat-item">
+          <span className="stat-number">{openRequests.length}</span>
           <span className="stat-label">{t('home.statOpen')}</span>
-          <strong>{openRequests.length}</strong>
-        </article>
-        <article className="stat-card">
+        </div>
+        <div className="stat-divider" />
+        <div className="stat-item">
+          <span className="stat-number">{closedCount}</span>
           <span className="stat-label">{t('home.statClosed')}</span>
-          <strong>{closedCount}</strong>
-        </article>
-        <article className="stat-card">
+        </div>
+        <div className="stat-divider" />
+        <div className="stat-item">
+          <span className="stat-number">{requests.length}</span>
           <span className="stat-label">{t('home.statTotal')}</span>
-          <strong>{requests.length}</strong>
-        </article>
+        </div>
       </div>
 
       {previewRequests.length > 0 ? (

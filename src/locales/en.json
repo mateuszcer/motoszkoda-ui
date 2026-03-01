@@ -158,6 +158,38 @@
     "air conditioning": "air conditioning"
   },
 
+  "auth": {
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to manage your repair requests",
+    "registerTitle": "Create account",
+    "registerSubtitle": "Get started with Autoceny",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPassword": "Confirm password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "name": "Name",
+    "namePlaceholder": "Your full name",
+    "login": "Sign in",
+    "loggingIn": "Signing in...",
+    "register": "Create account",
+    "registering": "Creating account...",
+    "logout": "Sign out",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Create one",
+    "hasAccount": "Already have an account?",
+    "loginLink": "Sign in",
+    "emailRequired": "Email is required.",
+    "emailInvalid": "Please enter a valid email address.",
+    "passwordRequired": "Password is required.",
+    "passwordMinLength": "Password must be at least 6 characters.",
+    "passwordMismatch": "Passwords do not match.",
+    "nameMinLength": "Name must be at least 2 characters.",
+    "loginFailed": "Login failed. Please try again.",
+    "registerFailed": "Registration failed. Please try again."
+  },
+
   "validation": {
     "vinInvalid": "VIN must be 17 characters and cannot include I, O, or Q.",
     "makeRequired": "Make is required.",
@@ -168,5 +200,120 @@
     "descriptionTooShort": "Please provide enough detail for shops to quote accurately.",
     "addressRequired": "Address is required.",
     "radiusOutOfRange": "Radius must be between {{min}} and {{max}} km."
+  },
+
+  "landing": {
+    "hero": {
+      "headline": "Get repair quotes from nearby shops — without calling around.",
+      "subheadline": "Create a Repair Request in 1 minute. Compare Quotes. Save money.",
+      "cta": "Create Repair Request",
+      "ctaShop": "For Shops"
+    },
+    "demo": {
+      "step1Label": "Describe your car & issue",
+      "step2Label": "Set search radius",
+      "step3Label": "Receive quotes"
+    },
+    "stickyBar": {
+      "cta": "Create Repair Request",
+      "ctaShop": "Join as a Shop"
+    },
+    "flow": {
+      "title": "How It Works",
+      "subtitle": "Follow the journey from request to repair",
+      "driverColumn": "Driver",
+      "shopColumn": "Shop",
+      "step1": {
+        "title": "Create Repair Request",
+        "driverText": "Enter car details, describe the issue, set radius in km.",
+        "shopText": "Requests arrive automatically if you're within the radius."
+      },
+      "step2": {
+        "title": "Shop Reviews",
+        "driverText": "See which shops are actively reviewing your request.",
+        "shopText": "One tap to signal you're preparing a Quote."
+      },
+      "step3": {
+        "title": "Clarify Details",
+        "driverText": "Answer questions to improve quote accuracy.",
+        "shopText": "Request missing info before quoting."
+      },
+      "step4": {
+        "title": "Receive Quotes",
+        "driverText": "Compare prices, distance, and notes.",
+        "shopText": "Send a fixed price or a range with a short comment."
+      },
+      "step5": {
+        "title": "Choose & Connect",
+        "driverText": "Shortlist the best option and contact the shop.",
+        "shopText": "Share contact after quoting (optional)."
+      }
+    },
+    "trust": {
+      "title": "Why Autoceny?",
+      "driver": {
+        "title": "For Drivers",
+        "benefit1": "Save money",
+        "benefit1Desc": "Compare real quotes instead of guessing prices.",
+        "benefit2": "No calling around",
+        "benefit2Desc": "One request reaches every shop in your radius.",
+        "benefit3": "Clear comparison",
+        "benefit3Desc": "Side-by-side prices, distances, and reviews."
+      },
+      "shop": {
+        "title": "For Shops",
+        "benefit1": "High-intent leads",
+        "benefit1Desc": "Every request comes from a driver ready to repair.",
+        "benefit2": "Less back-and-forth",
+        "benefit2Desc": "Ask questions and quote directly in the app.",
+        "benefit3": "Win locally",
+        "benefit3Desc": "Compete on value in your neighborhood."
+      }
+    },
+    "conversion": {
+      "driverTitle": "Ready to find the best deal?",
+      "driverCta": "Create Repair Request",
+      "shopTitle": "Want to reach new customers?",
+      "shopCta": "Join as a Shop"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": "How is the search radius calculated?",
+      "a1": "We use your location (or entered address) as the center and find every shop within the distance you set — straight-line radius in km.",
+      "q2": "Is it free for drivers?",
+      "a2": "Yes, creating repair requests and receiving quotes is completely free for drivers.",
+      "q3": "Do shops see each other's quotes?",
+      "a3": "No. Each shop's quote is private. Only the driver can see and compare all quotes.",
+      "q4": "When do I see a shop's phone number?",
+      "a4": "After a shop sends a quote and chooses to share their phone number, it becomes visible on their quote card.",
+      "q5": "Can I close a request early?",
+      "a5": "Yes, you can close a request at any time. Open quotes remain visible but no new ones will arrive.",
+      "q6": "What happens after I mark a shop as 'Interested'?",
+      "a6": "The shop is notified. If they shared their phone number, you'll see it immediately. You can then contact them directly."
+    },
+    "footer": {
+      "copy": "\u00a9 2026 Autoceny. All rights reserved."
+    },
+    "appScreenshot": "App screenshot placeholder",
+    "mockSubmit": "Submit Request",
+    "mockBrakes": "Brakes squeal when stopping",
+    "mockRadius": "search radius",
+    "mockInbox": "Inbox",
+    "mockNewRequest": "New Request",
+    "mockReviewing": "Reviewing",
+    "mockDelivered": "Delivered",
+    "mockAcknowledge": "Acknowledge",
+    "mockBrakesIssue": "Brakes squeal when stopping...",
+    "mockAskQuestion": "Can you share a photo of the brakes?",
+    "mockAnswer": "Answer",
+    "mockIgnore": "Ignore",
+    "mockTypeQuestion": "Type your question...",
+    "mockSendQuestion": "Ask Question",
+    "mockInterested": "Interested",
+    "mockSendQuote": "Send Quote",
+    "mockMinPrice": "Min price",
+    "mockMaxPrice": "Max price",
+    "mockQuoteSent": "Quote Sent",
+    "mockSharePhone": "Share Phone Number"
   }
 }

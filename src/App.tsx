@@ -3,8 +3,12 @@ import { useTranslation } from 'react-i18next'
 import './App.css'
 import { CreateRepairRequestFlow } from './components/CreateRepairRequestFlow'
 import { HomeView } from './components/HomeView'
+import { LandingPage } from './components/LandingPage'
+import { LoginView } from './components/LoginView'
 import { MyRequestsView } from './components/MyRequestsView'
+import { RegisterView } from './components/RegisterView'
 import { RepairRequestDetail } from './components/RepairRequestDetail'
+import type { AuthState } from './domain/auth-types'
 import type {
   AppScreen,
   Attachment,
@@ -12,6 +16,7 @@ import type {
   NotificationEvent,
   RepairRequest,
 } from './domain/types'
+import { authApi } from './services/authApi'
 import { repairRequestApi } from './services/repairRequestApi'
 
 const sortRequests = (requests: RepairRequest[]): RepairRequest[] => {
@@ -36,12 +41,19 @@ function LanguageToggle() {
 
 function App() {
   const { t } = useTranslation()
-  const [screen, setScreen] = useState<AppScreen>('home')
+  const [screen, setScreen] = useState<AppScreen>('landing')
   const [requests, setRequests] = useState<RepairRequest[]>([])
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [banners, setBanners] = useState<NotificationEvent[]>([])
+
+  const [auth, setAuth] = useState<AuthState>({
+    user: null,
+    token: null,
+    isAuthenticated: false,
+  })
+  const [authLoading, setAuthLoading] = useState(true)
 
   const selectedRequest = useMemo(() => {
     if (!selectedRequestId) {
@@ -72,9 +84,51 @@ function App() {
     }
   }, [])
 
+  // Check for existing session on mount
   useEffect(() => {
-    void loadRequests()
-  }, [loadRequests])
+    void (async () => {
+      try {
+        const user = await authApi.getCurrentUser()
+        if (user) {
+          setAuth({
+            user,
+            token: localStorage.getItem('autoceny_auth_token'),
+            isAuthenticated: true,
+          })
+          setScreen('home')
+        }
+      } finally {
+        setAuthLoading(false)
+      }
+    })()
+  }, [])
+
+  // Load requests when authenticated
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      void loadRequests()
+    }
+  }, [auth.isAuthenticated, loadRequests])
+
+  const handleLogin = async (email: string, password: string) => {
+    const result = await authApi.login(email, password)
+    setAuth({ user: result.user, token: result.token, isAuthenticated: true })
+    setScreen('home')
+  }
+
+  const handleRegister = async (name: string, email: string, password: string) => {
+    const result = await authApi.register(name, email, password)
+    setAuth({ user: result.user, token: result.token, isAuthenticated: true })
+    setScreen('home')
+  }
+
+  const handleLogout = async () => {
+    await authApi.logout()
+    setAuth({ user: null, token: null, isAuthenticated: false })
+    setRequests([])
+    setBanners([])
+    setScreen('landing')
+  }
 
   const upsertRequest = useCallback((updatedRequest: RepairRequest) => {
     setRequests((previous) => {
@@ -174,12 +228,61 @@ function App() {
     }
   }, [pushBanner, requests, screen, selectedRequestId, upsertRequest])
 
+  // Auth loading state
+  if (authLoading) {
+    return (
+      <main className="app-shell">
+        <p className="loading">{t('app.loading')}</p>
+      </main>
+    )
+  }
+
+  // Landing page (unauthenticated entry point)
+  if (!auth.isAuthenticated && screen === 'landing') {
+    return (
+      <LandingPage
+        onGetStarted={() => setScreen('login')}
+        onJoinAsShop={() => setScreen('register')}
+      />
+    )
+  }
+
+  // Auth screens (login/register)
+  if (!auth.isAuthenticated) {
+    return (
+      <main className="app-shell">
+        <header className="app-header">
+          <div className="brand" onClick={() => setScreen('landing')} style={{ cursor: 'pointer' }}>
+            <div className="brand-mark">AC</div>
+            <h1>Autoceny</h1>
+          </div>
+          <div className="header-actions">
+            <LanguageToggle />
+          </div>
+        </header>
+
+        {screen === 'register' ? (
+          <RegisterView
+            onRegister={handleRegister}
+            onSwitchToLogin={() => setScreen('login')}
+          />
+        ) : (
+          <LoginView
+            onLogin={handleLogin}
+            onSwitchToRegister={() => setScreen('register')}
+          />
+        )}
+      </main>
+    )
+  }
+
+  // Authenticated app
   return (
     <main className="app-shell">
       <header className="app-header">
         <div className="brand" onClick={() => setScreen('home')} style={{ cursor: 'pointer' }}>
-          <div className="brand-mark">MS</div>
-          <h1>Moto Szkoda</h1>
+          <div className="brand-mark">AC</div>
+          <h1>Autoceny</h1>
         </div>
         <div className="header-actions">
           {screen !== 'home' ? (
@@ -192,6 +295,12 @@ function App() {
               {t('app.home')}
             </button>
           ) : null}
+          <button
+            className="btn btn-ghost"
+            onClick={() => void handleLogout()}
+          >
+            {t('auth.logout')}
+          </button>
           <LanguageToggle />
         </div>
       </header>

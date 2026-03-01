@@ -162,6 +162,38 @@
     "air conditioning": "klimatyzacja"
   },
 
+  "auth": {
+    "loginTitle": "Witaj ponownie",
+    "loginSubtitle": "Zaloguj się, aby zarządzać zgłoszeniami",
+    "registerTitle": "Utwórz konto",
+    "registerSubtitle": "Rozpocznij korzystanie z Autoceny",
+    "email": "Email",
+    "emailPlaceholder": "ty@przykład.pl",
+    "password": "Hasło",
+    "passwordPlaceholder": "Wpisz hasło",
+    "confirmPassword": "Potwierdź hasło",
+    "confirmPasswordPlaceholder": "Wpisz hasło ponownie",
+    "name": "Imię i nazwisko",
+    "namePlaceholder": "Twoje imię i nazwisko",
+    "login": "Zaloguj się",
+    "loggingIn": "Logowanie...",
+    "register": "Utwórz konto",
+    "registering": "Tworzenie konta...",
+    "logout": "Wyloguj",
+    "noAccount": "Nie masz konta?",
+    "registerLink": "Utwórz je",
+    "hasAccount": "Masz już konto?",
+    "loginLink": "Zaloguj się",
+    "emailRequired": "Email jest wymagany.",
+    "emailInvalid": "Podaj prawidłowy adres email.",
+    "passwordRequired": "Hasło jest wymagane.",
+    "passwordMinLength": "Hasło musi mieć co najmniej 6 znaków.",
+    "passwordMismatch": "Hasła nie pasują do siebie.",
+    "nameMinLength": "Imię musi mieć co najmniej 2 znaki.",
+    "loginFailed": "Logowanie nie powiodło się. Spróbuj ponownie.",
+    "registerFailed": "Rejestracja nie powiodła się. Spróbuj ponownie."
+  },
+
   "validation": {
     "vinInvalid": "VIN musi mieć 17 znaków i nie może zawierać I, O ani Q.",
     "makeRequired": "Marka jest wymagana.",
@@ -172,5 +204,120 @@
     "descriptionTooShort": "Podaj wystarczająco szczegółowy opis, aby warsztaty mogły wycenić naprawę.",
     "addressRequired": "Adres jest wymagany.",
     "radiusOutOfRange": "Zasięg musi być między {{min}} a {{max}} km."
+  },
+
+  "landing": {
+    "hero": {
+      "headline": "Otrzymaj wyceny naprawy z okolicznych warsztatów — bez obdzwaniania.",
+      "subheadline": "Stwórz Zlecenie Naprawy w 1 minutę. Porównaj Wyceny. Zaoszczędź.",
+      "cta": "Stwórz Zlecenie Naprawy",
+      "ctaShop": "Dla Warsztatów"
+    },
+    "demo": {
+      "step1Label": "Opisz auto i problem",
+      "step2Label": "Ustaw promień szukania",
+      "step3Label": "Otrzymaj wyceny"
+    },
+    "stickyBar": {
+      "cta": "Stwórz Zlecenie Naprawy",
+      "ctaShop": "Dołącz jako Warsztat"
+    },
+    "flow": {
+      "title": "Jak to działa",
+      "subtitle": "Śledź proces od zgłoszenia do naprawy",
+      "driverColumn": "Kierowca",
+      "shopColumn": "Warsztat",
+      "step1": {
+        "title": "Stwórz Zlecenie Naprawy",
+        "driverText": "Podaj dane auta, opisz usterkę, ustaw promień w km.",
+        "shopText": "Zlecenia trafiają automatycznie, jeśli jesteś w promieniu."
+      },
+      "step2": {
+        "title": "Warsztat analizuje",
+        "driverText": "Sprawdź, które warsztaty aktywnie przeglądają Twoje zgłoszenie.",
+        "shopText": "Jedno kliknięcie, by potwierdzić, że przygotowujesz wycenę."
+      },
+      "step3": {
+        "title": "Doprecyzuj szczegóły",
+        "driverText": "Odpowiadaj na pytania, by wycena była dokładniejsza.",
+        "shopText": "Zapytaj o brakujące informacje przed wyceną."
+      },
+      "step4": {
+        "title": "Otrzymaj Wyceny",
+        "driverText": "Porównaj ceny, odległości i komentarze.",
+        "shopText": "Wyślij cenę stałą lub zakres z krótkim komentarzem."
+      },
+      "step5": {
+        "title": "Wybierz i skontaktuj się",
+        "driverText": "Wybierz najlepszą ofertę i skontaktuj się z warsztatem.",
+        "shopText": "Udostępnij dane kontaktowe po wycenie (opcjonalnie)."
+      }
+    },
+    "trust": {
+      "title": "Dlaczego Autoceny?",
+      "driver": {
+        "title": "Dla Kierowców",
+        "benefit1": "Oszczędzaj",
+        "benefit1Desc": "Porównuj realne wyceny zamiast zgadywać ceny.",
+        "benefit2": "Bez obdzwaniania",
+        "benefit2Desc": "Jedno zgłoszenie trafia do każdego warsztatu w promieniu.",
+        "benefit3": "Łatwe porównanie",
+        "benefit3Desc": "Ceny, odległości i opinie obok siebie."
+      },
+      "shop": {
+        "title": "Dla Warsztatów",
+        "benefit1": "Klienci gotowi na naprawę",
+        "benefit1Desc": "Każde zlecenie pochodzi od kierowcy gotowego naprawić auto.",
+        "benefit2": "Mniej przekazywania informacji",
+        "benefit2Desc": "Zadawaj pytania i wyceniaj bezpośrednio w aplikacji.",
+        "benefit3": "Wygrywaj lokalnie",
+        "benefit3Desc": "Konkuruj wartością w swojej okolicy."
+      }
+    },
+    "conversion": {
+      "driverTitle": "Gotowy znaleźć najlepszą ofertę?",
+      "driverCta": "Stwórz Zlecenie Naprawy",
+      "shopTitle": "Chcesz dotrzeć do nowych klientów?",
+      "shopCta": "Dołącz jako Warsztat"
+    },
+    "faq": {
+      "title": "Najczęściej zadawane pytania",
+      "q1": "Jak obliczany jest promień szukania?",
+      "a1": "Używamy Twojej lokalizacji (lub podanego adresu) jako centrum i znajdujemy każdy warsztat w ustawionym promieniu — w linii prostej, w km.",
+      "q2": "Czy jest to bezpłatne dla kierowców?",
+      "a2": "Tak, tworzenie zleceń i otrzymywanie wycen jest całkowicie bezpłatne dla kierowców.",
+      "q3": "Czy warsztaty widzą wyceny innych?",
+      "a3": "Nie. Wycena każdego warsztatu jest prywatna. Tylko kierowca widzi i porównuje wszystkie wyceny.",
+      "q4": "Kiedy zobaczę numer telefonu warsztatu?",
+      "a4": "Po tym, jak warsztat wyśle wycenę i zdecyduje się udostępnić swój numer — pojawi się on na karcie wyceny.",
+      "q5": "Czy mogę zamknąć zlecenie wcześniej?",
+      "a5": "Tak, możesz zamknąć zlecenie w dowolnym momencie. Otwarte wyceny pozostaną widoczne, ale nowe nie będą napływać.",
+      "q6": "Co się stanie po oznaczeniu warsztatu jako 'Zainteresowany'?",
+      "a6": "Warsztat zostanie powiadomiony. Jeśli udostępnił numer telefonu, zobaczysz go od razu. Możesz wtedy skontaktować się bezpośrednio."
+    },
+    "footer": {
+      "copy": "\u00a9 2026 Autoceny. Wszelkie prawa zastrzeżone."
+    },
+    "appScreenshot": "Miejsce na zrzut ekranu aplikacji",
+    "mockSubmit": "Wyślij zlecenie",
+    "mockBrakes": "Hamulce piszczą przy hamowaniu",
+    "mockRadius": "promień szukania",
+    "mockInbox": "Skrzynka odbiorcza",
+    "mockNewRequest": "Nowe Zlecenie",
+    "mockReviewing": "Analizuje",
+    "mockDelivered": "Dostarczono",
+    "mockAcknowledge": "Przyjmij do przeglądu",
+    "mockBrakesIssue": "Hamulce piszczą przy hamowaniu...",
+    "mockAskQuestion": "Czy może Pan przesłać zdjęcie hamulców?",
+    "mockAnswer": "Odpowiedz",
+    "mockIgnore": "Ignoruj",
+    "mockTypeQuestion": "Wpisz pytanie...",
+    "mockSendQuestion": "Wyślij pytanie",
+    "mockInterested": "Zainteresowany",
+    "mockSendQuote": "Wyślij wycenę",
+    "mockMinPrice": "Cena od",
+    "mockMaxPrice": "Cena do",
+    "mockQuoteSent": "Wycena wysłana",
+    "mockSharePhone": "Udostępnij numer telefonu"
   }
 }

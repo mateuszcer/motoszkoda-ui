@@ -1,4 +1,4 @@
-export type AppScreen = 'home' | 'create-request' | 'my-requests' | 'request-detail'
+export type AppScreen = 'landing' | 'login' | 'register' | 'home' | 'create-request' | 'my-requests' | 'request-detail'
 
 export type RequestStatus = 'open' | 'closed'
 
