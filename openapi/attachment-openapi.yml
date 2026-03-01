@@ -1,0 +1,321 @@
+openapi: 3.0.3
+info:
+  title: MotoSzkoda Attachment API
+  description: Attachment management for repair requests and message threads. Supports signed URL upload flow.
+  version: 1.0.0
+
+paths:
+  /api/attachments/upload-url:
+    post:
+      summary: Request a signed upload URL
+      description: |
+        Creates an attachment record in PENDING_UPLOAD status and returns a signed URL
+        for the client to upload the file directly to storage.
+      operationId: requestUploadUrl
+      tags: [Attachments]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadUrlRequest'
+      responses:
+        '201':
+          description: Upload URL created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadUrlResponse'
+        '400':
+          description: Validation error (invalid content type, file too large, blank filename)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+        '403':
+          description: Access denied (wrong role or not owner of repair request)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Attachment limit exceeded (max 5 per target)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/attachments/{id}/confirm:
+    post:
+      summary: Confirm upload completion
+      description: Transitions attachment from PENDING_UPLOAD to ACTIVE after the client finishes uploading.
+      operationId: confirmUpload
+      tags: [Attachments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/attachmentId'
+      responses:
+        '200':
+          description: Upload confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentResponse'
+        '403':
+          description: Not the uploader
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Attachment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Attachment is not in PENDING_UPLOAD status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/attachments/{id}:
+    delete:
+      summary: Delete an attachment
+      description: Soft-deletes the attachment record and removes the file from storage.
+      operationId: deleteAttachment
+      tags: [Attachments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/attachmentId'
+      responses:
+        '204':
+          description: Attachment deleted
+        '403':
+          description: Not the uploader
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Attachment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Attachment already deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/attachments/{id}/download-url:
+    get:
+      summary: Get a signed download URL
+      description: Returns a time-limited signed URL to download the attachment file.
+      operationId: getDownloadUrl
+      tags: [Attachments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/attachmentId'
+      responses:
+        '200':
+          description: Download URL generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadUrlResponse'
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Attachment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Attachment is not ACTIVE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/attachments:
+    get:
+      summary: List attachments by target
+      description: Returns all ACTIVE attachments for a given target (repair request or message thread).
+      operationId: listAttachments
+      tags: [Attachments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: targetType
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/AttachmentTargetType'
+        - name: repairRequestId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: shopId
+          in: query
+          required: false
+          description: Required when targetType is MESSAGE_THREAD
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of attachments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttachmentResponse'
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    attachmentId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    AttachmentTargetType:
+      type: string
+      enum: [REPAIR_REQUEST, MESSAGE_THREAD]
+
+    UploadUrlRequest:
+      type: object
+      required: [targetType, repairRequestId, fileName, contentType, sizeBytes]
+      properties:
+        targetType:
+          $ref: '#/components/schemas/AttachmentTargetType'
+        repairRequestId:
+          type: string
+          format: uuid
+        shopId:
+          type: string
+          format: uuid
+          description: Required for MESSAGE_THREAD targets
+        messageId:
+          type: string
+          format: uuid
+          description: Optional UI anchor to a specific message
+        fileName:
+          type: string
+          maxLength: 255
+        contentType:
+          type: string
+          enum: [image/jpeg, image/png, image/webp]
+        sizeBytes:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 5242880
+          description: File size in bytes (max 5 MB)
+
+    UploadUrlResponse:
+      type: object
+      properties:
+        attachmentId:
+          type: string
+          format: uuid
+        uploadUrl:
+          type: string
+          format: uri
+          description: Signed URL for direct file upload
+
+    DownloadUrlResponse:
+      type: object
+      properties:
+        attachmentId:
+          type: string
+          format: uuid
+        downloadUrl:
+          type: string
+          format: uri
+          description: Time-limited signed URL for file download
+
+    AttachmentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        uploaderId:
+          type: string
+          format: uuid
+        targetType:
+          $ref: '#/components/schemas/AttachmentTargetType'
+        repairRequestId:
+          type: string
+          format: uuid
+        shopId:
+          type: string
+          format: uuid
+          nullable: true
+        messageId:
+          type: string
+          format: uuid
+          nullable: true
+        fileName:
+          type: string
+        contentType:
+          type: string
+        sizeBytes:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum: [PENDING_UPLOAD, ACTIVE, DELETED]
+        createdAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+        correlationId:
+          type: string
+          format: uuid

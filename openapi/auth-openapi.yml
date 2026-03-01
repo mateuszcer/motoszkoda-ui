@@ -1,0 +1,314 @@
+openapi: 3.1.0
+info:
+  title: MotoSzkoda Auth API
+  description: Authentication endpoints proxying Supabase Auth. All endpoints are public (no JWT required).
+  version: 1.0.0
+
+paths:
+  /api/auth/users/signup:
+    post:
+      operationId: userSignup
+      summary: Register a new user account
+      tags: [Auth - Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignupResult"
+        "400":
+          description: Validation error or weak password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                weakPassword:
+                  summary: Weak password
+                  value:
+                    code: WEAK_PASSWORD
+                    message: Password is too weak
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+                validation:
+                  summary: Validation error
+                  value:
+                    code: VALIDATION_ERROR
+                    message: Validation failed
+                    details:
+                      - Invalid email format
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "409":
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: EMAIL_ALREADY_REGISTERED
+                message: Email already registered
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /api/auth/users/signin:
+    post:
+      operationId: userSignin
+      summary: Sign in as a user
+      description: Authenticates against Supabase and validates the returned role is USER. Returns JWT tokens.
+      tags: [Auth - Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+      responses:
+        "200":
+          description: Signed in successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SigninResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: INVALID_CREDENTIALS
+                message: Invalid email or password
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "403":
+          description: Account banned or role mismatch
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                roleMismatch:
+                  summary: Shop user trying to sign in via user endpoint
+                  value:
+                    code: ROLE_MISMATCH
+                    message: Expected role USER but got SHOP_USER
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+                banned:
+                  summary: Account banned or pending approval
+                  value:
+                    code: USER_BANNED
+                    message: Account is banned or pending approval
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /api/auth/shops/signup:
+    post:
+      operationId: shopSignup
+      summary: Register a new shop account
+      description: Creates a SHOP_USER account. Shop accounts require approval before they can sign in.
+      tags: [Auth - Shops]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+      responses:
+        "201":
+          description: Shop account created (requires approval)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignupResult"
+              example:
+                userId: 550e8400-e29b-41d4-a716-446655440000
+                email: shop@example.com
+                role: SHOP_USER
+                requiresApproval: true
+        "400":
+          description: Validation error or weak password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /api/auth/shops/signin:
+    post:
+      operationId: shopSignin
+      summary: Sign in as a shop user
+      description: Authenticates against Supabase and validates the returned role is SHOP_USER. Returns JWT tokens.
+      tags: [Auth - Shops]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+      responses:
+        "200":
+          description: Signed in successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SigninResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Account banned or role mismatch
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                roleMismatch:
+                  summary: Regular user trying to sign in via shop endpoint
+                  value:
+                    code: ROLE_MISMATCH
+                    message: Expected role SHOP_USER but got USER
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+                banned:
+                  summary: Shop pending approval
+                  value:
+                    code: USER_BANNED
+                    message: Account is banned or pending approval
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+components:
+  schemas:
+    AuthRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          minLength: 1
+          example: StrongPass1!
+
+    SignupResult:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        role:
+          $ref: "#/components/schemas/Role"
+        requiresApproval:
+          type: boolean
+          description: true for SHOP_USER accounts that need admin approval
+          example: false
+
+    SigninResult:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        role:
+          $ref: "#/components/schemas/Role"
+        accessToken:
+          type: string
+          description: JWT access token for authenticating subsequent API calls
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refreshToken:
+          type: string
+          description: Token used to obtain a new access token after expiry
+          example: v1.MjQ1NjM4...
+        expiresIn:
+          type: integer
+          format: int64
+          description: Access token lifetime in seconds
+          example: 3600
+
+    Role:
+      type: string
+      enum: [USER, SHOP_USER]
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code
+          example: INVALID_CREDENTIALS
+        message:
+          type: string
+          description: Human-readable error message
+          example: Invalid email or password
+        details:
+          type: array
+          items:
+            type: string
+          description: Additional error details (e.g. validation messages)
+        correlationId:
+          type: string
+          format: uuid
+          description: Request correlation ID for tracing
+          example: 550e8400-e29b-41d4-a716-446655440000
+
+  responses:
+    InternalError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            code: AUTH_PROVIDER_ERROR
+            message: Authentication service unavailable
+            details: []
+            correlationId: 550e8400-e29b-41d4-a716-446655440000

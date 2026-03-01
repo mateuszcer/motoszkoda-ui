@@ -1,0 +1,295 @@
+openapi: 3.0.3
+info:
+  title: MotoSzkoda Messaging API
+  description: Threaded Q&A messaging between shops and drivers per (repairRequestId, shopId) pair.
+  version: 1.0.0
+
+paths:
+  /api/repair-requests/{repairRequestId}/messages/question:
+    post:
+      summary: Send a question (shop → driver)
+      description: >
+        Shop user sends a question to the driver. Counts toward the plan-based
+        question limit per (repairRequestId, shopId) scope.
+      operationId: sendQuestion
+      tags: [Messaging]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/repairRequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '201':
+          description: Question sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: No delivery for (repairRequestId, shopId)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Repair request is not OPEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Question limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/repair-requests/{repairRequestId}/messages/shops/{shopId}/message:
+    post:
+      summary: Send a message (driver reply or shop info message)
+      description: >
+        Driver replies to a specific shop thread, or shop sends an info message.
+        No limit check is applied.
+      operationId: sendMessage
+      tags: [Messaging]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/repairRequestId'
+        - $ref: '#/components/parameters/shopId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '201':
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Driver does not own the repair request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No delivery for (repairRequestId, shopId)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Repair request is not OPEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/repair-requests/{repairRequestId}/messages:
+    get:
+      summary: List messages in shop's own thread
+      description: >
+        Shop user lists messages for their thread (shopId from JWT).
+        Supports cursor-based pagination.
+      operationId: listThreadForShop
+      tags: [Messaging]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/repairRequestId'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/before'
+      responses:
+        '200':
+          description: List of messages (newest first)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: No delivery for (repairRequestId, shopId)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/repair-requests/{repairRequestId}/messages/shops/{shopId}:
+    get:
+      summary: List messages in a specific shop's thread (driver view)
+      description: >
+        Driver views messages for a specific shop's thread.
+        Supports cursor-based pagination.
+      operationId: listThreadForDriver
+      tags: [Messaging]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/repairRequestId'
+        - $ref: '#/components/parameters/shopId'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/before'
+      responses:
+        '200':
+          description: List of messages (newest first)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Driver does not own the repair request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/repair-requests/{repairRequestId}/messages/threads:
+    get:
+      summary: List thread summaries for a repair request (driver view)
+      description: >
+        Driver lists all threads (one per shop) with summary stats:
+        message count, last message timestamp, and last message type.
+      operationId: listThreadSummaries
+      tags: [Messaging]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/repairRequestId'
+      responses:
+        '200':
+          description: List of thread summaries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ThreadSummaryResponse'
+        '403':
+          description: Driver does not own the repair request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    repairRequestId:
+      name: repairRequestId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    shopId:
+      name: shopId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    limit:
+      name: limit
+      in: query
+      required: false
+      description: Number of messages to return (default 50, max 100)
+      schema:
+        type: integer
+        default: 50
+        minimum: 1
+        maximum: 100
+    before:
+      name: before
+      in: query
+      required: false
+      description: Cursor — message UUID to paginate before (returns messages older than this)
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    SendMessageRequest:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 4000
+
+    MessageResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        repairRequestId:
+          type: string
+          format: uuid
+        shopId:
+          type: string
+          format: uuid
+        senderId:
+          type: string
+          format: uuid
+        messageType:
+          type: string
+          enum: [QUESTION, MESSAGE]
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ThreadSummaryResponse:
+      type: object
+      properties:
+        shopId:
+          type: string
+          format: uuid
+        messageCount:
+          type: integer
+        lastMessageAt:
+          type: string
+          format: date-time
+        lastMessageType:
+          type: string
+          enum: [QUESTION, MESSAGE]
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code
+          enum:
+            - DELIVERY_NOT_FOUND
+            - REPAIR_REQUEST_NOT_ACTIVE
+            - THREAD_ACCESS_DENIED
+            - LIMIT_EXCEEDED
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+        correlationId:
+          type: string
+          format: uuid

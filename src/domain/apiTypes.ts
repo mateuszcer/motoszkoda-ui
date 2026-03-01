@@ -1,0 +1,231 @@
+// Raw backend response/request types — 1:1 with OpenAPI specs
+
+// ── Auth ─────────────────────────────────────────────────────────────
+
+export type ApiRole = 'USER' | 'SHOP_USER'
+
+export interface SignupRequest {
+  email: string
+  password: string
+}
+
+export interface SignupResponse {
+  userId: string
+  email: string
+  role: ApiRole
+  requiresApproval: boolean
+}
+
+export interface SigninRequest {
+  email: string
+  password: string
+}
+
+export interface SigninResponse {
+  userId: string
+  email: string
+  role: ApiRole
+  accessToken: string
+  refreshToken: string
+  expiresIn: number
+}
+
+// ── Repair Request ───────────────────────────────────────────────────
+
+export type ApiRequestStatus = 'OPEN' | 'CLOSED' | 'EXPIRED'
+export type ApiUrgency = 'ASAP' | 'THIS_WEEK' | 'FLEXIBLE'
+
+export interface CreateRepairRequestRequest {
+  make: string
+  model: string
+  year: number
+  description: string
+  latitude: number
+  longitude: number
+  radiusKm: number
+  vin?: string
+  variant?: string
+  engineType?: string
+  fuelType?: string
+  mileageKm?: number
+  categories?: string[]
+  urgency?: ApiUrgency
+}
+
+export interface RepairRequestResponse {
+  id: string
+  driverId: string
+  status: ApiRequestStatus
+  vin: string | null
+  make: string
+  model: string
+  variant: string | null
+  year: number
+  engineType: string | null
+  fuelType: string | null
+  mileageKm: number | null
+  description: string
+  categories: string[] | null
+  latitude: number
+  longitude: number
+  radiusKm: number
+  urgency: ApiUrgency | null
+  createdAt: string
+  updatedAt: string
+}
+
+// ── Shop Response ────────────────────────────────────────────────────
+
+export type ApiShopRequestStatus = 'PENDING' | 'ACKNOWLEDGED' | 'QUOTED' | 'DECLINED'
+
+export interface QuoteResponse {
+  id: string
+  priceMinorUnits: number
+  currency: string
+  estimatedDays: number | null
+  note: string | null
+  createdAt: string
+}
+
+export interface ShopRequestResponse {
+  id: string
+  deliveryId: string
+  repairRequestId: string
+  shopId: string
+  status: ApiShopRequestStatus
+  sharedPhone: string | null
+  phoneSharedAt: string | null
+  quotes: QuoteResponse[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ShopResponseForDriverView {
+  id: string
+  deliveryId: string
+  repairRequestId: string
+  shopId: string
+  status: ApiShopRequestStatus
+  sharedPhone: string | null
+  phoneSharedAt: string | null
+  quotes: QuoteResponse[]
+  createdAt: string
+  updatedAt: string
+}
+
+// ── Read Model (Compare View) ────────────────────────────────────────
+
+export interface CompareQuoteSummary {
+  priceMinorUnits: number
+  currency: string
+  estimatedDays: number | null
+}
+
+export interface CompareViewResponse {
+  shopId: string
+  shopName: string
+  distanceKm: number
+  shopRequestStatus: ApiShopRequestStatus | null
+  quoteSummary: CompareQuoteSummary | null
+  lastMessageAt: string | null
+  lastMessageType: ApiMessageType | null
+  phone: string | null
+}
+
+// ── Messaging ────────────────────────────────────────────────────────
+
+export type ApiMessageType = 'QUESTION' | 'MESSAGE'
+
+export interface SendMessageRequest {
+  content: string
+}
+
+export interface MessageResponse {
+  id: string
+  repairRequestId: string
+  shopId: string
+  senderId: string
+  messageType: ApiMessageType
+  content: string
+  createdAt: string
+}
+
+export interface ThreadSummaryResponse {
+  shopId: string
+  messageCount: number
+  lastMessageAt: string
+  lastMessageType: ApiMessageType
+}
+
+// ── Notifications ────────────────────────────────────────────────────
+
+export type ApiNotificationType =
+  | 'REQUEST_DELIVERED_TO_SHOP'
+  | 'SHOP_ACKNOWLEDGED_REQUEST'
+  | 'SHOP_ASKED_QUESTION'
+  | 'SHOP_SENT_QUOTE'
+
+export interface NotificationResponse {
+  id: string
+  type: ApiNotificationType
+  payload: Record<string, unknown>
+  read: boolean
+  createdAt: string
+}
+
+export interface NotificationPageResponse {
+  notifications: NotificationResponse[]
+  hasMore: boolean
+}
+
+export interface UnreadCountResponse {
+  count: number
+}
+
+// ── Attachments ──────────────────────────────────────────────────────
+
+export type ApiTargetType = 'REPAIR_REQUEST' | 'MESSAGE_THREAD'
+export type ApiAttachmentStatus = 'PENDING_UPLOAD' | 'ACTIVE' | 'DELETED'
+
+export interface UploadUrlRequest {
+  targetType: ApiTargetType
+  repairRequestId: string
+  fileName: string
+  contentType: 'image/jpeg' | 'image/png' | 'image/webp'
+  sizeBytes: number
+  shopId?: string
+  messageId?: string
+}
+
+export interface UploadUrlResponse {
+  attachmentId: string
+  uploadUrl: string
+}
+
+export interface AttachmentResponse {
+  id: string
+  uploaderId: string
+  targetType: ApiTargetType
+  repairRequestId: string
+  shopId: string | null
+  messageId: string | null
+  fileName: string
+  contentType: string
+  sizeBytes: number
+  status: ApiAttachmentStatus
+  createdAt: string
+}
+
+export interface DownloadUrlResponse {
+  attachmentId: string
+  downloadUrl: string
+}
+
+// ── Common Error ─────────────────────────────────────────────────────
+
+export interface ApiErrorResponse {
+  code: string
+  message: string
+  details?: string[]
+  correlationId?: string
+}

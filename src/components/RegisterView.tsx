@@ -2,13 +2,12 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 interface RegisterViewProps {
-  onRegister: (name: string, email: string, password: string) => Promise<void>
+  onRegister: (email: string, password: string) => Promise<void>
   onSwitchToLogin: () => void
 }
 
 export function RegisterView({ onRegister, onSwitchToLogin }: RegisterViewProps) {
   const { t } = useTranslation()
-  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -19,10 +18,6 @@ export function RegisterView({ onRegister, onSwitchToLogin }: RegisterViewProps)
     e.preventDefault()
     setError(null)
 
-    if (name.trim().length < 2) {
-      setError(t('auth.nameMinLength'))
-      return
-    }
     if (!email.trim()) {
       setError(t('auth.emailRequired'))
       return
@@ -42,7 +37,7 @@ export function RegisterView({ onRegister, onSwitchToLogin }: RegisterViewProps)
 
     setSubmitting(true)
     try {
-      await onRegister(name.trim(), email.trim(), password)
+      await onRegister(email.trim(), password)
     } catch (err) {
       setError(err instanceof Error ? err.message : t('auth.registerFailed'))
     } finally {
@@ -62,17 +57,6 @@ export function RegisterView({ onRegister, onSwitchToLogin }: RegisterViewProps)
         {error ? <div className="auth-error">{error}</div> : null}
 
         <div className="form-grid">
-          <label>
-            {t('auth.name')}
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t('auth.namePlaceholder')}
-              autoComplete="name"
-            />
-          </label>
-
           <label>
             {t('auth.email')}
             <input

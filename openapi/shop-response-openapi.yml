@@ -1,0 +1,400 @@
+openapi: 3.0.3
+info:
+  title: Shop Response API
+  description: >
+    API for shops to respond to delivered repair requests — acknowledge, decline,
+    submit quotes, and share phone numbers. Also provides read endpoints for
+    shops (inbox, own response) and drivers (shop responses for their request).
+  version: 1.0.0
+
+paths:
+  /api/repair-requests/{id}/shop-actions/acknowledge:
+    post:
+      summary: Acknowledge a delivery
+      operationId: acknowledgeShopRequest
+      tags: [ShopResponse]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RepairRequestId'
+      responses:
+        '200':
+          description: Shop request acknowledged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShopRequestResponse'
+        '401':
+          description: Unauthorized — missing or invalid JWT
+        '403':
+          description: Forbidden — caller is not a SHOP_USER
+        '404':
+          description: Delivery not found for this shop and repair request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Action not allowed (e.g. already declined or quoted)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/repair-requests/{id}/shop-actions/decline:
+    post:
+      summary: Decline a delivery
+      operationId: declineShopRequest
+      tags: [ShopResponse]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RepairRequestId'
+      responses:
+        '200':
+          description: Shop request declined (terminal)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShopRequestResponse'
+        '401':
+          description: Unauthorized — missing or invalid JWT
+        '403':
+          description: Forbidden — caller is not a SHOP_USER
+        '404':
+          description: Delivery not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Action not allowed (e.g. already declined)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/repair-requests/{id}/shop-actions/quote:
+    post:
+      summary: Submit a quote
+      operationId: submitQuote
+      tags: [ShopResponse]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RepairRequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitQuoteRequest'
+      responses:
+        '201':
+          description: Quote submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShopRequestResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — missing or invalid JWT
+        '403':
+          description: Forbidden — caller is not a SHOP_USER
+        '404':
+          description: Delivery not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Action not allowed (e.g. already declined or repair request closed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/repair-requests/{id}/shop-actions/share-phone:
+    post:
+      summary: Share phone number with the driver
+      operationId: sharePhone
+      tags: [ShopResponse]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RepairRequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SharePhoneRequest'
+      responses:
+        '200':
+          description: Phone shared successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShopRequestResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — missing or invalid JWT
+        '403':
+          description: Forbidden — caller is not a SHOP_USER
+        '404':
+          description: Shop request not found (must quote first)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Phone not shareable (not quoted yet, or already shared)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/repair-requests/{id}/shop-response:
+    get:
+      summary: Get own shop response for a repair request
+      operationId: getShopResponse
+      tags: [ShopResponse]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RepairRequestId'
+      responses:
+        '200':
+          description: Shop response details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShopRequestResponse'
+        '401':
+          description: Unauthorized — missing or invalid JWT
+        '403':
+          description: Forbidden — caller is not a SHOP_USER
+        '404':
+          description: Shop request not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/repair-requests/{id}/shop-responses:
+    get:
+      summary: List all shop responses for a repair request (driver view)
+      operationId: listShopResponses
+      tags: [ShopResponse]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RepairRequestId'
+      responses:
+        '200':
+          description: List of shop responses (declined shops excluded)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShopResponseForDriverView'
+        '401':
+          description: Unauthorized — missing or invalid JWT
+        '403':
+          description: Forbidden — caller is not a USER
+        '404':
+          description: Repair request not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/shop-inbox:
+    get:
+      summary: List all delivered requests and responses for the shop
+      operationId: shopInbox
+      tags: [ShopResponse]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of shop requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShopRequestResponse'
+        '401':
+          description: Unauthorized — missing or invalid JWT
+        '403':
+          description: Forbidden — caller is not a SHOP_USER
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    RepairRequestId:
+      name: id
+      in: path
+      required: true
+      description: Repair request UUID
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    SubmitQuoteRequest:
+      type: object
+      required: [priceMinorUnits, currency]
+      properties:
+        priceMinorUnits:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Price in minor currency units (e.g. 15000 = 150.00 PLN)
+        currency:
+          type: string
+          maxLength: 3
+          example: PLN
+        estimatedDays:
+          type: integer
+          minimum: 1
+          description: Optional estimated repair time in days
+        note:
+          type: string
+          maxLength: 2000
+          description: Optional explanation or scope of work
+
+    SharePhoneRequest:
+      type: object
+      required: [phone]
+      properties:
+        phone:
+          type: string
+          maxLength: 30
+          example: "+48123456789"
+
+    ShopRequestResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        deliveryId:
+          type: string
+          format: uuid
+        repairRequestId:
+          type: string
+          format: uuid
+        shopId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [PENDING, ACKNOWLEDGED, QUOTED, DECLINED]
+        sharedPhone:
+          type: string
+          nullable: true
+        phoneSharedAt:
+          type: string
+          format: date-time
+          nullable: true
+        quotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuoteResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ShopResponseForDriverView:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        repairRequestId:
+          type: string
+          format: uuid
+        shopId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [PENDING, ACKNOWLEDGED, QUOTED]
+        sharedPhone:
+          type: string
+          nullable: true
+          description: Included only when the shop has shared their phone
+        quotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuoteResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    QuoteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        priceMinorUnits:
+          type: integer
+          format: int64
+        currency:
+          type: string
+        estimatedDays:
+          type: integer
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+            - SHOP_REQUEST_NOT_FOUND
+            - DELIVERY_NOT_FOUND
+            - REPAIR_REQUEST_NOT_ACTIVE
+            - SHOP_REQUEST_ACTION_NOT_ALLOWED
+            - PHONE_NOT_SHAREABLE
+            - VALIDATION_ERROR
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+        correlationId:
+          type: string
+          format: uuid

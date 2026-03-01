@@ -1,7 +1,10 @@
+import type { ApiRole } from './apiTypes'
+
 export interface User {
   id: string
   name: string
   email: string
+  role: ApiRole
   avatarUrl?: string
   createdAt: string
 }
@@ -23,14 +26,20 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-  name: string
   email: string
   password: string
 }
 
+export interface StoredSession {
+  accessToken: string
+  refreshToken: string
+  expiresAt: number // epoch ms
+  user: User
+}
+
 export interface AuthApi {
   login(email: string, password: string): Promise<AuthResult>
-  register(name: string, email: string, password: string): Promise<AuthResult>
+  register(email: string, password: string): Promise<AuthResult>
   logout(): Promise<void>
-  getCurrentUser(): Promise<User | null>
+  restoreSession(): StoredSession | null
 }

@@ -1,0 +1,320 @@
+openapi: 3.1.0
+info:
+  title: MotoSzkoda Shop Directory API
+  description: |
+    Shop profile management and geo-radius search endpoints.
+    All endpoints require a valid JWT (Bearer token) obtained via the Auth API.
+  version: 1.0.0
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/shops/me:
+    put:
+      operationId: updateShopProfile
+      summary: Create or update own shop profile
+      description: |
+        Upsert pattern: creates the shop on first call, updates on subsequent calls.
+        The shop ID and owner ID are derived from the JWT claims (`shop_id` and `sub`).
+        Only the shop owner can update their own profile.
+      tags: [Shop Directory]
+      security:
+        - bearerAuth: [ROLE_SHOP_USER]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateShopRequest"
+            example:
+              name: AutoFix Centrum
+              address: ul. Marszalkowska 10, Warsaw
+              phone: "+48111000001"
+              description: General car repair in city center
+              lat: 52.235
+              lon: 21.015
+      responses:
+        "200":
+          description: Shop profile created or updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopInfo"
+              example:
+                shopId: a0000000-0000-0000-0000-000000000001
+                name: AutoFix Centrum
+                address: ul. Marszalkowska 10, Warsaw
+                phone: "+48111000001"
+                description: General car repair in city center
+                lat: 52.235
+                lon: 21.015
+        "400":
+          description: Validation error (missing name or address)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: VALIDATION_ERROR
+                message: Validation failed
+                details:
+                  - Name is required
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: Access denied — caller is not SHOP_USER or not the shop owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                forbidden:
+                  summary: User role cannot access this endpoint
+                  value:
+                    code: FORBIDDEN
+                    message: Access denied
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+                notOwner:
+                  summary: SHOP_USER trying to modify another shop
+                  value:
+                    code: SHOP_ACCESS_DENIED
+                    message: "User b0000000-... is not the owner of shop a0000000-..."
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /api/shops/nearby:
+    get:
+      operationId: findShopsNearby
+      summary: Find shops within a radius
+      description: |
+        Returns shops within the specified radius of the given coordinates,
+        ordered by distance (nearest first). Uses PostGIS `ST_DWithin` for
+        index-backed geo queries on the WGS84 geography column.
+      tags: [Shop Directory]
+      security:
+        - bearerAuth: [ROLE_USER, ROLE_SHOP_USER]
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          description: Latitude of the search center (-90 to 90)
+          schema:
+            type: number
+            format: double
+            minimum: -90
+            maximum: 90
+          example: 52.23
+        - name: lon
+          in: query
+          required: true
+          description: Longitude of the search center (-180 to 180)
+          schema:
+            type: number
+            format: double
+            minimum: -180
+            maximum: 180
+          example: 21.01
+        - name: radiusKm
+          in: query
+          required: true
+          description: Search radius in kilometers
+          schema:
+            type: number
+            format: double
+            minimum: 0
+          example: 20
+      responses:
+        "200":
+          description: List of shops within radius, ordered by distance
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ShopWithDistance"
+              example:
+                - shopId: a0000000-0000-0000-0000-000000000001
+                  name: AutoFix Centrum
+                  address: ul. Marszalkowska 10, Warsaw
+                  phone: "+48111000001"
+                  distanceKm: 0.65
+                - shopId: a0000000-0000-0000-0000-000000000002
+                  name: Mechanik Praga
+                  address: ul. Targowa 50, Warsaw
+                  phone: "+48111000002"
+                  distanceKm: 3.42
+                - shopId: a0000000-0000-0000-0000-000000000003
+                  name: Serwis Ursynow
+                  address: ul. Pulawy 300, Warsaw
+                  phone: "+48111000003"
+                  distanceKm: 11.15
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: Access denied — missing required role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: FORBIDDEN
+                message: Access denied
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Supabase JWT with `app_metadata.app_role` claim.
+        Obtain via `POST /api/auth/users/signin` or `POST /api/auth/shops/signin`.
+
+  schemas:
+    UpdateShopRequest:
+      type: object
+      required: [name, address, lat, lon]
+      properties:
+        name:
+          type: string
+          maxLength: 200
+          description: Shop display name
+          example: AutoFix Centrum
+        address:
+          type: string
+          maxLength: 500
+          description: Full street address
+          example: ul. Marszalkowska 10, Warsaw
+        phone:
+          type: string
+          maxLength: 30
+          description: Contact phone number (optional)
+          example: "+48111000001"
+        description:
+          type: string
+          maxLength: 2000
+          description: Free-text shop description (optional)
+          example: General car repair in city center
+        lat:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+          description: Shop latitude (WGS84)
+          example: 52.235
+        lon:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+          description: Shop longitude (WGS84)
+          example: 21.015
+
+    ShopInfo:
+      type: object
+      properties:
+        shopId:
+          type: string
+          format: uuid
+          description: Unique shop identifier (matches shop_id from JWT)
+          example: a0000000-0000-0000-0000-000000000001
+        name:
+          type: string
+          example: AutoFix Centrum
+        address:
+          type: string
+          example: ul. Marszalkowska 10, Warsaw
+        phone:
+          type: string
+          example: "+48111000001"
+        description:
+          type: string
+          example: General car repair in city center
+        lat:
+          type: number
+          format: double
+          description: Shop latitude (WGS84)
+          example: 52.235
+        lon:
+          type: number
+          format: double
+          description: Shop longitude (WGS84)
+          example: 21.015
+
+    ShopWithDistance:
+      type: object
+      properties:
+        shopId:
+          type: string
+          format: uuid
+          description: Unique shop identifier
+          example: a0000000-0000-0000-0000-000000000001
+        name:
+          type: string
+          example: AutoFix Centrum
+        address:
+          type: string
+          example: ul. Marszalkowska 10, Warsaw
+        phone:
+          type: string
+          example: "+48111000001"
+        distanceKm:
+          type: number
+          format: double
+          description: Distance from search center in kilometers
+          example: 0.65
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code
+          example: SHOP_NOT_FOUND
+        message:
+          type: string
+          description: Human-readable error message
+          example: Shop not found
+        details:
+          type: array
+          items:
+            type: string
+          description: Additional error details
+        correlationId:
+          type: string
+          format: uuid
+          description: Request correlation ID for tracing
+          example: 550e8400-e29b-41d4-a716-446655440000
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid JWT
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            code: UNAUTHORIZED
+            message: Full authentication is required
+            details: []
+            correlationId: 550e8400-e29b-41d4-a716-446655440000
+    InternalError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            code: INTERNAL_ERROR
+            message: An unexpected error occurred
+            details: []
+            correlationId: 550e8400-e29b-41d4-a716-446655440000

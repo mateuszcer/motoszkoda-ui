@@ -1,0 +1,43 @@
+openapi: 3.1.0
+info:
+  title: MotoSzkoda Matching API
+  description: |
+    Matching & Distribution context. Currently event-driven only — no HTTP endpoints.
+    When a repair request is created, the system fans out delivery records to nearby shops.
+    This spec documents the DeliveryInfo schema for future use by shop inbox and quoting contexts.
+  version: 1.0.0
+
+paths: {}
+
+components:
+  schemas:
+    DeliveryInfo:
+      type: object
+      description: A delivery record linking a repair request to a nearby shop.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique delivery identifier.
+        repairRequestId:
+          type: string
+          format: uuid
+          description: The repair request that was distributed.
+        shopId:
+          type: string
+          format: uuid
+          description: The shop that received the delivery.
+        distanceKm:
+          type: number
+          format: double
+          description: Distance in kilometers between the repair request location and the shop.
+        deliveredAt:
+          type: string
+          format: date-time
+          description: Timestamp when the delivery record was created.
+      required:
+        - id
+        - repairRequestId
+        - shopId
+        - distanceKm
+        - deliveredAt

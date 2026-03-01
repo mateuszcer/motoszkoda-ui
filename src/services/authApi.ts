@@ -1,115 +1,81 @@
-import type { AuthApi, AuthResult, User } from '../domain/auth-types'
+import type { SigninResponse, SignupResponse } from '../domain/apiTypes'
+import type { AuthApi, AuthResult, StoredSession, User } from '../domain/auth-types'
+import { api } from './apiClient'
 
-const STORAGE_KEY = 'autoceny_auth_token'
-const latencyMs = 250
+const AUTH_STORAGE_KEY = 'autoceny_auth'
 
-interface StoredUser {
-  id: string
-  name: string
-  email: string
-  password: string
-  createdAt: string
+function deriveNameFromEmail(email: string): string {
+  return email.split('@')[0]
 }
 
-const usersDb: StoredUser[] = [
-  {
-    id: 'user_demo',
-    name: 'Jan Kowalski',
-    email: 'jan@example.com',
-    password: 'password123',
-    createdAt: '2025-01-15T10:00:00.000Z',
-  },
-]
-
-const tokenToUserId = new Map<string, string>()
-
-const simulateLatency = async <T>(value: T): Promise<T> => {
-  await new Promise((resolve) => {
-    window.setTimeout(resolve, latencyMs)
-  })
-  return value
+function storeSession(session: StoredSession): void {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session))
 }
 
-const generateToken = (): string => {
-  return `tok_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`
+function clearSession(): void {
+  localStorage.removeItem(AUTH_STORAGE_KEY)
 }
 
-const toPublicUser = (stored: StoredUser): User => ({
-  id: stored.id,
-  name: stored.name,
-  email: stored.email,
-  createdAt: stored.createdAt,
-})
+function signinToResult(res: SigninResponse): AuthResult {
+  const user: User = {
+    id: res.userId,
+    name: deriveNameFromEmail(res.email),
+    email: res.email,
+    role: res.role,
+    createdAt: new Date().toISOString(),
+  }
 
-const api: AuthApi = {
+  const session: StoredSession = {
+    accessToken: res.accessToken,
+    refreshToken: res.refreshToken,
+    expiresAt: Date.now() + res.expiresIn * 1000,
+    user,
+  }
+  storeSession(session)
+
+  return { user, token: res.accessToken }
+}
+
+const authApiImpl: AuthApi = {
   async login(email: string, password: string): Promise<AuthResult> {
-    const found = usersDb.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
-    )
-    if (!found) {
-      await simulateLatency(null)
-      throw new Error('Invalid email or password')
-    }
-
-    const token = generateToken()
-    tokenToUserId.set(token, found.id)
-    localStorage.setItem(STORAGE_KEY, token)
-
-    return simulateLatency({ user: toPublicUser(found), token })
+    const res = await api.post<SigninResponse>('/api/auth/users/signin', {
+      auth: false,
+      body: { email, password },
+    })
+    return signinToResult(res)
   },
 
-  async register(name: string, email: string, password: string): Promise<AuthResult> {
-    const exists = usersDb.some((u) => u.email.toLowerCase() === email.toLowerCase())
-    if (exists) {
-      await simulateLatency(null)
-      throw new Error('Email already registered')
-    }
-
-    const newUser: StoredUser = {
-      id: `user_${Date.now().toString(36)}`,
-      name,
-      email: email.toLowerCase(),
-      password,
-      createdAt: new Date().toISOString(),
-    }
-    usersDb.push(newUser)
-
-    const token = generateToken()
-    tokenToUserId.set(token, newUser.id)
-    localStorage.setItem(STORAGE_KEY, token)
-
-    return simulateLatency({ user: toPublicUser(newUser), token })
+  async register(email: string, password: string): Promise<AuthResult> {
+    // Signup returns no token — we must sign in afterwards
+    await api.post<SignupResponse>('/api/auth/users/signup', {
+      auth: false,
+      body: { email, password },
+    })
+    return authApiImpl.login(email, password)
   },
 
   async logout(): Promise<void> {
-    const token = localStorage.getItem(STORAGE_KEY)
-    if (token) {
-      tokenToUserId.delete(token)
-    }
-    localStorage.removeItem(STORAGE_KEY)
-    await simulateLatency(undefined)
+    clearSession()
+    await Promise.resolve()
   },
 
-  async getCurrentUser(): Promise<User | null> {
-    const token = localStorage.getItem(STORAGE_KEY)
-    if (!token) {
-      return simulateLatency(null)
-    }
+  restoreSession(): StoredSession | null {
+    try {
+      const raw = localStorage.getItem(AUTH_STORAGE_KEY)
+      if (!raw) return null
 
-    const userId = tokenToUserId.get(token)
-    if (!userId) {
-      localStorage.removeItem(STORAGE_KEY)
-      return simulateLatency(null)
+      const session = JSON.parse(raw) as StoredSession
+      // If token expired, clear it
+      if (session.expiresAt < Date.now()) {
+        clearSession()
+        return null
+      }
+      return session
+    } catch {
+      clearSession()
+      return null
     }
-
-    const found = usersDb.find((u) => u.id === userId)
-    if (!found) {
-      localStorage.removeItem(STORAGE_KEY)
-      return simulateLatency(null)
-    }
-
-    return simulateLatency(toPublicUser(found))
   },
 }
 
-export const authApi: AuthApi = api
+export const authApi: AuthApi = authApiImpl

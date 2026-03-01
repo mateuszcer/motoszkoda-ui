@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './App.css'
 import { CreateRepairRequestFlow } from './components/CreateRepairRequestFlow'
@@ -16,8 +16,13 @@ import type {
   NotificationEvent,
   RepairRequest,
 } from './domain/types'
+import { setOnUnauthorized } from './services/apiClient'
 import { authApi } from './services/authApi'
+import * as localPrefs from './services/localPreferences'
+import { fetchNotifications } from './services/notificationsApi'
 import { repairRequestApi } from './services/repairRequestApi'
+
+const NOTIFICATION_POLL_INTERVAL = 15_000
 
 const sortRequests = (requests: RepairRequest[]): RepairRequest[] => {
   return [...requests].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
@@ -55,6 +60,8 @@ function App() {
   })
   const [authLoading, setAuthLoading] = useState(true)
 
+  const lastNotificationTime = useRef<string | undefined>(undefined)
+
   const selectedRequest = useMemo(() => {
     if (!selectedRequestId) {
       return null
@@ -62,6 +69,19 @@ function App() {
 
     return requests.find((request) => request.id === selectedRequestId) ?? null
   }, [requests, selectedRequestId])
+
+  const doLogout = useCallback(() => {
+    void authApi.logout()
+    setAuth({ user: null, token: null, isAuthenticated: false })
+    setRequests([])
+    setBanners([])
+    setScreen('landing')
+  }, [])
+
+  // Wire up 401 auto-logout
+  useEffect(() => {
+    setOnUnauthorized(doLogout)
+  }, [doLogout])
 
   const pushBanner = useCallback((event: NotificationEvent) => {
     setBanners((previous) => [event, ...previous].slice(0, 4))
@@ -84,23 +104,18 @@ function App() {
     }
   }, [])
 
-  // Check for existing session on mount
+  // Restore session on mount
   useEffect(() => {
-    void (async () => {
-      try {
-        const user = await authApi.getCurrentUser()
-        if (user) {
-          setAuth({
-            user,
-            token: localStorage.getItem('autoceny_auth_token'),
-            isAuthenticated: true,
-          })
-          setScreen('home')
-        }
-      } finally {
-        setAuthLoading(false)
-      }
-    })()
+    const session = authApi.restoreSession()
+    if (session) {
+      setAuth({
+        user: session.user,
+        token: session.accessToken,
+        isAuthenticated: true,
+      })
+      setScreen('home')
+    }
+    setAuthLoading(false)
   }, [])
 
   // Load requests when authenticated
@@ -116,18 +131,15 @@ function App() {
     setScreen('home')
   }
 
-  const handleRegister = async (name: string, email: string, password: string) => {
-    const result = await authApi.register(name, email, password)
+  const handleRegister = async (email: string, password: string) => {
+    const result = await authApi.register(email, password)
     setAuth({ user: result.user, token: result.token, isAuthenticated: true })
     setScreen('home')
   }
 
   const handleLogout = async () => {
-    await authApi.logout()
-    setAuth({ user: null, token: null, isAuthenticated: false })
-    setRequests([])
-    setBanners([])
-    setScreen('landing')
+    doLogout()
+    await Promise.resolve()
   }
 
   const upsertRequest = useCallback((updatedRequest: RepairRequest) => {
@@ -141,14 +153,11 @@ function App() {
     setSelectedRequestId(requestId)
     setScreen('request-detail')
 
-    const existing = requests.find((request) => request.id === requestId)
-    if (existing) {
-      return
-    }
+    if (!auth.user) return
 
-    const loaded = await repairRequestApi.getRequestById(requestId)
-    if (loaded) {
-      upsertRequest(loaded)
+    const detail = await repairRequestApi.fetchRequestDetail(requestId, auth.user.id)
+    if (detail) {
+      upsertRequest(detail)
     }
   }
 
@@ -173,60 +182,127 @@ function App() {
   }
 
   const handleMarkInterested = async (requestId: string, shopId: string) => {
-    const updated = await repairRequestApi.markInterested(requestId, shopId)
-    upsertRequest(updated)
+    localPrefs.markInterested(requestId, shopId)
+    // Optimistic UI update
+    setRequests((previous) =>
+      previous.map((req) => {
+        if (req.id !== requestId) return req
+        return {
+          ...req,
+          shopQuotes: req.shopQuotes.map((sq) =>
+            sq.shopId === shopId ? { ...sq, interested: true, ignored: false } : sq,
+          ),
+        }
+      }),
+    )
   }
 
   const handleIgnoreShop = async (requestId: string, shopId: string) => {
-    const updated = await repairRequestApi.ignoreShop(requestId, shopId)
-    upsertRequest(updated)
+    localPrefs.ignoreShop(requestId, shopId)
+    // Optimistic UI update
+    setRequests((previous) =>
+      previous.map((req) => {
+        if (req.id !== requestId) return req
+        return {
+          ...req,
+          shopQuotes: req.shopQuotes.map((sq) =>
+            sq.shopId === shopId ? { ...sq, ignored: true, interested: false } : sq,
+          ),
+        }
+      }),
+    )
   }
 
   const handleSendThreadMessage = async (
     requestId: string,
     shopId: string,
     text: string,
-    attachments: Attachment[],
+    _attachments: Attachment[],
   ) => {
-    const updated = await repairRequestApi.sendThreadMessage({
+    await repairRequestApi.sendThreadMessage({
       requestId,
       shopId,
       text,
-      attachments,
+      attachments: [],
     })
-    upsertRequest(updated)
+
+    // Re-fetch the detail to get updated threads
+    if (auth.user) {
+      const updated = await repairRequestApi.fetchRequestDetail(requestId, auth.user.id)
+      if (updated) {
+        upsertRequest(updated)
+      }
+    }
   }
 
+  // Notification polling — replaces advanceMockUpdates
   useEffect(() => {
-    if (screen !== 'request-detail' || !selectedRequestId) {
-      return
+    if (!auth.isAuthenticated) return
+
+    const poll = async () => {
+      try {
+        const page = await fetchNotifications(10)
+        if (page.notifications.length === 0) return
+
+        const newest = page.notifications[0]
+        if (lastNotificationTime.current && newest.createdAt <= lastNotificationTime.current) {
+          return // No new notifications
+        }
+
+        // Find notifications newer than what we've seen
+        const newOnes = lastNotificationTime.current
+          ? page.notifications.filter((n) => n.createdAt > lastNotificationTime.current!)
+          : [] // Don't banner on first poll
+
+        lastNotificationTime.current = newest.createdAt
+
+        for (const n of newOnes) {
+          const payload = n.payload as Record<string, string>
+          pushBanner({
+            id: n.id,
+            requestId: payload.repairRequestId ?? '',
+            shopId: payload.shopId,
+            type: n.type === 'SHOP_SENT_QUOTE' ? 'new_quote'
+              : n.type === 'SHOP_ACKNOWLEDGED_REQUEST' ? 'shop_acknowledged'
+              : n.type === 'SHOP_ASKED_QUESTION' ? 'new_question'
+              : 'request_submitted',
+            title: n.type.replace(/_/g, ' '),
+            message: (payload.message as string) ?? '',
+            createdAt: n.createdAt,
+          })
+
+          // If we're viewing this request's detail, refresh it
+          if (
+            selectedRequestId &&
+            payload.repairRequestId === selectedRequestId &&
+            auth.user
+          ) {
+            repairRequestApi.invalidateCache(selectedRequestId)
+            const updated = await repairRequestApi.fetchRequestDetail(
+              selectedRequestId,
+              auth.user.id,
+            )
+            if (updated) {
+              upsertRequest(updated)
+            }
+          }
+        }
+      } catch {
+        // Silently ignore polling errors
+      }
     }
 
-    const activeRequest = requests.find((request) => request.id === selectedRequestId)
-    if (!activeRequest || activeRequest.status === 'closed') {
-      return
-    }
+    // Initial poll
+    void poll()
 
     const intervalId = window.setInterval(() => {
-      void (async () => {
-        const event = await repairRequestApi.advanceMockUpdates(selectedRequestId)
-        if (!event) {
-          return
-        }
-
-        const updated = await repairRequestApi.getRequestById(selectedRequestId)
-        if (updated) {
-          upsertRequest(updated)
-        }
-
-        pushBanner(event)
-      })()
-    }, 20_000)
+      void poll()
+    }, NOTIFICATION_POLL_INTERVAL)
 
     return () => {
       window.clearInterval(intervalId)
     }
-  }, [pushBanner, requests, screen, selectedRequestId, upsertRequest])
+  }, [auth.isAuthenticated, auth.user, pushBanner, selectedRequestId, upsertRequest])
 
   // Auth loading state
   if (authLoading) {
