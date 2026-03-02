@@ -673,9 +673,6 @@ function App() {
           onBackHome={() => {
             setScreen('home')
           }}
-          onMyRequests={() => {
-            setScreen('my-requests')
-          }}
           onCloseRequest={handleCloseRequest}
           onMarkInterested={handleMarkInterested}
           onIgnoreShop={handleIgnoreShop}

@@ -7,7 +7,6 @@ import { ShopThreadPanel } from './ShopThreadPanel'
 interface RepairRequestDetailProps {
   request: RepairRequest
   onBackHome: () => void
-  onMyRequests: () => void
   onCloseRequest: (requestId: string) => Promise<void>
   onMarkInterested: (requestId: string, shopId: string) => Promise<void>
   onIgnoreShop: (requestId: string, shopId: string) => Promise<void>
@@ -66,7 +65,6 @@ const sortLabelKeys: Record<SortQuotesBy, string> = {
 export function RepairRequestDetail({
   request,
   onBackHome,
-  onMyRequests,
   onCloseRequest,
   onMarkInterested,
   onIgnoreShop,
