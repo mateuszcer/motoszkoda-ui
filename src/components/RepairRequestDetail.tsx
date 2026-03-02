@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Attachment, RepairRequest, ShopQuoteCard, SortQuotesBy } from '../domain/types'
+import { getDownloadUrl } from '../services/attachmentApi'
 import { formatDateTime, formatQuoteRange } from '../utils/format'
 import { ShopThreadPanel } from './ShopThreadPanel'
 
@@ -15,6 +16,7 @@ interface RepairRequestDetailProps {
     shopId: string,
     text: string,
     attachments: Attachment[],
+    files?: Map<string, File>,
   ) => Promise<void>
 }
 
@@ -80,6 +82,33 @@ export function RepairRequestDetail({
   const [closing, setClosing] = useState(false)
   const [pendingShopAction, setPendingShopAction] = useState<string | null>(null)
   const [summaryCollapsed, setSummaryCollapsed] = useState(false)
+  const [attachmentUrls, setAttachmentUrls] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    const atts = request.issue.attachments.filter((a) => a.kind === 'image' && !a.previewUrl)
+    if (atts.length === 0) return
+
+    let cancelled = false
+    void Promise.all(
+      atts.map(async (att) => {
+        try {
+          const url = await getDownloadUrl(att.id)
+          return [att.id, url] as const
+        } catch {
+          return null
+        }
+      }),
+    ).then((results) => {
+      if (cancelled) return
+      const urls: Record<string, string> = {}
+      for (const r of results) {
+        if (r) urls[r[0]] = r[1]
+      }
+      setAttachmentUrls((prev) => ({ ...prev, ...urls }))
+    })
+
+    return () => { cancelled = true }
+  }, [request.issue.attachments])
 
   const isReadOnly = request.status === 'closed'
 
@@ -200,6 +229,18 @@ export function RepairRequestDetail({
                 {request.car.make} {request.car.model} {request.car.variant}
               </h2>
               <p>{request.issue.description}</p>
+              {request.issue.attachments.length > 0 ? (
+                <div className="attachment-grid" style={{ marginTop: 'var(--space-2)' }}>
+                  {request.issue.attachments.map((att) => {
+                    const url = att.previewUrl ?? attachmentUrls[att.id]
+                    return (
+                      <div className="attachment-thumb" key={att.id}>
+                        {url ? <img src={url} alt={att.name} /> : <span>{att.name}</span>}
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : null}
               <small>
                 {t('detail.radiusUpdated', { radius: request.location.radiusKm })} &middot; {t('detail.updated', { date: formatDateTime(request.updatedAt, i18n.language) })}
               </small>
@@ -472,8 +513,8 @@ export function RepairRequestDetail({
           onClose={() => {
             setActiveThreadShopId(null)
           }}
-          onSend={async (text, attachments) => {
-            await onSendThreadMessage(request.id, activeThread.shopId, text, attachments)
+          onSend={async (text, attachments, files) => {
+            await onSendThreadMessage(request.id, activeThread.shopId, text, attachments, files)
           }}
         />
       ) : null}

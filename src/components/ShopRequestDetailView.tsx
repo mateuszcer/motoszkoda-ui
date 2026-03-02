@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { RepairRequest, ShopOwnResponse, ThreadMessage } from '../domain/types'
+import { getDownloadUrl } from '../services/attachmentApi'
 import { formatCurrencyPln, formatDateTime } from '../utils/format'
 
 interface ShopRequestDetailViewProps {
@@ -43,6 +44,33 @@ export function ShopRequestDetailView({
 
   const isClosed = request.status === 'closed'
   const status = shopResponse?.status ?? 'PENDING'
+  const [attachmentUrls, setAttachmentUrls] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    const atts = request.issue.attachments.filter((a) => a.kind === 'image' && !a.previewUrl)
+    if (atts.length === 0) return
+
+    let cancelled = false
+    void Promise.all(
+      atts.map(async (att) => {
+        try {
+          const url = await getDownloadUrl(att.id)
+          return [att.id, url] as const
+        } catch {
+          return null
+        }
+      }),
+    ).then((results) => {
+      if (cancelled) return
+      const urls: Record<string, string> = {}
+      for (const r of results) {
+        if (r) urls[r[0]] = r[1]
+      }
+      setAttachmentUrls((prev) => ({ ...prev, ...urls }))
+    })
+
+    return () => { cancelled = true }
+  }, [request.issue.attachments])
 
   useEffect(() => {
     if (activeTab === 'messages') {
@@ -243,11 +271,14 @@ export function ShopRequestDetailView({
             <div className="detail-section">
               <h3>{t('shopDetail.attachmentsTitle')}</h3>
               <div className="attachment-grid">
-                {request.issue.attachments.map((att) => (
-                  <div className="attachment-thumb" key={att.id}>
-                    {att.previewUrl ? <img src={att.previewUrl} alt={att.name} /> : <span>{att.name}</span>}
-                  </div>
-                ))}
+                {request.issue.attachments.map((att) => {
+                  const url = att.previewUrl ?? attachmentUrls[att.id]
+                  return (
+                    <div className="attachment-thumb" key={att.id}>
+                      {url ? <img src={url} alt={att.name} /> : <span>{att.name}</span>}
+                    </div>
+                  )
+                })}
               </div>
             </div>
           ) : null}

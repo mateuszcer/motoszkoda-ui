@@ -1,4 +1,5 @@
 import type {
+  AttachmentResponse,
   CompareViewResponse,
   MessageResponse,
   RepairRequestResponse,
@@ -8,6 +9,8 @@ import type {
   ThreadSummaryResponse,
 } from './apiTypes'
 import type {
+  Attachment,
+  AttachmentKind,
   QuoteOffer,
   QuoteState,
   RepairRequest,
@@ -46,12 +49,31 @@ export function mapShopRequestStatus(
   }
 }
 
+// ── AttachmentResponse → Attachment ──────────────────────────────────
+
+function getKindFromContentType(contentType: string): AttachmentKind {
+  if (contentType.startsWith('image/')) return 'image'
+  if (contentType.startsWith('video/')) return 'video'
+  return 'document'
+}
+
+export function mapAttachment(raw: AttachmentResponse): Attachment {
+  return {
+    id: raw.id,
+    name: raw.fileName,
+    mimeType: raw.contentType,
+    sizeBytes: raw.sizeBytes,
+    kind: getKindFromContentType(raw.contentType),
+  }
+}
+
 // ── RepairRequestResponse → RepairRequest ────────────────────────────
 
 export function mapRepairRequest(
   raw: RepairRequestResponse,
   shopQuotes: ShopQuoteCard[] = [],
   threads: Record<string, ShopThread> = {},
+  attachments: Attachment[] = [],
 ): RepairRequest {
   return {
     id: raw.id,
@@ -71,7 +93,7 @@ export function mapRepairRequest(
     issue: {
       description: raw.description,
       tags: raw.categories ?? [],
-      attachments: [],
+      attachments,
     },
     location: {
       address: '', // Backend doesn't return resolved address

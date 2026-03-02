@@ -1,4 +1,5 @@
 import type {
+  AttachmentResponse,
   CompareViewResponse,
   CreateRepairRequestRequest,
   MessageResponse,
@@ -6,6 +7,7 @@ import type {
   ThreadSummaryResponse,
 } from '../domain/apiTypes'
 import {
+  mapAttachment,
   mapCompareToShopQuote,
   mapMessage,
   mapRepairRequest,
@@ -64,11 +66,14 @@ const repairRequestApiImpl: RepairRequestApi = {
   },
 
   async fetchRequestDetail(requestId: string, currentUserId: string): Promise<RepairRequest | null> {
-    // Fetch repair-request, compare view, shop-responses, and thread summaries in parallel
-    const [rawRequest, compareData, threadSummaries] = await Promise.all([
+    // Fetch repair-request, compare view, thread summaries, and attachments in parallel
+    const [rawRequest, compareData, threadSummaries, rawAttachments] = await Promise.all([
       api.get<RepairRequestResponse>(`/api/repair-requests/${requestId}`).catch(() => null),
       api.get<CompareViewResponse[]>(`/api/repair-requests/${requestId}/compare`).catch(() => [] as CompareViewResponse[]),
       api.get<ThreadSummaryResponse[]>(`/api/repair-requests/${requestId}/messages/threads`).catch(() => [] as ThreadSummaryResponse[]),
+      api.get<AttachmentResponse[]>('/api/attachments', {
+        params: { targetType: 'REPAIR_REQUEST', repairRequestId: requestId },
+      }).catch(() => [] as AttachmentResponse[]),
     ])
 
     if (!rawRequest) return null
@@ -105,7 +110,8 @@ const repairRequestApiImpl: RepairRequestApi = {
     )
 
     const threads: Record<string, ShopThread> = Object.fromEntries(threadEntries)
-    const result = mapRepairRequest(rawRequest, shopQuotes, threads)
+    const attachments = rawAttachments.filter((a) => a.status === 'ACTIVE').map(mapAttachment)
+    const result = mapRepairRequest(rawRequest, shopQuotes, threads, attachments)
 
     // Cache it
     detailCache.set(requestId, result)

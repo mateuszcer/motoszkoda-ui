@@ -1,23 +1,29 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Attachment, ShopThread } from '../domain/types'
 import { fileToAttachment, revokeAttachmentPreview, revokeAttachmentsPreview } from '../utils/attachments'
 import { formatDateTime } from '../utils/format'
 import { AttachmentGrid } from './AttachmentGrid'
 
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
+const MAX_ATTACHMENTS = 5
+
 interface ShopThreadPanelProps {
   thread: ShopThread
   readOnly: boolean
   onClose: () => void
-  onSend: (text: string, attachments: Attachment[]) => Promise<void>
+  onSend: (text: string, attachments: Attachment[], files: Map<string, File>) => Promise<void>
 }
 
 export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThreadPanelProps) {
   const { t, i18n } = useTranslation()
   const [draft, setDraft] = useState('')
   const [attachments, setAttachments] = useState<Attachment[]>([])
+  const [attachmentError, setAttachmentError] = useState<string | null>(null)
   const [sending, setSending] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const fileMapRef = useRef<Map<string, File>>(new Map())
 
   useEffect(() => {
     return () => {
@@ -29,7 +35,8 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [thread.messages.length])
 
-  const handleRemoveAttachment = (attachmentId: string) => {
+  const handleRemoveAttachment = useCallback((attachmentId: string) => {
+    fileMapRef.current.delete(attachmentId)
     setAttachments((previous) => {
       const target = previous.find((attachment) => attachment.id === attachmentId)
       if (target) {
@@ -37,7 +44,7 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
       }
       return previous.filter((attachment) => attachment.id !== attachmentId)
     })
-  }
+  }, [])
 
   const handleSend = async () => {
     const cleanDraft = draft.trim()
@@ -47,9 +54,10 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
 
     setSending(true)
     try {
-      await onSend(cleanDraft, attachments)
+      await onSend(cleanDraft, attachments, fileMapRef.current)
       setDraft('')
       setAttachments([])
+      fileMapRef.current = new Map()
     } finally {
       setSending(false)
     }
@@ -140,14 +148,43 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
                   id="thread-attachment-input"
                   type="file"
                   multiple
-                  accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+                  accept="image/jpeg,image/png,image/webp"
                   onChange={(event) => {
                     const files = event.target.files
                     if (!files) {
                       return
                     }
 
-                    const added = Array.from(files).map(fileToAttachment)
+                    setAttachmentError(null)
+                    const remaining = MAX_ATTACHMENTS - attachments.length
+                    if (remaining <= 0) {
+                      setAttachmentError('form.maxAttachments')
+                      event.target.value = ''
+                      return
+                    }
+
+                    const validFiles: File[] = []
+                    for (const file of Array.from(files)) {
+                      if (!ALLOWED_MIME_TYPES.has(file.type)) {
+                        setAttachmentError('form.fileTypeNotAllowed')
+                        continue
+                      }
+                      if (file.size > MAX_FILE_SIZE) {
+                        setAttachmentError('form.fileTooLarge')
+                        continue
+                      }
+                      if (validFiles.length >= remaining) {
+                        setAttachmentError('form.maxAttachments')
+                        break
+                      }
+                      validFiles.push(file)
+                    }
+
+                    const added = validFiles.map((file) => {
+                      const attachment = fileToAttachment(file)
+                      fileMapRef.current.set(attachment.id, file)
+                      return attachment
+                    })
                     setAttachments((previous) => [...previous, ...added])
                     event.target.value = ''
                   }}
@@ -160,6 +197,9 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
                   {sending ? t('thread.sending') : t('thread.send')}
                 </button>
               </div>
+              {attachmentError ? (
+                <small className="field-error">{t(attachmentError)}</small>
+              ) : null}
               <AttachmentGrid
                 attachments={attachments}
                 removable

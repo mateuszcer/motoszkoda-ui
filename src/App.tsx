@@ -30,6 +30,7 @@ import { authApi } from './services/authApi'
 import { enrollmentApi } from './services/enrollmentApi'
 import * as localPrefs from './services/localPreferences'
 import { fetchNotifications } from './services/notificationsApi'
+import { uploadAttachments } from './services/attachmentApi'
 import { repairRequestApi } from './services/repairRequestApi'
 
 const NOTIFICATION_POLL_INTERVAL = 15_000
@@ -220,7 +221,7 @@ function App() {
     }
   }
 
-  const handleCreateRequest = async (payload: CreateRepairRequestPayload): Promise<RepairRequest> => {
+  const handleCreateRequest = async (payload: CreateRepairRequestPayload, files: Map<string, File>): Promise<RepairRequest> => {
     const created = await repairRequestApi.createRequest(payload)
     upsertRequest(created)
     pushBanner({
@@ -231,6 +232,11 @@ function App() {
       message: t('notification.requestSubmittedMessage'),
       createdAt: new Date().toISOString(),
     })
+
+    // Upload attachments in the background — don't block the success flow
+    if (files.size > 0) {
+      void uploadAttachments(files, payload.issue.attachments, 'REPAIR_REQUEST', created.id)
+    }
 
     return created
   }
@@ -276,7 +282,8 @@ function App() {
     requestId: string,
     shopId: string,
     text: string,
-    _attachments: Attachment[],
+    attachments: Attachment[],
+    files?: Map<string, File>,
   ) => {
     await repairRequestApi.sendThreadMessage({
       requestId,
@@ -284,6 +291,11 @@ function App() {
       text,
       attachments: [],
     })
+
+    // Upload attachments in the background
+    if (files && files.size > 0) {
+      void uploadAttachments(files, attachments, 'MESSAGE_THREAD', requestId, shopId)
+    }
 
     // Re-fetch the detail to get updated threads
     if (auth.user) {

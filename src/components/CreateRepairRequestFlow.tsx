@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DEFAULT_RADIUS_KM, ISSUE_TAGS, MAX_CAR_YEAR, MAX_RADIUS_KM, MIN_CAR_YEAR, MIN_RADIUS_KM } from '../domain/constants'
 import type { Attachment, CreateRepairRequestPayload, RepairRequest } from '../domain/types'
@@ -6,9 +6,13 @@ import { fileToAttachment, revokeAttachmentPreview, revokeAttachmentsPreview } f
 import { isValidVin, normalizeVin, validateYear } from '../utils/validation'
 import { AttachmentGrid } from './AttachmentGrid'
 
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
+const MAX_ATTACHMENTS = 5
+
 interface CreateRepairRequestFlowProps {
   onCancel: () => void
-  onSubmitRequest: (payload: CreateRepairRequestPayload) => Promise<RepairRequest>
+  onSubmitRequest: (payload: CreateRepairRequestPayload, files: Map<string, File>) => Promise<RepairRequest>
   onViewRequest: (requestId: string) => void
 }
 
@@ -54,6 +58,9 @@ export function CreateRepairRequestFlow({
   const [description, setDescription] = useState('')
   const [tags, setTags] = useState<string[]>([])
   const [issueAttachments, setIssueAttachments] = useState<Attachment[]>([])
+  const [attachmentError, setAttachmentError] = useState<string | null>(null)
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null)
+  const fileMapRef = useRef<Map<string, File>>(new Map())
 
   const [address, setAddress] = useState('')
   const [latitude, setLatitude] = useState(52.2297)
@@ -155,6 +162,7 @@ export function CreateRepairRequestFlow({
   }
 
   const removeIssueAttachment = (attachmentId: string) => {
+    fileMapRef.current.delete(attachmentId)
     setIssueAttachments((previous) => {
       const target = previous.find((attachment) => attachment.id === attachmentId)
       if (target) {
@@ -211,7 +219,7 @@ export function CreateRepairRequestFlow({
 
     setIsSubmitting(true)
     try {
-      const createdRequest = await onSubmitRequest(payload)
+      const createdRequest = await onSubmitRequest(payload, fileMapRef.current)
       setSubmittedRequestId(createdRequest.id)
       setStep(4)
     } finally {
@@ -420,18 +428,50 @@ export function CreateRepairRequestFlow({
                 id="issue-file-input"
                 type="file"
                 multiple
-                accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+                accept="image/jpeg,image/png,image/webp"
                 onChange={(event) => {
                   const files = event.target.files
                   if (!files) {
                     return
                   }
 
-                  const added = Array.from(files).map(fileToAttachment)
+                  setAttachmentError(null)
+                  const remaining = MAX_ATTACHMENTS - issueAttachments.length
+                  if (remaining <= 0) {
+                    setAttachmentError('form.maxAttachments')
+                    event.target.value = ''
+                    return
+                  }
+
+                  const validFiles: File[] = []
+                  for (const file of Array.from(files)) {
+                    if (!ALLOWED_MIME_TYPES.has(file.type)) {
+                      setAttachmentError('form.fileTypeNotAllowed')
+                      continue
+                    }
+                    if (file.size > MAX_FILE_SIZE) {
+                      setAttachmentError('form.fileTooLarge')
+                      continue
+                    }
+                    if (validFiles.length >= remaining) {
+                      setAttachmentError('form.maxAttachments')
+                      break
+                    }
+                    validFiles.push(file)
+                  }
+
+                  const added = validFiles.map((file) => {
+                    const attachment = fileToAttachment(file)
+                    fileMapRef.current.set(attachment.id, file)
+                    return attachment
+                  })
                   setIssueAttachments((previous) => [...previous, ...added])
                   event.target.value = ''
                 }}
               />
+              {attachmentError ? (
+                <small className="field-error">{t(attachmentError)}</small>
+              ) : null}
               <AttachmentGrid
                 attachments={issueAttachments}
                 removable
@@ -532,7 +572,7 @@ export function CreateRepairRequestFlow({
                 disabled={isSubmitting}
                 style={{ flex: 1 }}
               >
-                {isSubmitting ? t('form.submitting') : t('form.submitRequest')}
+                {isSubmitting ? (uploadStatus ?? t('form.submitting')) : t('form.submitRequest')}
               </button>
             </div>
           </div>
