@@ -37,10 +37,10 @@ function signinToResult(res: SigninResponse): AuthResult {
 }
 
 const authApiImpl: AuthApi = {
-  async login(email: string, password: string): Promise<AuthResult> {
+  async login(email: string, password: string, captchaToken?: string): Promise<AuthResult> {
     const res = await api.post<SigninResponse>('/api/auth/users/signin', {
       auth: false,
-      body: { email, password },
+      body: { email, password, captchaToken: captchaToken ?? null },
     })
     return signinToResult(res)
   },
@@ -54,10 +54,10 @@ const authApiImpl: AuthApi = {
     return authApiImpl.login(email, password)
   },
 
-  async shopLogin(email: string, password: string): Promise<AuthResult> {
+  async shopLogin(email: string, password: string, captchaToken?: string): Promise<AuthResult> {
     const res = await api.post<SigninResponse>('/api/auth/shops/signin', {
       auth: false,
-      body: { email, password },
+      body: { email, password, captchaToken: captchaToken ?? null },
     })
     return signinToResult(res)
   },

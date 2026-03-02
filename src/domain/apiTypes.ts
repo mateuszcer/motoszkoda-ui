@@ -20,6 +20,7 @@ export interface SignupResponse {
 export interface SigninRequest {
   email: string
   password: string
+  captchaToken?: string | null
 }
 
 export interface SigninResponse {

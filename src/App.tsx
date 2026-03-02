@@ -164,8 +164,8 @@ function App() {
     }
   }, [auth.isAuthenticated, isShop, loadRequests, shop.loadShopQueue])
 
-  const handleLogin = async (email: string, password: string) => {
-    const result = await authApi.login(email, password)
+  const handleLogin = async (email: string, password: string, captchaToken?: string) => {
+    const result = await authApi.login(email, password, captchaToken)
     setAuth({ user: result.user, token: result.token, isAuthenticated: true })
     setScreen('home')
   }
@@ -176,8 +176,8 @@ function App() {
     setScreen('home')
   }
 
-  const handleShopLogin = async (email: string, password: string) => {
-    const result = await authApi.shopLogin(email, password)
+  const handleShopLogin = async (email: string, password: string, captchaToken?: string) => {
+    const result = await authApi.shopLogin(email, password, captchaToken)
     setAuth({ user: result.user, token: result.token, isAuthenticated: true })
     try {
       const status = await enrollmentApi.getStatus()

@@ -38,9 +38,9 @@ export interface StoredSession {
 }
 
 export interface AuthApi {
-  login(email: string, password: string): Promise<AuthResult>
+  login(email: string, password: string, captchaToken?: string): Promise<AuthResult>
   register(email: string, password: string, captchaToken?: string): Promise<AuthResult>
-  shopLogin(email: string, password: string): Promise<AuthResult>
+  shopLogin(email: string, password: string, captchaToken?: string): Promise<AuthResult>
   shopRegister(email: string, password: string, captchaToken?: string): Promise<AuthResult>
   logout(): Promise<void>
   restoreSession(): StoredSession | null

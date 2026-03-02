@@ -1,8 +1,11 @@
+import { Turnstile } from '@marsidev/react-turnstile'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
+
 interface LoginViewProps {
-  onLogin: (email: string, password: string) => Promise<void>
+  onLogin: (email: string, password: string, captchaToken?: string) => Promise<void>
   onSwitchToRegister: () => void
   titleKey?: string
   subtitleKey?: string
@@ -15,6 +18,7 @@ export function LoginView({ onLogin, onSwitchToRegister, titleKey, subtitleKey, 
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>(undefined)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,10 +32,14 @@ export function LoginView({ onLogin, onSwitchToRegister, titleKey, subtitleKey, 
       setError(t('auth.passwordRequired'))
       return
     }
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      setError(t('auth.captchaRequired'))
+      return
+    }
 
     setSubmitting(true)
     try {
-      await onLogin(email.trim(), password)
+      await onLogin(email.trim(), password, captchaToken)
     } catch (err) {
       setError(err instanceof Error ? err.message : t('auth.loginFailed'))
     } finally {
@@ -73,6 +81,12 @@ export function LoginView({ onLogin, onSwitchToRegister, titleKey, subtitleKey, 
             />
           </label>
         </div>
+
+        {TURNSTILE_SITE_KEY ? (
+          <div className="turnstile-wrap">
+            <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setCaptchaToken} />
+          </div>
+        ) : null}
 
         <button className="btn btn-primary btn-lg auth-submit" type="submit" disabled={submitting}>
           {submitting ? t('auth.loggingIn') : t('auth.login')}
