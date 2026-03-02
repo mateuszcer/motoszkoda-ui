@@ -59,7 +59,6 @@ export function CreateRepairRequestFlow({
   const [tags, setTags] = useState<string[]>([])
   const [issueAttachments, setIssueAttachments] = useState<Attachment[]>([])
   const [attachmentError, setAttachmentError] = useState<string | null>(null)
-  const [uploadStatus, setUploadStatus] = useState<string | null>(null)
   const fileMapRef = useRef<Map<string, File>>(new Map())
 
   const [address, setAddress] = useState('')
@@ -572,7 +571,7 @@ export function CreateRepairRequestFlow({
                 disabled={isSubmitting}
                 style={{ flex: 1 }}
               >
-                {isSubmitting ? (uploadStatus ?? t('form.submitting')) : t('form.submitRequest')}
+                {isSubmitting ? t('form.submitting') : t('form.submitRequest')}
               </button>
             </div>
           </div>

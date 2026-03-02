@@ -489,6 +489,31 @@
     "termsRequired": "Musisz zaakceptować Regulamin Usługi."
   },
 
+  "admin": {
+    "loginTitle": "Panel Admina",
+    "loginSubtitle": "Zaloguj się kontem administratora",
+    "login": "Zaloguj się",
+    "loggingIn": "Logowanie...",
+    "loginFailed": "Logowanie nie powiodło się. Spróbuj ponownie.",
+    "invalidCredentials": "Nieprawidłowy email lub hasło.",
+    "notAdmin": "To konto nie ma uprawnień administratora.",
+    "captchaFailed": "Weryfikacja captcha nie powiodła się. Spróbuj ponownie.",
+    "vouchersTitle": "Generator voucherów",
+    "vouchersSubtitle": "Twórz kody voucherów do rejestracji warsztatów",
+    "voucherCodeLabel": "Kod vouchera",
+    "voucherCodePlaceholder": "np. WARSZTAT2026",
+    "voucherCodeHint": "6–30 znaków alfanumerycznych (A-Z, 0-9)",
+    "generateRandom": "Losuj kod",
+    "createVoucher": "Utwórz voucher",
+    "creatingVoucher": "Tworzenie...",
+    "voucherCreated": "Voucher utworzony pomyślnie.",
+    "voucherInvalidFormat": "Kod musi mieć 6–30 znaków alfanumerycznych.",
+    "voucherAlreadyExists": "Ten kod vouchera już istnieje.",
+    "voucherCreateFailed": "Nie udało się utworzyć vouchera. Spróbuj ponownie.",
+    "recentVouchers": "Ostatnio utworzone",
+    "copy": "Kopiuj"
+  },
+
   "shopEnroll": {
     "title": "Aktywacja warsztatu",
     "statusPending": "Aktywuj swój warsztat, aby zacząć otrzymywać zlecenia napraw.",

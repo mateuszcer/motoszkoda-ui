@@ -2447,3 +2447,109 @@ label small {
   border: 1px solid var(--success-100);
   color: var(--success-600);
 }
+
+/* ============================================================
+   ADMIN PORTAL
+   ============================================================ */
+.admin-shell {
+  background: var(--gray-50);
+}
+
+.admin-brand-mark {
+  background: var(--gray-900) !important;
+}
+
+.admin-vouchers {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-top: var(--space-6);
+}
+
+.admin-vouchers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.admin-vouchers-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gray-950);
+}
+
+.admin-vouchers-header p {
+  margin: var(--space-1) 0 0;
+  font-size: 14px;
+  color: var(--gray-500);
+}
+
+.admin-voucher-form {
+  padding: var(--space-6);
+  border-top: 3px solid var(--gray-900);
+}
+
+.admin-voucher-input-row {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.admin-voucher-input-row input {
+  flex: 1;
+}
+
+.admin-voucher-input {
+  font-family: var(--font-mono) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-success {
+  background: var(--success-50);
+  border: 1px solid var(--success-100);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  color: var(--success-600);
+  font-size: 14px;
+  margin-bottom: var(--space-4);
+}
+
+.admin-recent-vouchers {
+  margin-top: var(--space-6);
+}
+
+.admin-recent-vouchers h3 {
+  margin: 0 0 var(--space-3);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.admin-voucher-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.admin-voucher-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+}
+
+.admin-voucher-code {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-900);
+  letter-spacing: 0.05em;
+}

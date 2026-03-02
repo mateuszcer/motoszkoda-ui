@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './App.css'
+import { AdminLoginView } from './components/AdminLoginView'
+import { AdminVouchersView } from './components/AdminVouchersView'
 import { CreateRepairRequestFlow } from './components/CreateRepairRequestFlow'
 import { EnrollmentGate } from './components/EnrollmentGate'
 import { HomeView } from './components/HomeView'
@@ -85,13 +87,14 @@ function App() {
   }, [requests, selectedRequestId])
 
   const doLogout = useCallback(() => {
+    const wasAdmin = auth.user?.role === 'ADMIN'
     void authApi.logout()
     setAuth({ user: null, token: null, isAuthenticated: false })
     setEnrollmentStatus(null)
     setRequests([])
     setBanners([])
-    setScreen('landing')
-  }, [])
+    setScreen(wasAdmin ? 'admin-login' : 'landing')
+  }, [auth.user?.role])
 
   // Wire up 401 auto-logout
   useEffect(() => {
@@ -124,6 +127,13 @@ function App() {
   const shop = useShopPortal(auth.user?.id ?? null)
   const [shopSelectedRequestId, setShopSelectedRequestId] = useState<string | null>(null)
 
+  // URL-based admin entry
+  useEffect(() => {
+    if (window.location.pathname.startsWith('/admin')) {
+      setScreen('admin-login')
+    }
+  }, [])
+
   // Restore session on mount
   useEffect(() => {
     const restore = async () => {
@@ -134,7 +144,9 @@ function App() {
           token: session.accessToken,
           isAuthenticated: true,
         })
-        if (session.user.role === 'SHOP_USER') {
+        if (session.user.role === 'ADMIN') {
+          setScreen('admin-vouchers')
+        } else if (session.user.role === 'SHOP_USER') {
           setEnrollmentLoading(true)
           try {
             const status = await enrollmentApi.getStatus()
@@ -154,16 +166,18 @@ function App() {
     void restore()
   }, [])
 
-  // Load requests when authenticated
+  const isAdmin = auth.user?.role === 'ADMIN'
+
+  // Load requests when authenticated (skip for admin)
   useEffect(() => {
-    if (auth.isAuthenticated) {
+    if (auth.isAuthenticated && !isAdmin) {
       if (isShop) {
         void shop.loadShopQueue()
       } else {
         void loadRequests()
       }
     }
-  }, [auth.isAuthenticated, isShop, loadRequests, shop.loadShopQueue])
+  }, [auth.isAuthenticated, isAdmin, isShop, loadRequests, shop.loadShopQueue])
 
   const handleLogin = async (email: string, password: string, captchaToken?: string) => {
     const result = await authApi.login(email, password, captchaToken)
@@ -195,6 +209,12 @@ function App() {
     const loginResult = await authApi.shopLogin(payload.email, payload.password)
     setAuth({ user: loginResult.user, token: loginResult.token, isAuthenticated: true })
     setScreen('shop-inbox')
+  }
+
+  const handleAdminLogin = async (email: string, password: string, captchaToken?: string) => {
+    const result = await authApi.adminLogin(email, password, captchaToken)
+    setAuth({ user: result.user, token: result.token, isAuthenticated: true })
+    setScreen('admin-vouchers')
   }
 
   const handleLogout = async () => {
@@ -308,7 +328,7 @@ function App() {
 
   // Notification polling — replaces advanceMockUpdates
   useEffect(() => {
-    if (!auth.isAuthenticated) return
+    if (!auth.isAuthenticated || isAdmin) return
 
     const poll = async () => {
       try {
@@ -394,6 +414,24 @@ function App() {
     )
   }
 
+  // Admin login screen (unauthenticated)
+  if (!auth.isAuthenticated && screen === 'admin-login') {
+    return (
+      <main className="app-shell admin-shell">
+        <header className="app-header">
+          <div className="brand">
+            <div className="brand-mark admin-brand-mark">AD</div>
+            <h1>Autoceny</h1>
+          </div>
+          <div className="header-actions">
+            <LanguageToggle />
+          </div>
+        </header>
+        <AdminLoginView onLogin={handleAdminLogin} />
+      </main>
+    )
+  }
+
   // Auth screens (login/register) — driver & shop
   if (!auth.isAuthenticated) {
     const isShopAuth = screen === 'shop-login' || screen === 'shop-register'
@@ -454,6 +492,24 @@ function App() {
     } catch {
       // keep current status
     }
+  }
+
+  // Admin portal (authenticated admin user)
+  if (isAdmin) {
+    return (
+      <main className="app-shell admin-shell">
+        <header className="app-header">
+          <div className="brand">
+            <div className="brand-mark admin-brand-mark">AD</div>
+            <h1>Autoceny</h1>
+          </div>
+          <div className="header-actions">
+            <LanguageToggle />
+          </div>
+        </header>
+        <AdminVouchersView onLogout={doLogout} />
+      </main>
+    )
   }
 
   // Shop portal (authenticated shop user)

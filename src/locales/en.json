@@ -485,6 +485,31 @@
     "termsRequired": "You must accept the Terms of Service."
   },
 
+  "admin": {
+    "loginTitle": "Admin Portal",
+    "loginSubtitle": "Sign in with your admin account",
+    "login": "Sign in",
+    "loggingIn": "Signing in...",
+    "loginFailed": "Login failed. Please try again.",
+    "invalidCredentials": "Invalid email or password.",
+    "notAdmin": "This account does not have admin access.",
+    "captchaFailed": "Captcha verification failed. Please try again.",
+    "vouchersTitle": "Voucher Generator",
+    "vouchersSubtitle": "Create voucher codes for shop enrollment",
+    "voucherCodeLabel": "Voucher Code",
+    "voucherCodePlaceholder": "e.g. SHOP2026FREE",
+    "voucherCodeHint": "6–30 alphanumeric characters (A-Z, 0-9)",
+    "generateRandom": "Generate Random",
+    "createVoucher": "Create Voucher",
+    "creatingVoucher": "Creating...",
+    "voucherCreated": "Voucher created successfully.",
+    "voucherInvalidFormat": "Code must be 6–30 alphanumeric characters.",
+    "voucherAlreadyExists": "This voucher code already exists.",
+    "voucherCreateFailed": "Failed to create voucher. Please try again.",
+    "recentVouchers": "Recently Created",
+    "copy": "Copy"
+  },
+
   "shopEnroll": {
     "title": "Shop Activation",
     "statusPending": "Activate your shop to start receiving repair requests.",

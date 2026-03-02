@@ -70,6 +70,14 @@ const authApiImpl: AuthApi = {
     return authApiImpl.shopLogin(email, password)
   },
 
+  async adminLogin(email: string, password: string, captchaToken?: string): Promise<AuthResult> {
+    const res = await api.post<SigninResponse>('/api/auth/admin/signin', {
+      auth: false,
+      body: { email, password, captchaToken: captchaToken ?? null },
+    })
+    return signinToResult(res)
+  },
+
   async logout(): Promise<void> {
     clearSession()
     await Promise.resolve()

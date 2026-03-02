@@ -42,6 +42,7 @@ export interface AuthApi {
   register(email: string, password: string, captchaToken?: string): Promise<AuthResult>
   shopLogin(email: string, password: string, captchaToken?: string): Promise<AuthResult>
   shopRegister(email: string, password: string, captchaToken?: string): Promise<AuthResult>
+  adminLogin(email: string, password: string, captchaToken?: string): Promise<AuthResult>
   logout(): Promise<void>
   restoreSession(): StoredSession | null
 }

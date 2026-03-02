@@ -2,6 +2,7 @@ export type AppScreen =
   | 'landing' | 'login' | 'register' | 'home' | 'create-request' | 'my-requests' | 'request-detail'
   | 'shop-login' | 'shop-register' | 'shop-inbox' | 'shop-request-detail' | 'shop-send-quote' | 'shop-profile'
   | 'shop-enroll'
+  | 'admin-login' | 'admin-vouchers'
 
 export type EnrollmentStatus = 'PENDING_PAYMENT' | 'ACTIVE' | 'SUSPENDED'
 

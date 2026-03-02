@@ -2,7 +2,7 @@
 
 // ── Auth ─────────────────────────────────────────────────────────────
 
-export type ApiRole = 'USER' | 'SHOP_USER'
+export type ApiRole = 'USER' | 'SHOP_USER' | 'ADMIN'
 
 export interface SignupRequest {
   email: string
@@ -334,4 +334,15 @@ export interface ApiErrorResponse {
   message: string
   details?: string[]
   correlationId?: string
+}
+
+// ── Admin ───────────────────────────────────────────────────────────
+
+export interface CreateVoucherRequest {
+  code: string
+}
+
+export interface VoucherResponse {
+  id: string
+  code: string
 }
