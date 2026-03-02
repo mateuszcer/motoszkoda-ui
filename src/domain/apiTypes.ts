@@ -221,6 +221,66 @@ export interface DownloadUrlResponse {
   downloadUrl: string
 }
 
+// ── Shop Queue (Read Model) ─────────────────────────────────────────
+
+export interface ShopQueueItemResponse {
+  repairRequestId: string
+  make: string
+  model: string
+  year: number
+  description: string
+  urgency: string | null
+  categories: string[] | null
+  requestStatus: string
+  distanceKm: number
+  shopRequestStatus: ApiShopRequestStatus | null
+  deliveredAt: string
+  quoteCount: number
+  hasQuote: boolean
+  hasMessages: boolean
+  lastActivityAt: string
+}
+
+export interface ShopQueueResponse {
+  items: ShopQueueItemResponse[]
+  hasMore: boolean
+  nextCursor: string | null
+}
+
+// ── Shop Submit Quote ───────────────────────────────────────────────
+
+export interface SubmitQuoteRequest {
+  priceMinorUnits: number
+  currency: string
+  estimatedDays?: number
+  note?: string
+}
+
+export interface SharePhoneRequest {
+  phone: string
+}
+
+// ── Shop Info / Profile ─────────────────────────────────────────────
+
+export interface ShopInfoResponse {
+  shopId: string
+  name: string
+  address: string
+  phone: string
+  description: string
+  lat: number
+  lon: number
+}
+
+export interface UpdateShopRequest {
+  name: string
+  address: string
+  phone?: string
+  description?: string
+  lat: number
+  lon: number
+}
+
 // ── Common Error ─────────────────────────────────────────────────────
 
 export interface ApiErrorResponse {

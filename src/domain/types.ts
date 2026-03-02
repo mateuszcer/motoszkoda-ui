@@ -1,4 +1,6 @@
-export type AppScreen = 'landing' | 'login' | 'register' | 'home' | 'create-request' | 'my-requests' | 'request-detail'
+export type AppScreen =
+  | 'landing' | 'login' | 'register' | 'home' | 'create-request' | 'my-requests' | 'request-detail'
+  | 'shop-login' | 'shop-register' | 'shop-inbox' | 'shop-request-detail' | 'shop-send-quote' | 'shop-profile'
 
 export type RequestStatus = 'open' | 'closed'
 
@@ -128,4 +130,67 @@ export interface RepairRequestApi {
   sendThreadMessage: (payload: SendMessagePayload) => Promise<void>
   getThreadMessages: (requestId: string, shopId: string, currentUserId: string) => Promise<ThreadMessage[]>
   invalidateCache: (requestId: string) => void
+}
+
+// ── Shop Portal ─────────────────────────────────────────────────────
+
+export type ShopInboxFilter = 'all' | 'new' | 'in_progress' | 'quoted' | 'declined'
+
+export type ShopRequestStatus = 'PENDING' | 'ACKNOWLEDGED' | 'QUOTED' | 'DECLINED'
+
+export interface ShopQueueItem {
+  repairRequestId: string
+  status: ShopRequestStatus | null
+  make: string
+  model: string
+  year: number
+  description: string
+  distanceKm: number
+  categories: string[]
+  requestStatus: string
+  deliveredAt: string
+  quoteCount: number
+  hasQuote: boolean
+  hasMessages: boolean
+  lastActivityAt: string
+}
+
+export interface ShopOwnResponse {
+  id: string
+  repairRequestId: string
+  status: ShopRequestStatus
+  sharedPhone: string | null
+  quotes: QuoteOffer[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SubmitQuotePayload {
+  priceMinorUnits: number
+  currency: string
+  estimatedDays?: number
+  note?: string
+}
+
+export interface SharePhonePayload {
+  phone: string
+}
+
+export interface ShopProfile {
+  shopId: string
+  name: string
+  address: string
+  phone: string
+  description: string
+  lat: number
+  lon: number
+}
+
+export interface UpdateShopProfilePayload {
+  name: string
+  address: string
+  phone?: string
+  description?: string
+  lat: number
+  lon: number
 }

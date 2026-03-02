@@ -202,6 +202,109 @@
     "radiusOutOfRange": "Radius must be between {{min}} and {{max}} km."
   },
 
+  "shopAuth": {
+    "loginTitle": "Shop Portal",
+    "loginSubtitle": "Sign in to manage your repair requests",
+    "registerTitle": "Register your shop",
+    "registerSubtitle": "Join Autoceny and receive repair requests"
+  },
+
+  "shopNav": {
+    "inbox": "Inbox",
+    "profile": "Profile"
+  },
+
+  "shopInbox": {
+    "eyebrow": "Shop Portal",
+    "headline": "Your Repair Requests",
+    "subheadline": "Review incoming requests, ask questions, and send quotes.",
+    "statNew": "New",
+    "statInProgress": "In Progress",
+    "statQuoted": "Quoted",
+    "statTotal": "Total",
+    "searchPlaceholder": "Search by make, model, or description...",
+    "filter_all": "All",
+    "filter_new": "New",
+    "filter_in_progress": "In Progress",
+    "filter_quoted": "Quoted",
+    "filter_declined": "Declined",
+    "noItems": "No requests in your inbox.",
+    "kmAway": "{{distance}} km away",
+    "newMessages": "New messages",
+    "acknowledge": "Acknowledge",
+    "decline": "Decline"
+  },
+
+  "shopRequestStatus": {
+    "PENDING": "New",
+    "ACKNOWLEDGED": "In Progress",
+    "QUOTED": "Quoted",
+    "DECLINED": "Declined"
+  },
+
+  "shopDetail": {
+    "radius": "{{radius}} km radius",
+    "requestClosed": "This request has been closed or expired. Actions are disabled.",
+    "acknowledge": "Acknowledge",
+    "acknowledging": "Acknowledging...",
+    "sendQuote": "Send Quote",
+    "decline": "Decline",
+    "declining": "Declining...",
+    "confirmDecline": "Yes, Decline",
+    "declineDialogTitle": "Decline this request?",
+    "declineDialogMessage": "You won't be able to send a quote for this request.",
+    "declinedLabel": "You declined this request.",
+    "quoteSent": "Your Quote",
+    "sharePhone": "Share Phone",
+    "sharing": "Sharing...",
+    "phonePlaceholder": "+48 ...",
+    "phoneShared": "Phone shared: {{phone}}",
+    "tabDetails": "Details",
+    "tabMessages": "Messages",
+    "issueTitle": "Issue Description",
+    "categoriesTitle": "Categories",
+    "carTitle": "Car Details",
+    "attachmentsTitle": "Attachments",
+    "noMessages": "No messages yet.",
+    "questionPlaceholder": "Ask the driver a question...",
+    "messagePlaceholder": "Type a message...",
+    "askQuestion": "Ask Question"
+  },
+
+  "shopQuoteForm": {
+    "title": "Send a Quote",
+    "price": "Price",
+    "estimatedDays": "Estimated Days",
+    "note": "Note",
+    "notePlaceholder": "Add any notes for the driver...",
+    "sharePhoneLabel": "Share my phone number with the driver",
+    "phonePlaceholder": "+48 ...",
+    "submit": "Send Quote",
+    "submitting": "Sending...",
+    "submitFailed": "Failed to send quote. Please try again.",
+    "priceRequired": "Price is required and must be positive.",
+    "phoneRequired": "Phone number is required when sharing."
+  },
+
+  "shopProfile": {
+    "title": "Shop Profile",
+    "name": "Shop Name",
+    "namePlaceholder": "Your workshop name",
+    "address": "Address",
+    "addressPlaceholder": "Street and city",
+    "phone": "Phone",
+    "phonePlaceholder": "+48 ...",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe your shop's specialties...",
+    "save": "Save Profile",
+    "saving": "Saving...",
+    "saved": "Profile saved successfully.",
+    "saveFailed": "Failed to save profile. Please try again.",
+    "nameRequired": "Shop name is required.",
+    "addressRequired": "Address is required.",
+    "selectAddress": "Please select an address from the suggestions."
+  },
+
   "landing": {
     "hero": {
       "headline": "Get repair quotes from nearby shops — without calling around.",

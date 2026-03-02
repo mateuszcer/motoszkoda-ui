@@ -4,9 +4,12 @@ import { useTranslation } from 'react-i18next'
 interface LoginViewProps {
   onLogin: (email: string, password: string) => Promise<void>
   onSwitchToRegister: () => void
+  titleKey?: string
+  subtitleKey?: string
+  brandMark?: string
 }
 
-export function LoginView({ onLogin, onSwitchToRegister }: LoginViewProps) {
+export function LoginView({ onLogin, onSwitchToRegister, titleKey, subtitleKey, brandMark }: LoginViewProps) {
   const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -40,9 +43,9 @@ export function LoginView({ onLogin, onSwitchToRegister }: LoginViewProps) {
     <section className="auth-screen">
       <form className="auth-card" onSubmit={(e) => void handleSubmit(e)}>
         <div className="auth-brand">
-          <div className="brand-mark">AC</div>
-          <h2>{t('auth.loginTitle')}</h2>
-          <p>{t('auth.loginSubtitle')}</p>
+          <div className="brand-mark">{brandMark ?? 'AC'}</div>
+          <h2>{titleKey ? t(titleKey as 'auth.loginTitle') : t('auth.loginTitle')}</h2>
+          <p>{subtitleKey ? t(subtitleKey as 'auth.loginSubtitle') : t('auth.loginSubtitle')}</p>
         </div>
 
         {error ? <div className="auth-error">{error}</div> : null}

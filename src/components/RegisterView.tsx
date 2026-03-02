@@ -4,9 +4,12 @@ import { useTranslation } from 'react-i18next'
 interface RegisterViewProps {
   onRegister: (email: string, password: string) => Promise<void>
   onSwitchToLogin: () => void
+  titleKey?: string
+  subtitleKey?: string
+  brandMark?: string
 }
 
-export function RegisterView({ onRegister, onSwitchToLogin }: RegisterViewProps) {
+export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKey, brandMark }: RegisterViewProps) {
   const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -49,9 +52,9 @@ export function RegisterView({ onRegister, onSwitchToLogin }: RegisterViewProps)
     <section className="auth-screen">
       <form className="auth-card" onSubmit={(e) => void handleSubmit(e)}>
         <div className="auth-brand">
-          <div className="brand-mark">AC</div>
-          <h2>{t('auth.registerTitle')}</h2>
-          <p>{t('auth.registerSubtitle')}</p>
+          <div className="brand-mark">{brandMark ?? 'AC'}</div>
+          <h2>{titleKey ? t(titleKey as 'auth.registerTitle') : t('auth.registerTitle')}</h2>
+          <p>{subtitleKey ? t(subtitleKey as 'auth.registerSubtitle') : t('auth.registerSubtitle')}</p>
         </div>
 
         {error ? <div className="auth-error">{error}</div> : null}

@@ -2,6 +2,9 @@ import type {
   CompareViewResponse,
   MessageResponse,
   RepairRequestResponse,
+  ShopInfoResponse,
+  ShopQueueItemResponse,
+  ShopRequestResponse,
   ThreadSummaryResponse,
 } from './apiTypes'
 import type {
@@ -9,6 +12,9 @@ import type {
   QuoteState,
   RepairRequest,
   RequestStatus,
+  ShopOwnResponse,
+  ShopProfile,
+  ShopQueueItem,
   ShopQuoteCard,
   ShopThread,
   ThreadMessage,
@@ -131,5 +137,56 @@ export function mapThread(
     unreadCount: 0, // managed client-side or via notifications
     messages,
     lastActivityAt: summary.lastMessageAt,
+  }
+}
+
+// ── Shop Portal Mappers ─────────────────────────────────────────────
+
+export function mapShopQueueItem(raw: ShopQueueItemResponse): ShopQueueItem {
+  return {
+    repairRequestId: raw.repairRequestId,
+    status: raw.shopRequestStatus,
+    make: raw.make,
+    model: raw.model,
+    year: raw.year,
+    description: raw.description,
+    distanceKm: raw.distanceKm,
+    categories: raw.categories ?? [],
+    requestStatus: raw.requestStatus,
+    deliveredAt: raw.deliveredAt,
+    quoteCount: raw.quoteCount,
+    hasQuote: raw.hasQuote,
+    hasMessages: raw.hasMessages,
+    lastActivityAt: raw.lastActivityAt,
+  }
+}
+
+export function mapShopOwnResponse(raw: ShopRequestResponse): ShopOwnResponse {
+  const quotes: QuoteOffer[] = raw.quotes.map((q) => ({
+    minPricePln: q.priceMinorUnits / 100,
+    durationDays: q.estimatedDays ?? undefined,
+    comment: q.note ?? undefined,
+  }))
+
+  return {
+    id: raw.id,
+    repairRequestId: raw.repairRequestId,
+    status: raw.status,
+    sharedPhone: raw.sharedPhone,
+    quotes,
+    createdAt: raw.createdAt,
+    updatedAt: raw.updatedAt,
+  }
+}
+
+export function mapShopProfile(raw: ShopInfoResponse): ShopProfile {
+  return {
+    shopId: raw.shopId,
+    name: raw.name,
+    address: raw.address,
+    phone: raw.phone,
+    description: raw.description,
+    lat: raw.lat,
+    lon: raw.lon,
   }
 }

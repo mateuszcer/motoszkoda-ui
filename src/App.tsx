@@ -8,6 +8,10 @@ import { LoginView } from './components/LoginView'
 import { MyRequestsView } from './components/MyRequestsView'
 import { RegisterView } from './components/RegisterView'
 import { RepairRequestDetail } from './components/RepairRequestDetail'
+import { ShopInboxView } from './components/ShopInboxView'
+import { ShopProfileView } from './components/ShopProfileView'
+import { ShopRequestDetailView } from './components/ShopRequestDetailView'
+import { ShopSendQuoteView } from './components/ShopSendQuoteView'
 import type { AuthState } from './domain/auth-types'
 import type {
   AppScreen,
@@ -16,6 +20,7 @@ import type {
   NotificationEvent,
   RepairRequest,
 } from './domain/types'
+import { useShopPortal } from './hooks/useShopPortal'
 import { setOnUnauthorized } from './services/apiClient'
 import { authApi } from './services/authApi'
 import * as localPrefs from './services/localPreferences'
@@ -104,6 +109,11 @@ function App() {
     }
   }, [])
 
+  // Shop portal hook
+  const isShop = auth.user?.role === 'SHOP_USER'
+  const shop = useShopPortal(auth.user?.id ?? null)
+  const [shopSelectedRequestId, setShopSelectedRequestId] = useState<string | null>(null)
+
   // Restore session on mount
   useEffect(() => {
     const session = authApi.restoreSession()
@@ -113,7 +123,7 @@ function App() {
         token: session.accessToken,
         isAuthenticated: true,
       })
-      setScreen('home')
+      setScreen(session.user.role === 'SHOP_USER' ? 'shop-inbox' : 'home')
     }
     setAuthLoading(false)
   }, [])
@@ -121,9 +131,13 @@ function App() {
   // Load requests when authenticated
   useEffect(() => {
     if (auth.isAuthenticated) {
-      void loadRequests()
+      if (isShop) {
+        void shop.loadShopQueue()
+      } else {
+        void loadRequests()
+      }
     }
-  }, [auth.isAuthenticated, loadRequests])
+  }, [auth.isAuthenticated, isShop, loadRequests, shop.loadShopQueue])
 
   const handleLogin = async (email: string, password: string) => {
     const result = await authApi.login(email, password)
@@ -135,6 +149,18 @@ function App() {
     const result = await authApi.register(email, password)
     setAuth({ user: result.user, token: result.token, isAuthenticated: true })
     setScreen('home')
+  }
+
+  const handleShopLogin = async (email: string, password: string) => {
+    const result = await authApi.shopLogin(email, password)
+    setAuth({ user: result.user, token: result.token, isAuthenticated: true })
+    setScreen('shop-inbox')
+  }
+
+  const handleShopRegister = async (email: string, password: string) => {
+    const result = await authApi.shopRegister(email, password)
+    setAuth({ user: result.user, token: result.token, isAuthenticated: true })
+    setScreen('shop-inbox')
   }
 
   const handleLogout = async () => {
@@ -318,18 +344,19 @@ function App() {
     return (
       <LandingPage
         onGetStarted={() => setScreen('login')}
-        onJoinAsShop={() => setScreen('register')}
+        onJoinAsShop={() => setScreen('shop-login')}
       />
     )
   }
 
-  // Auth screens (login/register)
+  // Auth screens (login/register) — driver & shop
   if (!auth.isAuthenticated) {
+    const isShopAuth = screen === 'shop-login' || screen === 'shop-register'
     return (
       <main className="app-shell">
         <header className="app-header">
           <div className="brand" onClick={() => setScreen('landing')} style={{ cursor: 'pointer' }}>
-            <div className="brand-mark">AC</div>
+            <div className={`brand-mark${isShopAuth ? ' brand-mark-shop' : ''}`}>{isShopAuth ? 'W' : 'AC'}</div>
             <h1>Autoceny</h1>
           </div>
           <div className="header-actions">
@@ -337,7 +364,23 @@ function App() {
           </div>
         </header>
 
-        {screen === 'register' ? (
+        {screen === 'shop-register' ? (
+          <RegisterView
+            onRegister={handleShopRegister}
+            onSwitchToLogin={() => setScreen('shop-login')}
+            titleKey="shopAuth.registerTitle"
+            subtitleKey="shopAuth.registerSubtitle"
+            brandMark="W"
+          />
+        ) : screen === 'shop-login' ? (
+          <LoginView
+            onLogin={handleShopLogin}
+            onSwitchToRegister={() => setScreen('shop-register')}
+            titleKey="shopAuth.loginTitle"
+            subtitleKey="shopAuth.loginSubtitle"
+            brandMark="W"
+          />
+        ) : screen === 'register' ? (
           <RegisterView
             onRegister={handleRegister}
             onSwitchToLogin={() => setScreen('login')}
@@ -352,7 +395,141 @@ function App() {
     )
   }
 
-  // Authenticated app
+  // Shop portal (authenticated shop user)
+  if (isShop) {
+    const shopOpenDetail = (requestId: string) => {
+      setShopSelectedRequestId(requestId)
+      void shop.openShopRequestDetail(requestId)
+      setScreen('shop-request-detail')
+    }
+
+    return (
+      <main className="app-shell">
+        <header className="app-header">
+          <div className="brand" onClick={() => setScreen('shop-inbox')} style={{ cursor: 'pointer' }}>
+            <div className="brand-mark brand-mark-shop">W</div>
+            <h1>Autoceny</h1>
+          </div>
+          <div className="header-actions">
+            {screen !== 'shop-inbox' ? (
+              <button className="btn btn-ghost" onClick={() => setScreen('shop-inbox')}>
+                {t('shopNav.inbox')}
+              </button>
+            ) : null}
+            <button className="btn btn-ghost" onClick={() => {
+              void shop.loadShopProfile()
+              setScreen('shop-profile')
+            }}>
+              {t('shopNav.profile')}
+            </button>
+            <button className="btn btn-ghost" onClick={() => void handleLogout()}>
+              {t('auth.logout')}
+            </button>
+            <LanguageToggle />
+          </div>
+        </header>
+
+        <section className="banner-stack" aria-live="polite">
+          {banners.map((banner) => (
+            <article className={`banner banner-${banner.type}`} key={banner.id}>
+              <strong>{banner.title}</strong>
+              <p>{banner.message}</p>
+            </article>
+          ))}
+        </section>
+
+        {shop.shopLoading ? <p className="loading">{t('app.loading')}</p> : null}
+        {shop.shopError ? <p className="field-error">{t(shop.shopError as 'app.loadError')}</p> : null}
+
+        {!shop.shopLoading && !shop.shopError && screen === 'shop-inbox' ? (
+          <ShopInboxView
+            queueItems={shop.shopQueue}
+            onOpenRequest={shopOpenDetail}
+            onAcknowledge={(requestId) => {
+              void shop.handleShopAcknowledge(requestId)
+            }}
+            onDecline={(requestId) => {
+              void shop.handleShopDecline(requestId)
+            }}
+            onProfile={() => {
+              void shop.loadShopProfile()
+              setScreen('shop-profile')
+            }}
+          />
+        ) : null}
+
+        {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && shop.shopSelectedRequest ? (
+          <ShopRequestDetailView
+            request={shop.shopSelectedRequest}
+            shopResponse={shop.shopOwnResponse}
+            messages={shop.shopMessages}
+            onBack={() => {
+              void shop.loadShopQueue()
+              setScreen('shop-inbox')
+            }}
+            onAcknowledge={() => {
+              if (shopSelectedRequestId) {
+                void shop.handleShopAcknowledge(shopSelectedRequestId).then(() => {
+                  void shop.openShopRequestDetail(shopSelectedRequestId)
+                })
+              }
+            }}
+            onDecline={() => {
+              if (shopSelectedRequestId) {
+                void shop.handleShopDecline(shopSelectedRequestId).then(() => {
+                  void shop.loadShopQueue()
+                  setScreen('shop-inbox')
+                })
+              }
+            }}
+            onSendQuote={() => setScreen('shop-send-quote')}
+            onAskQuestion={async (text) => {
+              if (shopSelectedRequestId) {
+                await shop.handleShopAskQuestion(shopSelectedRequestId, text)
+              }
+            }}
+            onSendMessage={async (text) => {
+              if (shopSelectedRequestId) {
+                await shop.handleShopSendMessage(shopSelectedRequestId, text)
+              }
+            }}
+            onSharePhone={async (phone) => {
+              if (shopSelectedRequestId) {
+                await shop.handleSharePhone(shopSelectedRequestId, phone)
+              }
+            }}
+          />
+        ) : null}
+
+        {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && !shop.shopSelectedRequest ? (
+          <article className="empty-state">{t('app.notFound')}</article>
+        ) : null}
+
+        {!shop.shopLoading && !shop.shopError && screen === 'shop-send-quote' && shop.shopSelectedRequest ? (
+          <ShopSendQuoteView
+            request={shop.shopSelectedRequest}
+            onSubmit={async (payload, phone) => {
+              if (shopSelectedRequestId) {
+                await shop.handleSubmitQuote(shopSelectedRequestId, payload, phone)
+                setScreen('shop-request-detail')
+              }
+            }}
+            onBack={() => setScreen('shop-request-detail')}
+          />
+        ) : null}
+
+        {screen === 'shop-profile' ? (
+          <ShopProfileView
+            profile={shop.shopProfile}
+            onSave={shop.handleSaveProfile}
+            onBack={() => setScreen('shop-inbox')}
+          />
+        ) : null}
+      </main>
+    )
+  }
+
+  // Authenticated driver app
   return (
     <main className="app-shell">
       <header className="app-header">
@@ -391,7 +568,7 @@ function App() {
       </section>
 
       {loading ? <p className="loading">{t('app.loading')}</p> : null}
-      {error ? <p className="field-error">{t(error)}</p> : null}
+      {error ? <p className="field-error">{t(error as 'app.loadError')}</p> : null}
 
       {!loading && !error && screen === 'home' ? (
         <HomeView

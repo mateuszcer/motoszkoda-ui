@@ -54,6 +54,22 @@ const authApiImpl: AuthApi = {
     return authApiImpl.login(email, password)
   },
 
+  async shopLogin(email: string, password: string): Promise<AuthResult> {
+    const res = await api.post<SigninResponse>('/api/auth/shops/signin', {
+      auth: false,
+      body: { email, password },
+    })
+    return signinToResult(res)
+  },
+
+  async shopRegister(email: string, password: string): Promise<AuthResult> {
+    await api.post<SignupResponse>('/api/auth/shops/signup', {
+      auth: false,
+      body: { email, password },
+    })
+    return authApiImpl.shopLogin(email, password)
+  },
+
   async logout(): Promise<void> {
     clearSession()
     await Promise.resolve()

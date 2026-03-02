@@ -206,6 +206,109 @@
     "radiusOutOfRange": "Zasięg musi być między {{min}} a {{max}} km."
   },
 
+  "shopAuth": {
+    "loginTitle": "Panel Warsztatu",
+    "loginSubtitle": "Zaloguj się, aby zarządzać zleceniami napraw",
+    "registerTitle": "Zarejestruj swój warsztat",
+    "registerSubtitle": "Dołącz do Autoceny i otrzymuj zlecenia napraw"
+  },
+
+  "shopNav": {
+    "inbox": "Skrzynka",
+    "profile": "Profil"
+  },
+
+  "shopInbox": {
+    "eyebrow": "Panel Warsztatu",
+    "headline": "Twoje zlecenia napraw",
+    "subheadline": "Przeglądaj zlecenia, zadawaj pytania i wysyłaj wyceny.",
+    "statNew": "Nowe",
+    "statInProgress": "W toku",
+    "statQuoted": "Wycenione",
+    "statTotal": "Wszystkie",
+    "searchPlaceholder": "Szukaj po marce, modelu lub opisie...",
+    "filter_all": "Wszystkie",
+    "filter_new": "Nowe",
+    "filter_in_progress": "W toku",
+    "filter_quoted": "Wycenione",
+    "filter_declined": "Odrzucone",
+    "noItems": "Brak zleceń w skrzynce.",
+    "kmAway": "{{distance}} km",
+    "newMessages": "Nowe wiadomości",
+    "acknowledge": "Przyjmij",
+    "decline": "Odrzuć"
+  },
+
+  "shopRequestStatus": {
+    "PENDING": "Nowe",
+    "ACKNOWLEDGED": "W toku",
+    "QUOTED": "Wycenione",
+    "DECLINED": "Odrzucone"
+  },
+
+  "shopDetail": {
+    "radius": "Zasięg {{radius}} km",
+    "requestClosed": "To zlecenie zostało zamknięte lub wygasło. Akcje są wyłączone.",
+    "acknowledge": "Przyjmij",
+    "acknowledging": "Przyjmowanie...",
+    "sendQuote": "Wyślij wycenę",
+    "decline": "Odrzuć",
+    "declining": "Odrzucanie...",
+    "confirmDecline": "Tak, odrzuć",
+    "declineDialogTitle": "Odrzucić to zlecenie?",
+    "declineDialogMessage": "Nie będziesz mógł wysłać wyceny dla tego zlecenia.",
+    "declinedLabel": "Odrzuciłeś to zlecenie.",
+    "quoteSent": "Twoja wycena",
+    "sharePhone": "Udostępnij telefon",
+    "sharing": "Udostępnianie...",
+    "phonePlaceholder": "+48 ...",
+    "phoneShared": "Telefon udostępniony: {{phone}}",
+    "tabDetails": "Szczegóły",
+    "tabMessages": "Wiadomości",
+    "issueTitle": "Opis usterki",
+    "categoriesTitle": "Kategorie",
+    "carTitle": "Dane pojazdu",
+    "attachmentsTitle": "Załączniki",
+    "noMessages": "Brak wiadomości.",
+    "questionPlaceholder": "Zadaj pytanie kierowcy...",
+    "messagePlaceholder": "Wpisz wiadomość...",
+    "askQuestion": "Zadaj pytanie"
+  },
+
+  "shopQuoteForm": {
+    "title": "Wyślij wycenę",
+    "price": "Cena",
+    "estimatedDays": "Szacowany czas (dni)",
+    "note": "Uwagi",
+    "notePlaceholder": "Dodaj uwagi dla kierowcy...",
+    "sharePhoneLabel": "Udostępnij mój numer telefonu kierowcy",
+    "phonePlaceholder": "+48 ...",
+    "submit": "Wyślij wycenę",
+    "submitting": "Wysyłanie...",
+    "submitFailed": "Nie udało się wysłać wyceny. Spróbuj ponownie.",
+    "priceRequired": "Cena jest wymagana i musi być dodatnia.",
+    "phoneRequired": "Numer telefonu jest wymagany przy udostępnianiu."
+  },
+
+  "shopProfile": {
+    "title": "Profil warsztatu",
+    "name": "Nazwa warsztatu",
+    "namePlaceholder": "Nazwa Twojego warsztatu",
+    "address": "Adres",
+    "addressPlaceholder": "Ulica i miasto",
+    "phone": "Telefon",
+    "phonePlaceholder": "+48 ...",
+    "description": "Opis",
+    "descriptionPlaceholder": "Opisz specjalizacje swojego warsztatu...",
+    "save": "Zapisz profil",
+    "saving": "Zapisywanie...",
+    "saved": "Profil zapisany pomyślnie.",
+    "saveFailed": "Nie udało się zapisać profilu. Spróbuj ponownie.",
+    "nameRequired": "Nazwa warsztatu jest wymagana.",
+    "addressRequired": "Adres jest wymagany.",
+    "selectAddress": "Wybierz adres z podpowiedzi."
+  },
+
   "landing": {
     "hero": {
       "headline": "Otrzymaj wyceny naprawy z okolicznych warsztatów — bez obdzwaniania.",
