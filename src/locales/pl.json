@@ -189,6 +189,7 @@
     "passwordRequired": "Hasło jest wymagane.",
     "passwordMinLength": "Hasło musi mieć co najmniej 6 znaków.",
     "passwordMismatch": "Hasła nie pasują do siebie.",
+    "captchaRequired": "Proszę ukończyć weryfikację captcha.",
     "nameMinLength": "Imię musi mieć co najmniej 2 znaki.",
     "loginFailed": "Logowanie nie powiodło się. Spróbuj ponownie.",
     "registerFailed": "Rejestracja nie powiodła się. Spróbuj ponownie.",

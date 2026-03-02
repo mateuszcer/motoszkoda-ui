@@ -96,6 +96,9 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
     // Terms
     if (!termsAccepted) errs.terms = t('shopRegister.termsRequired')
 
+    // Captcha
+    if (TURNSTILE_SITE_KEY && !captchaToken) errs.captcha = t('auth.captchaRequired')
+
     setErrors(errs)
     return Object.keys(errs).length === 0
   }

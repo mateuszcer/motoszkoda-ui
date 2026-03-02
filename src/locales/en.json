@@ -185,6 +185,7 @@
     "passwordRequired": "Password is required.",
     "passwordMinLength": "Password must be at least 6 characters.",
     "passwordMismatch": "Passwords do not match.",
+    "captchaRequired": "Please complete the captcha verification.",
     "nameMinLength": "Name must be at least 2 characters.",
     "loginFailed": "Login failed. Please try again.",
     "registerFailed": "Registration failed. Please try again.",

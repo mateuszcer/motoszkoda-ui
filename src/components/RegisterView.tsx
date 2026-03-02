@@ -42,6 +42,10 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
       setError(t('auth.passwordMismatch'))
       return
     }
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      setError(t('auth.captchaRequired'))
+      return
+    }
 
     setSubmitting(true)
     try {
