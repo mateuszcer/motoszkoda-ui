@@ -4,7 +4,7 @@ info:
   description: |
     Shop profile management and geo-radius search endpoints.
     All endpoints require a valid JWT (Bearer token) obtained via the Auth API.
-  version: 1.0.0
+  version: 2.0.0
 
 security:
   - bearerAuth: []
@@ -13,9 +13,9 @@ paths:
   /api/shops/me:
     put:
       operationId: updateShopProfile
-      summary: Create or update own shop profile
+      summary: Update own shop profile
       description: |
-        Upsert pattern: creates the shop on first call, updates on subsequent calls.
+        Updates the shop profile. The shop must already exist (created during enrollment).
         The shop ID and owner ID are derived from the JWT claims (`shop_id` and `sub`).
         Only the shop owner can update their own profile.
       tags: [Shop Directory]
@@ -30,37 +30,31 @@ paths:
             example:
               name: AutoFix Centrum
               address: ul. Marszalkowska 10, Warsaw
-              phone: "+48111000001"
+              contactPhoneE164: "+48111000001"
+              contactEmail: kontakt@autofix.pl
               description: General car repair in city center
               lat: 52.235
               lon: 21.015
+              legalName: AutoFix Centrum Sp. z o.o.
+              nip: "5261040828"
+              billingStreet: ul. Marszalkowska 10
+              billingCity: Warszawa
+              billingPostalCode: 00-001
+              billingCountry: PL
+              invoiceEmail: faktury@autofix.pl
       responses:
         "200":
-          description: Shop profile created or updated
+          description: Shop profile updated
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ShopInfo"
-              example:
-                shopId: a0000000-0000-0000-0000-000000000001
-                name: AutoFix Centrum
-                address: ul. Marszalkowska 10, Warsaw
-                phone: "+48111000001"
-                description: General car repair in city center
-                lat: 52.235
-                lon: 21.015
         "400":
           description: Validation error (missing name or address)
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-              example:
-                code: VALIDATION_ERROR
-                message: Validation failed
-                details:
-                  - Name is required
-                correlationId: 550e8400-e29b-41d4-a716-446655440000
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -69,21 +63,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                forbidden:
-                  summary: User role cannot access this endpoint
-                  value:
-                    code: FORBIDDEN
-                    message: Access denied
-                    details: []
-                    correlationId: 550e8400-e29b-41d4-a716-446655440000
-                notOwner:
-                  summary: SHOP_USER trying to modify another shop
-                  value:
-                    code: SHOP_ACCESS_DENIED
-                    message: "User b0000000-... is not the owner of shop a0000000-..."
-                    details: []
-                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "404":
+          description: Shop not found — must register via enrollment first
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    get:
+      operationId: getOwnShopProfile
+      summary: Get own shop profile with full details
+      description: |
+        Returns the full shop profile including billing information and terms acceptance.
+        Only accessible by the shop owner.
+      tags: [Shop Directory]
+      security:
+        - bearerAuth: [ROLE_SHOP_USER]
+      responses:
+        "200":
+          description: Full shop profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopDetailResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: Access denied — caller is not SHOP_USER
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           $ref: "#/components/responses/InternalError"
 
@@ -137,22 +154,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ShopWithDistance"
-              example:
-                - shopId: a0000000-0000-0000-0000-000000000001
-                  name: AutoFix Centrum
-                  address: ul. Marszalkowska 10, Warsaw
-                  phone: "+48111000001"
-                  distanceKm: 0.65
-                - shopId: a0000000-0000-0000-0000-000000000002
-                  name: Mechanik Praga
-                  address: ul. Targowa 50, Warsaw
-                  phone: "+48111000002"
-                  distanceKm: 3.42
-                - shopId: a0000000-0000-0000-0000-000000000003
-                  name: Serwis Ursynow
-                  address: ul. Pulawy 300, Warsaw
-                  phone: "+48111000003"
-                  distanceKm: 11.15
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -161,11 +162,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-              example:
-                code: FORBIDDEN
-                message: Access denied
-                details: []
-                correlationId: 550e8400-e29b-41d4-a716-446655440000
         "500":
           $ref: "#/components/responses/InternalError"
 
@@ -194,11 +190,16 @@ components:
           maxLength: 500
           description: Full street address
           example: ul. Marszalkowska 10, Warsaw
-        phone:
+        contactPhoneE164:
           type: string
-          maxLength: 30
-          description: Contact phone number (optional)
+          pattern: '^\+[1-9]\d{6,14}$'
+          description: Contact phone in E.164 format (optional)
           example: "+48111000001"
+        contactEmail:
+          type: string
+          format: email
+          description: Contact email (optional)
+          example: kontakt@autofix.pl
         description:
           type: string
           maxLength: 2000
@@ -218,6 +219,41 @@ components:
           maximum: 180
           description: Shop longitude (WGS84)
           example: 21.015
+        legalName:
+          type: string
+          maxLength: 500
+          description: Legal business name for invoicing
+          example: AutoFix Centrum Sp. z o.o.
+        nip:
+          type: string
+          pattern: '^\d{10}$'
+          description: Polish NIP (tax ID), 10 digits with valid checksum
+          example: "5261040828"
+        billingStreet:
+          type: string
+          maxLength: 500
+          description: Billing address street
+          example: ul. Marszalkowska 10
+        billingCity:
+          type: string
+          maxLength: 200
+          description: Billing address city
+          example: Warszawa
+        billingPostalCode:
+          type: string
+          maxLength: 20
+          description: Billing address postal code
+          example: "00-001"
+        billingCountry:
+          type: string
+          maxLength: 3
+          description: Billing country ISO code (defaults to PL)
+          example: PL
+        invoiceEmail:
+          type: string
+          format: email
+          description: Email address for invoices (optional)
+          example: faktury@autofix.pl
 
     ShopInfo:
       type: object
@@ -226,16 +262,20 @@ components:
           type: string
           format: uuid
           description: Unique shop identifier (matches shop_id from JWT)
-          example: a0000000-0000-0000-0000-000000000001
         name:
           type: string
           example: AutoFix Centrum
         address:
           type: string
           example: ul. Marszalkowska 10, Warsaw
-        phone:
+        contactPhoneE164:
           type: string
+          description: Contact phone in E.164 format
           example: "+48111000001"
+        contactEmail:
+          type: string
+          description: Contact email
+          example: kontakt@autofix.pl
         description:
           type: string
           example: General car repair in city center
@@ -250,6 +290,53 @@ components:
           description: Shop longitude (WGS84)
           example: 21.015
 
+    ShopDetailResponse:
+      type: object
+      properties:
+        shopId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+        contactPhoneE164:
+          type: string
+        contactEmail:
+          type: string
+        description:
+          type: string
+        lat:
+          type: number
+          format: double
+        lon:
+          type: number
+          format: double
+        legalName:
+          type: string
+          description: Legal business name
+        nip:
+          type: string
+          description: Polish NIP (tax ID)
+        billingStreet:
+          type: string
+        billingCity:
+          type: string
+        billingPostalCode:
+          type: string
+        billingCountry:
+          type: string
+        invoiceEmail:
+          type: string
+          format: email
+        termsAcceptedAt:
+          type: string
+          format: date-time
+          description: Server-side timestamp of terms acceptance
+        termsVersion:
+          type: string
+          description: Version of accepted terms
+
     ShopWithDistance:
       type: object
       properties:
@@ -257,15 +344,15 @@ components:
           type: string
           format: uuid
           description: Unique shop identifier
-          example: a0000000-0000-0000-0000-000000000001
         name:
           type: string
           example: AutoFix Centrum
         address:
           type: string
           example: ul. Marszalkowska 10, Warsaw
-        phone:
+        contactPhoneE164:
           type: string
+          description: Contact phone in E.164 format
           example: "+48111000001"
         distanceKm:
           type: number

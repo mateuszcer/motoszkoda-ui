@@ -1,0 +1,406 @@
+openapi: 3.1.0
+info:
+  title: MotoSzkoda Enrollment API
+  description: Shop enrollment endpoints — registration, voucher redemption, payment, and admin management.
+  version: 2.0.0
+
+paths:
+  /api/enrollment/register:
+    post:
+      operationId: registerShop
+      summary: Register a new shop with profile and enrollment
+      description: |
+        Combined signup + profile creation + enrollment in PENDING_PAYMENT state. Public endpoint, no JWT required.
+        Requires billing information (legalName, nip, billingStreet, billingCity, billingPostalCode) for VAT invoicing.
+        Terms acceptance timestamp is set server-side.
+      tags: [Enrollment - Registration]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShopRegistrationRequest"
+      responses:
+        "201":
+          description: Shop registered, enrollment created in PENDING_PAYMENT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopRegistrationResponse"
+        "400":
+          description: Validation error or weak password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/enrollment/voucher:
+    post:
+      operationId: redeemVoucher
+      summary: Redeem a voucher code to activate enrollment
+      tags: [Enrollment - Shop]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EnrollWithVoucherRequest"
+      responses:
+        "201":
+          description: Voucher redeemed, enrollment now ACTIVE
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnrollmentResponse"
+        "404":
+          description: Voucher not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Voucher already redeemed or invalid enrollment state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/enrollment/payment:
+    post:
+      operationId: initiatePayment
+      summary: Initiate enrollment payment
+      description: Creates a payment intent and returns client secret for frontend payment flow.
+      tags: [Enrollment - Shop]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Payment intent created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentIntentResponse"
+        "409":
+          description: Invalid enrollment state (already active)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/enrollment/status:
+    get:
+      operationId: getEnrollmentStatus
+      summary: Get own enrollment status
+      tags: [Enrollment - Shop]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current enrollment status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnrollmentResponse"
+        "404":
+          description: No enrollment found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/enrollment/webhook/payment:
+    post:
+      operationId: paymentWebhook
+      summary: Payment confirmation webhook
+      description: Called by payment provider (e.g. Stripe) when payment succeeds. Public endpoint with provider-specific auth.
+      tags: [Enrollment - Webhook]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shopId:
+                  type: string
+                  format: uuid
+                paymentIntentId:
+                  type: string
+      responses:
+        "200":
+          description: Payment confirmed, enrollment activated
+
+  /api/admin/enrollment/shops/{shopId}/suspend:
+    post:
+      operationId: suspendShop
+      summary: Suspend a shop
+      tags: [Enrollment - Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: shopId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Shop suspended
+        "404":
+          description: Enrollment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Shop already suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/admin/enrollment/shops/{shopId}/unsuspend:
+    post:
+      operationId: unsuspendShop
+      summary: Unsuspend a shop
+      tags: [Enrollment - Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: shopId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Shop unsuspended
+        "404":
+          description: Enrollment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Shop not suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/admin/enrollment/vouchers:
+    post:
+      operationId: createVoucher
+      summary: Create a voucher code
+      tags: [Enrollment - Admin]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVoucherRequest"
+      responses:
+        "201":
+          description: Voucher created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoucherResponse"
+        "400":
+          description: Invalid code format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Code already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ShopRegistrationRequest:
+      type: object
+      required: [email, password, name, address, legalName, nip, billingStreet, billingCity, billingPostalCode, lat, lon]
+      properties:
+        email:
+          type: string
+          format: email
+          example: shop@example.com
+        password:
+          type: string
+          format: password
+          example: StrongPass1!
+        name:
+          type: string
+          example: AutoSerwis Kowalski
+        address:
+          type: string
+          example: ul. Mechaniczna 5, 00-001 Warszawa
+        contactPhoneE164:
+          type: string
+          pattern: '^\+[1-9]\d{6,14}$'
+          description: Contact phone in E.164 format
+          example: "+48123456789"
+        contactEmail:
+          type: string
+          format: email
+          description: Contact email (optional)
+          example: kontakt@autoserwis.pl
+        description:
+          type: string
+          example: Specjalizujemy się w naprawach silników.
+        lat:
+          type: number
+          format: double
+          example: 52.2297
+        lon:
+          type: number
+          format: double
+          example: 21.0122
+        legalName:
+          type: string
+          maxLength: 500
+          description: Legal business name for invoicing
+          example: AutoSerwis Kowalski Sp. z o.o.
+        nip:
+          type: string
+          pattern: '^\d{10}$'
+          description: Polish NIP (tax ID), 10 digits with valid checksum
+          example: "5261040828"
+        billingStreet:
+          type: string
+          maxLength: 500
+          description: Billing address street
+          example: ul. Mechaniczna 5
+        billingCity:
+          type: string
+          maxLength: 200
+          description: Billing address city
+          example: Warszawa
+        billingPostalCode:
+          type: string
+          maxLength: 20
+          description: Billing address postal code
+          example: "00-001"
+        billingCountry:
+          type: string
+          maxLength: 3
+          description: Billing country ISO code (defaults to PL)
+          default: PL
+          example: PL
+        invoiceEmail:
+          type: string
+          format: email
+          description: Email for invoices (optional, defaults to registration email)
+          example: faktury@autoserwis.pl
+        termsVersion:
+          type: string
+          maxLength: 50
+          description: Version of terms accepted (optional)
+          example: "1.0"
+
+    ShopRegistrationResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        shopId:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        enrollmentStatus:
+          $ref: "#/components/schemas/EnrollmentStatus"
+
+    EnrollWithVoucherRequest:
+      type: object
+      required: [voucherCode]
+      properties:
+        voucherCode:
+          type: string
+          minLength: 6
+          maxLength: 30
+          pattern: "^[a-zA-Z0-9]+$"
+          example: FREESHOP2024
+
+    EnrollmentResponse:
+      type: object
+      properties:
+        shopId:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/EnrollmentStatus"
+
+    PaymentIntentResponse:
+      type: object
+      properties:
+        paymentIntentId:
+          type: string
+          example: pi_3abc123def456
+        clientSecret:
+          type: string
+          example: pi_3abc123def456_secret_xyz
+
+    CreateVoucherRequest:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+          minLength: 6
+          maxLength: 30
+          pattern: "^[a-zA-Z0-9]+$"
+          example: FREESHOP2024
+
+    VoucherResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          example: FREESHOP2024
+
+    EnrollmentStatus:
+      type: string
+      enum: [PENDING_PAYMENT, ACTIVE, SUSPENDED]
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+        correlationId:
+          type: string
+          format: uuid

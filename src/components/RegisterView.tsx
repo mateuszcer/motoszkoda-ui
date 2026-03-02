@@ -1,8 +1,12 @@
+import { Turnstile } from '@marsidev/react-turnstile'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getSignupErrorMessage } from '../utils/signupErrors'
+
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
 interface RegisterViewProps {
-  onRegister: (email: string, password: string) => Promise<void>
+  onRegister: (email: string, password: string, captchaToken?: string) => Promise<void>
   onSwitchToLogin: () => void
   titleKey?: string
   subtitleKey?: string
@@ -16,6 +20,7 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>(undefined)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,9 +45,10 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
 
     setSubmitting(true)
     try {
-      await onRegister(email.trim(), password)
+      await onRegister(email.trim(), password, captchaToken)
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('auth.registerFailed'))
+      const mapped = getSignupErrorMessage(err, t)
+      setError(mapped ?? (err instanceof Error ? err.message : t('auth.registerFailed')))
     } finally {
       setSubmitting(false)
     }
@@ -93,6 +99,12 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
             />
           </label>
         </div>
+
+        {TURNSTILE_SITE_KEY ? (
+          <div className="turnstile-wrap">
+            <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setCaptchaToken} />
+          </div>
+        ) : null}
 
         <button className="btn btn-primary btn-lg auth-submit" type="submit" disabled={submitting}>
           {submitting ? t('auth.registering') : t('auth.register')}

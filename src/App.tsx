@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './App.css'
 import { CreateRepairRequestFlow } from './components/CreateRepairRequestFlow'
+import { EnrollmentGate } from './components/EnrollmentGate'
 import { HomeView } from './components/HomeView'
 import { LandingPage } from './components/LandingPage'
 import { LoginView } from './components/LoginView'
@@ -10,19 +11,23 @@ import { RegisterView } from './components/RegisterView'
 import { RepairRequestDetail } from './components/RepairRequestDetail'
 import { ShopInboxView } from './components/ShopInboxView'
 import { ShopProfileView } from './components/ShopProfileView'
+import { ShopRegisterView } from './components/ShopRegisterView'
 import { ShopRequestDetailView } from './components/ShopRequestDetailView'
 import { ShopSendQuoteView } from './components/ShopSendQuoteView'
+import type { ShopRegistrationRequest } from './domain/apiTypes'
 import type { AuthState } from './domain/auth-types'
 import type {
   AppScreen,
   Attachment,
   CreateRepairRequestPayload,
+  EnrollmentStatus,
   NotificationEvent,
   RepairRequest,
 } from './domain/types'
 import { useShopPortal } from './hooks/useShopPortal'
 import { setOnUnauthorized } from './services/apiClient'
 import { authApi } from './services/authApi'
+import { enrollmentApi } from './services/enrollmentApi'
 import * as localPrefs from './services/localPreferences'
 import { fetchNotifications } from './services/notificationsApi'
 import { repairRequestApi } from './services/repairRequestApi'
@@ -65,6 +70,9 @@ function App() {
   })
   const [authLoading, setAuthLoading] = useState(true)
 
+  const [enrollmentStatus, setEnrollmentStatus] = useState<EnrollmentStatus | null>(null)
+  const [enrollmentLoading, setEnrollmentLoading] = useState(false)
+
   const lastNotificationTime = useRef<string | undefined>(undefined)
 
   const selectedRequest = useMemo(() => {
@@ -78,6 +86,7 @@ function App() {
   const doLogout = useCallback(() => {
     void authApi.logout()
     setAuth({ user: null, token: null, isAuthenticated: false })
+    setEnrollmentStatus(null)
     setRequests([])
     setBanners([])
     setScreen('landing')
@@ -116,16 +125,32 @@ function App() {
 
   // Restore session on mount
   useEffect(() => {
-    const session = authApi.restoreSession()
-    if (session) {
-      setAuth({
-        user: session.user,
-        token: session.accessToken,
-        isAuthenticated: true,
-      })
-      setScreen(session.user.role === 'SHOP_USER' ? 'shop-inbox' : 'home')
+    const restore = async () => {
+      const session = authApi.restoreSession()
+      if (session) {
+        setAuth({
+          user: session.user,
+          token: session.accessToken,
+          isAuthenticated: true,
+        })
+        if (session.user.role === 'SHOP_USER') {
+          setEnrollmentLoading(true)
+          try {
+            const status = await enrollmentApi.getStatus()
+            setEnrollmentStatus(status.status)
+          } catch {
+            setEnrollmentStatus(null)
+          } finally {
+            setEnrollmentLoading(false)
+          }
+          setScreen('shop-inbox')
+        } else {
+          setScreen('home')
+        }
+      }
+      setAuthLoading(false)
     }
-    setAuthLoading(false)
+    void restore()
   }, [])
 
   // Load requests when authenticated
@@ -145,8 +170,8 @@ function App() {
     setScreen('home')
   }
 
-  const handleRegister = async (email: string, password: string) => {
-    const result = await authApi.register(email, password)
+  const handleRegister = async (email: string, password: string, captchaToken?: string) => {
+    const result = await authApi.register(email, password, captchaToken)
     setAuth({ user: result.user, token: result.token, isAuthenticated: true })
     setScreen('home')
   }
@@ -154,12 +179,20 @@ function App() {
   const handleShopLogin = async (email: string, password: string) => {
     const result = await authApi.shopLogin(email, password)
     setAuth({ user: result.user, token: result.token, isAuthenticated: true })
+    try {
+      const status = await enrollmentApi.getStatus()
+      setEnrollmentStatus(status.status)
+    } catch {
+      setEnrollmentStatus(null)
+    }
     setScreen('shop-inbox')
   }
 
-  const handleShopRegister = async (email: string, password: string) => {
-    const result = await authApi.shopRegister(email, password)
-    setAuth({ user: result.user, token: result.token, isAuthenticated: true })
+  const handleShopRegister = async (payload: ShopRegistrationRequest) => {
+    const regResult = await enrollmentApi.register(payload)
+    setEnrollmentStatus(regResult.enrollmentStatus)
+    const loginResult = await authApi.shopLogin(payload.email, payload.password)
+    setAuth({ user: loginResult.user, token: loginResult.token, isAuthenticated: true })
     setScreen('shop-inbox')
   }
 
@@ -365,12 +398,9 @@ function App() {
         </header>
 
         {screen === 'shop-register' ? (
-          <RegisterView
+          <ShopRegisterView
             onRegister={handleShopRegister}
             onSwitchToLogin={() => setScreen('shop-login')}
-            titleKey="shopAuth.registerTitle"
-            subtitleKey="shopAuth.registerSubtitle"
-            brandMark="W"
           />
         ) : screen === 'shop-login' ? (
           <LoginView
@@ -395,6 +425,25 @@ function App() {
     )
   }
 
+  // Enrollment actions for shop users
+  const handleVoucherRedeem = async (code: string) => {
+    const result = await enrollmentApi.redeemVoucher(code)
+    setEnrollmentStatus(result.status)
+  }
+
+  const handleEnrollmentPayment = async () => {
+    await enrollmentApi.initiatePayment()
+  }
+
+  const handleEnrollmentStatusRefresh = async () => {
+    try {
+      const result = await enrollmentApi.getStatus()
+      setEnrollmentStatus(result.status)
+    } catch {
+      // keep current status
+    }
+  }
+
   // Shop portal (authenticated shop user)
   if (isShop) {
     const shopOpenDetail = (requestId: string) => {
@@ -404,128 +453,137 @@ function App() {
     }
 
     return (
-      <main className="app-shell">
-        <header className="app-header">
-          <div className="brand" onClick={() => setScreen('shop-inbox')} style={{ cursor: 'pointer' }}>
-            <div className="brand-mark brand-mark-shop">W</div>
-            <h1>Autoceny</h1>
-          </div>
-          <div className="header-actions">
-            {screen !== 'shop-inbox' ? (
-              <button className="btn btn-ghost" onClick={() => setScreen('shop-inbox')}>
-                {t('shopNav.inbox')}
+      <EnrollmentGate
+        enrollmentStatus={enrollmentStatus}
+        enrollmentLoading={enrollmentLoading}
+        onVoucherRedeem={handleVoucherRedeem}
+        onPayment={handleEnrollmentPayment}
+        onStatusRefresh={handleEnrollmentStatusRefresh}
+        onLogout={doLogout}
+      >
+        <main className="app-shell">
+          <header className="app-header">
+            <div className="brand" onClick={() => setScreen('shop-inbox')} style={{ cursor: 'pointer' }}>
+              <div className="brand-mark brand-mark-shop">W</div>
+              <h1>Autoceny</h1>
+            </div>
+            <div className="header-actions">
+              {screen !== 'shop-inbox' ? (
+                <button className="btn btn-ghost" onClick={() => setScreen('shop-inbox')}>
+                  {t('shopNav.inbox')}
+                </button>
+              ) : null}
+              <button className="btn btn-ghost" onClick={() => {
+                void shop.loadShopProfile()
+                setScreen('shop-profile')
+              }}>
+                {t('shopNav.profile')}
               </button>
-            ) : null}
-            <button className="btn btn-ghost" onClick={() => {
-              void shop.loadShopProfile()
-              setScreen('shop-profile')
-            }}>
-              {t('shopNav.profile')}
-            </button>
-            <button className="btn btn-ghost" onClick={() => void handleLogout()}>
-              {t('auth.logout')}
-            </button>
-            <LanguageToggle />
-          </div>
-        </header>
+              <button className="btn btn-ghost" onClick={() => void handleLogout()}>
+                {t('auth.logout')}
+              </button>
+              <LanguageToggle />
+            </div>
+          </header>
 
-        <section className="banner-stack" aria-live="polite">
-          {banners.map((banner) => (
-            <article className={`banner banner-${banner.type}`} key={banner.id}>
-              <strong>{banner.title}</strong>
-              <p>{banner.message}</p>
-            </article>
-          ))}
-        </section>
+          <section className="banner-stack" aria-live="polite">
+            {banners.map((banner) => (
+              <article className={`banner banner-${banner.type}`} key={banner.id}>
+                <strong>{banner.title}</strong>
+                <p>{banner.message}</p>
+              </article>
+            ))}
+          </section>
 
-        {shop.shopLoading ? <p className="loading">{t('app.loading')}</p> : null}
-        {shop.shopError ? <p className="field-error">{t(shop.shopError as 'app.loadError')}</p> : null}
+          {shop.shopLoading ? <p className="loading">{t('app.loading')}</p> : null}
+          {shop.shopError ? <p className="field-error">{t(shop.shopError as 'app.loadError')}</p> : null}
 
-        {!shop.shopLoading && !shop.shopError && screen === 'shop-inbox' ? (
-          <ShopInboxView
-            queueItems={shop.shopQueue}
-            onOpenRequest={shopOpenDetail}
-            onAcknowledge={(requestId) => {
-              void shop.handleShopAcknowledge(requestId)
-            }}
-            onDecline={(requestId) => {
-              void shop.handleShopDecline(requestId)
-            }}
-            onProfile={() => {
-              void shop.loadShopProfile()
-              setScreen('shop-profile')
-            }}
-          />
-        ) : null}
+          {!shop.shopLoading && !shop.shopError && screen === 'shop-inbox' ? (
+            <ShopInboxView
+              queueItems={shop.shopQueue}
+              onOpenRequest={shopOpenDetail}
+              onAcknowledge={(requestId) => {
+                void shop.handleShopAcknowledge(requestId)
+              }}
+              onDecline={(requestId) => {
+                void shop.handleShopDecline(requestId)
+              }}
+              onProfile={() => {
+                void shop.loadShopProfile()
+                setScreen('shop-profile')
+              }}
+            />
+          ) : null}
 
-        {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && shop.shopSelectedRequest ? (
-          <ShopRequestDetailView
-            request={shop.shopSelectedRequest}
-            shopResponse={shop.shopOwnResponse}
-            messages={shop.shopMessages}
-            onBack={() => {
-              void shop.loadShopQueue()
-              setScreen('shop-inbox')
-            }}
-            onAcknowledge={() => {
-              if (shopSelectedRequestId) {
-                void shop.handleShopAcknowledge(shopSelectedRequestId).then(() => {
-                  void shop.openShopRequestDetail(shopSelectedRequestId)
-                })
-              }
-            }}
-            onDecline={() => {
-              if (shopSelectedRequestId) {
-                void shop.handleShopDecline(shopSelectedRequestId).then(() => {
-                  void shop.loadShopQueue()
-                  setScreen('shop-inbox')
-                })
-              }
-            }}
-            onSendQuote={() => setScreen('shop-send-quote')}
-            onAskQuestion={async (text) => {
-              if (shopSelectedRequestId) {
-                await shop.handleShopAskQuestion(shopSelectedRequestId, text)
-              }
-            }}
-            onSendMessage={async (text) => {
-              if (shopSelectedRequestId) {
-                await shop.handleShopSendMessage(shopSelectedRequestId, text)
-              }
-            }}
-            onSharePhone={async (phone) => {
-              if (shopSelectedRequestId) {
-                await shop.handleSharePhone(shopSelectedRequestId, phone)
-              }
-            }}
-          />
-        ) : null}
+          {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && shop.shopSelectedRequest ? (
+            <ShopRequestDetailView
+              request={shop.shopSelectedRequest}
+              shopResponse={shop.shopOwnResponse}
+              messages={shop.shopMessages}
+              onBack={() => {
+                void shop.loadShopQueue()
+                setScreen('shop-inbox')
+              }}
+              onAcknowledge={() => {
+                if (shopSelectedRequestId) {
+                  void shop.handleShopAcknowledge(shopSelectedRequestId).then(() => {
+                    void shop.openShopRequestDetail(shopSelectedRequestId)
+                  })
+                }
+              }}
+              onDecline={() => {
+                if (shopSelectedRequestId) {
+                  void shop.handleShopDecline(shopSelectedRequestId).then(() => {
+                    void shop.loadShopQueue()
+                    setScreen('shop-inbox')
+                  })
+                }
+              }}
+              onSendQuote={() => setScreen('shop-send-quote')}
+              onAskQuestion={async (text) => {
+                if (shopSelectedRequestId) {
+                  await shop.handleShopAskQuestion(shopSelectedRequestId, text)
+                }
+              }}
+              onSendMessage={async (text) => {
+                if (shopSelectedRequestId) {
+                  await shop.handleShopSendMessage(shopSelectedRequestId, text)
+                }
+              }}
+              onSharePhone={async (phone) => {
+                if (shopSelectedRequestId) {
+                  await shop.handleSharePhone(shopSelectedRequestId, phone)
+                }
+              }}
+            />
+          ) : null}
 
-        {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && !shop.shopSelectedRequest ? (
-          <article className="empty-state">{t('app.notFound')}</article>
-        ) : null}
+          {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && !shop.shopSelectedRequest ? (
+            <article className="empty-state">{t('app.notFound')}</article>
+          ) : null}
 
-        {!shop.shopLoading && !shop.shopError && screen === 'shop-send-quote' && shop.shopSelectedRequest ? (
-          <ShopSendQuoteView
-            request={shop.shopSelectedRequest}
-            onSubmit={async (payload, phone) => {
-              if (shopSelectedRequestId) {
-                await shop.handleSubmitQuote(shopSelectedRequestId, payload, phone)
-                setScreen('shop-request-detail')
-              }
-            }}
-            onBack={() => setScreen('shop-request-detail')}
-          />
-        ) : null}
+          {!shop.shopLoading && !shop.shopError && screen === 'shop-send-quote' && shop.shopSelectedRequest ? (
+            <ShopSendQuoteView
+              request={shop.shopSelectedRequest}
+              onSubmit={async (payload, phone) => {
+                if (shopSelectedRequestId) {
+                  await shop.handleSubmitQuote(shopSelectedRequestId, payload, phone)
+                  setScreen('shop-request-detail')
+                }
+              }}
+              onBack={() => setScreen('shop-request-detail')}
+            />
+          ) : null}
 
-        {screen === 'shop-profile' ? (
-          <ShopProfileView
-            profile={shop.shopProfile}
-            onSave={shop.handleSaveProfile}
-            onBack={() => setScreen('shop-inbox')}
-          />
-        ) : null}
-      </main>
+          {screen === 'shop-profile' ? (
+            <ShopProfileView
+              profile={shop.shopProfile}
+              onSave={shop.handleSaveProfile}
+              onBack={() => setScreen('shop-inbox')}
+            />
+          ) : null}
+        </main>
+      </EnrollmentGate>
     )
   }
 

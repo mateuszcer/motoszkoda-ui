@@ -7,6 +7,7 @@ export type ApiRole = 'USER' | 'SHOP_USER'
 export interface SignupRequest {
   email: string
   password: string
+  captchaToken?: string | null
 }
 
 export interface SignupResponse {
@@ -279,6 +280,50 @@ export interface UpdateShopRequest {
   description?: string
   lat: number
   lon: number
+}
+
+// ── Enrollment ──────────────────────────────────────────────────────
+
+export interface ShopRegistrationRequest {
+  email: string
+  password: string
+  name: string
+  address: string
+  contactPhoneE164: string
+  contactEmail?: string
+  description?: string
+  lat: number
+  lon: number
+  legalName: string
+  nip: string
+  billingStreet: string
+  billingCity: string
+  billingPostalCode: string
+  billingCountry?: string
+  invoiceEmail?: string
+  termsVersion?: string
+  captchaToken?: string | null
+}
+
+export interface ShopRegistrationResponse {
+  userId: string
+  shopId: string
+  email: string
+  enrollmentStatus: 'PENDING_PAYMENT' | 'ACTIVE' | 'SUSPENDED'
+}
+
+export interface EnrollWithVoucherRequest {
+  voucherCode: string
+}
+
+export interface EnrollmentStatusResponse {
+  shopId: string
+  status: 'PENDING_PAYMENT' | 'ACTIVE' | 'SUSPENDED'
+}
+
+export interface PaymentIntentResponse {
+  paymentIntentId: string
+  clientSecret: string
 }
 
 // ── Common Error ─────────────────────────────────────────────────────

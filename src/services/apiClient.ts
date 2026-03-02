@@ -15,14 +15,16 @@ export class ApiError extends Error {
   code: string
   details: string[] | undefined
   correlationId: string | undefined
+  retryAfterSeconds: number | undefined
 
-  constructor(status: number, code: string, details?: string[], correlationId?: string) {
+  constructor(status: number, code: string, details?: string[], correlationId?: string, retryAfterSeconds?: number) {
     super(`[${code}] ${status}`)
     this.name = 'ApiError'
     this.status = status
     this.code = code
     this.details = details
     this.correlationId = correlationId
+    this.retryAfterSeconds = retryAfterSeconds
   }
 }
 
@@ -47,6 +49,9 @@ async function handleResponse<T>(response: Response): Promise<T> {
       onUnauthorized?.()
     }
 
+    const retryAfterRaw = response.headers.get('Retry-After')
+    const retryAfterSeconds = retryAfterRaw ? parseInt(retryAfterRaw, 10) : undefined
+
     let body: ApiErrorResponse | undefined
     try {
       body = (await response.json()) as ApiErrorResponse
@@ -59,6 +64,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
       body?.code ?? `HTTP_${response.status}`,
       body?.details,
       body?.correlationId,
+      Number.isFinite(retryAfterSeconds) ? retryAfterSeconds : undefined,
     )
   }
 

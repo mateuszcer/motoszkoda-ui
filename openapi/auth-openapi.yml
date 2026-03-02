@@ -56,6 +56,33 @@ paths:
                 message: Email already registered
                 details: []
                 correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "422":
+          description: Disposable email rejected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: DISPOSABLE_EMAIL_NOT_ALLOWED
+                message: Disposable email addresses are not allowed
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "429":
+          description: Rate limited
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds until the client may retry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: RATE_LIMITED
+                message: Too many signup attempts
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
         "500":
           $ref: "#/components/responses/InternalError"
 
@@ -123,7 +150,7 @@ paths:
     post:
       operationId: shopSignup
       summary: Register a new shop account
-      description: Creates a SHOP_USER account. Shop accounts require approval before they can sign in.
+      description: Creates a SHOP_USER account. Shop accounts require enrollment (voucher or payment) before they can use the platform.
       tags: [Auth - Shops]
       requestBody:
         required: true
@@ -133,7 +160,7 @@ paths:
               $ref: "#/components/schemas/AuthRequest"
       responses:
         "201":
-          description: Shop account created (requires approval)
+          description: Shop account created (requires enrollment)
           content:
             application/json:
               schema:
@@ -142,7 +169,8 @@ paths:
                 userId: 550e8400-e29b-41d4-a716-446655440000
                 email: shop@example.com
                 role: SHOP_USER
-                requiresApproval: true
+                requiresEnrollment: true
+                shopId: 660e8400-e29b-41d4-a716-446655440001
         "400":
           description: Validation error or weak password
           content:
@@ -155,6 +183,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Disposable email rejected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: DISPOSABLE_EMAIL_NOT_ALLOWED
+                message: Disposable email addresses are not allowed
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "429":
+          description: Rate limited
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds until the client may retry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: RATE_LIMITED
+                message: Too many signup attempts
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
         "500":
           $ref: "#/components/responses/InternalError"
 
@@ -228,6 +283,10 @@ components:
           format: password
           minLength: 1
           example: StrongPass1!
+        captchaToken:
+          type: string
+          nullable: true
+          description: Cloudflare Turnstile CAPTCHA token. Null when CAPTCHA is not enabled.
 
     SignupResult:
       type: object
@@ -242,10 +301,16 @@ components:
           example: user@example.com
         role:
           $ref: "#/components/schemas/Role"
-        requiresApproval:
+        requiresEnrollment:
           type: boolean
-          description: true for SHOP_USER accounts that need admin approval
+          description: true for SHOP_USER accounts that need enrollment (voucher or payment)
           example: false
+        shopId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Shop ID (present for SHOP_USER, null for USER)
+          example: null
 
     SigninResult:
       type: object
@@ -276,7 +341,7 @@ components:
 
     Role:
       type: string
-      enum: [USER, SHOP_USER]
+      enum: [USER, SHOP_USER, ADMIN]
 
     ErrorResponse:
       type: object
