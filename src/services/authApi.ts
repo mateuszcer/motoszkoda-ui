@@ -45,13 +45,11 @@ const authApiImpl: AuthApi = {
     return signinToResult(res)
   },
 
-  async register(email: string, password: string, captchaToken?: string): Promise<AuthResult> {
-    // Signup returns no token — we must sign in afterwards
-    await api.post<SignupResponse>('/api/auth/users/signup', {
+  async register(email: string, password: string, captchaToken?: string): Promise<SignupResponse> {
+    return api.post<SignupResponse>('/api/auth/users/signup', {
       auth: false,
       body: { email, password, captchaToken: captchaToken ?? null },
     })
-    return authApiImpl.login(email, password)
   },
 
   async shopLogin(email: string, password: string, captchaToken?: string): Promise<AuthResult> {

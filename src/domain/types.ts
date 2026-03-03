@@ -1,5 +1,5 @@
 export type AppScreen =
-  | 'landing' | 'login' | 'register' | 'signup-confirmation' | 'home' | 'create-request' | 'my-requests' | 'request-detail'
+  | 'landing' | 'login' | 'register' | 'check-email' | 'signup-confirmation' | 'home' | 'create-request' | 'my-requests' | 'request-detail'
   | 'shop-login' | 'shop-register' | 'shop-inbox' | 'shop-request-detail' | 'shop-send-quote' | 'shop-profile'
   | 'shop-enroll'
   | 'admin-login' | 'admin-vouchers'

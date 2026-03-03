@@ -532,9 +532,15 @@
     "copy": "Kopiuj"
   },
 
+  "checkEmail": {
+    "title": "Sprawdź swoją skrzynkę",
+    "message": "Wysłaliśmy link weryfikacyjny na adres {{email}}. Kliknij go, aby aktywować konto.",
+    "goToLogin": "Przejdź do logowania"
+  },
+
   "signupConfirmation": {
-    "title": "Rejestracja zakończona",
-    "message": "Twoje konto zostało utworzone. Sprawdź swoją skrzynkę email, aby zweryfikować adres, a następnie się zaloguj.",
+    "title": "Email potwierdzony",
+    "message": "Twój adres email został zweryfikowany. Możesz się teraz zalogować.",
     "goToLogin": "Przejdź do logowania"
   },
 

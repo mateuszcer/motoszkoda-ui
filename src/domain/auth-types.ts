@@ -1,4 +1,4 @@
-import type { ApiRole } from './apiTypes'
+import type { ApiRole, SignupResponse } from './apiTypes'
 
 export interface User {
   id: string
@@ -39,7 +39,7 @@ export interface StoredSession {
 
 export interface AuthApi {
   login(email: string, password: string, captchaToken?: string): Promise<AuthResult>
-  register(email: string, password: string, captchaToken?: string): Promise<AuthResult>
+  register(email: string, password: string, captchaToken?: string): Promise<SignupResponse>
   shopLogin(email: string, password: string, captchaToken?: string): Promise<AuthResult>
   shopRegister(email: string, password: string, captchaToken?: string): Promise<AuthResult>
   adminLogin(email: string, password: string, captchaToken?: string): Promise<AuthResult>

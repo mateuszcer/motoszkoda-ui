@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './App.css'
 import { AdminLoginView } from './components/AdminLoginView'
+import { CheckEmailView } from './components/CheckEmailView'
 import { AdminVouchersView } from './components/AdminVouchersView'
 import { CreateRepairRequestFlow } from './components/CreateRepairRequestFlow'
 import { EnrollmentGate } from './components/EnrollmentGate'
@@ -73,6 +74,8 @@ function App() {
     isAuthenticated: false,
   })
   const [authLoading, setAuthLoading] = useState(true)
+
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null)
 
   const [enrollmentStatus, setEnrollmentStatus] = useState<EnrollmentStatus | null>(null)
   const [enrollmentLoading, setEnrollmentLoading] = useState(false)
@@ -189,9 +192,9 @@ function App() {
   }
 
   const handleRegister = async (email: string, password: string, captchaToken?: string) => {
-    const result = await authApi.register(email, password, captchaToken)
-    setAuth({ user: result.user, token: result.token, isAuthenticated: true })
-    setScreen('home')
+    await authApi.register(email, password, captchaToken)
+    setPendingEmail(email)
+    setScreen('check-email')
   }
 
   const handleShopLogin = async (email: string, password: string, captchaToken?: string) => {
@@ -207,11 +210,9 @@ function App() {
   }
 
   const handleShopRegister = async (payload: ShopRegistrationRequest) => {
-    const regResult = await enrollmentApi.register(payload)
-    setEnrollmentStatus(regResult.enrollmentStatus)
-    const loginResult = await authApi.shopLogin(payload.email, payload.password)
-    setAuth({ user: loginResult.user, token: loginResult.token, isAuthenticated: true })
-    setScreen('shop-inbox')
+    await enrollmentApi.register(payload)
+    setPendingEmail(payload.email)
+    setScreen('check-email')
   }
 
   const handleAdminLogin = async (email: string, password: string, captchaToken?: string) => {
@@ -414,6 +415,24 @@ function App() {
         onGetStarted={() => setScreen('login')}
         onJoinAsShop={() => setScreen('shop-login')}
       />
+    )
+  }
+
+  // Check-email screen (shown immediately after registration)
+  if (!auth.isAuthenticated && screen === 'check-email' && pendingEmail) {
+    return (
+      <main className="app-shell">
+        <header className="app-header">
+          <div className="brand" onClick={() => setScreen('landing')} style={{ cursor: 'pointer' }}>
+            <div className="brand-mark">AC</div>
+            <h1>Autoceny</h1>
+          </div>
+          <div className="header-actions">
+            <LanguageToggle />
+          </div>
+        </header>
+        <CheckEmailView email={pendingEmail} onGoToLogin={() => setScreen('login')} />
+      </main>
     )
   }
 

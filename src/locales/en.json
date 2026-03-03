@@ -528,9 +528,15 @@
     "copy": "Copy"
   },
 
+  "checkEmail": {
+    "title": "Check your email",
+    "message": "We sent a verification link to {{email}}. Click it to activate your account.",
+    "goToLogin": "Go to Sign in"
+  },
+
   "signupConfirmation": {
-    "title": "Registration successful",
-    "message": "Your account has been created. Please check your email to verify your address, then sign in.",
+    "title": "Email confirmed",
+    "message": "Your email has been verified. You can now sign in.",
     "goToLogin": "Go to Sign in"
   },
 
