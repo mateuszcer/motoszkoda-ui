@@ -200,11 +200,14 @@ function App() {
   const handleShopLogin = async (email: string, password: string, captchaToken?: string) => {
     const result = await authApi.shopLogin(email, password, captchaToken)
     setAuth({ user: result.user, token: result.token, isAuthenticated: true })
+    setEnrollmentLoading(true)
     try {
       const status = await enrollmentApi.getStatus()
       setEnrollmentStatus(status.status)
     } catch {
       setEnrollmentStatus(null)
+    } finally {
+      setEnrollmentLoading(false)
     }
     setScreen('shop-inbox')
   }

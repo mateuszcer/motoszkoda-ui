@@ -39,6 +39,9 @@ const DIAL_CODES_DESC = COUNTRY_LIST
 const DEFAULT_COUNTRY = COUNTRY_LIST[0] // Poland
 
 export function parseE164(value: string): { country: CountryEntry; localNumber: string } {
+  if (!value) {
+    return { country: DEFAULT_COUNTRY, localNumber: '' }
+  }
   if (!value.startsWith('+')) {
     return { country: DEFAULT_COUNTRY, localNumber: value.replace(/\D/g, '') }
   }

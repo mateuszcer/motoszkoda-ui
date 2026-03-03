@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { Attachment, RepairRequest, ShopQuoteCard, SortQuotesBy } from '../domain/types'
 import { getDownloadUrl } from '../services/attachmentApi'
 import { formatDateTime, formatLineItemRange, formatQuoteRange } from '../utils/format'
+import { ImageLightbox } from './ImageLightbox'
 import { ShopThreadPanel } from './ShopThreadPanel'
 
 interface RepairRequestDetailProps {
@@ -83,6 +84,7 @@ export function RepairRequestDetail({
   const [pendingShopAction, setPendingShopAction] = useState<string | null>(null)
   const [summaryCollapsed, setSummaryCollapsed] = useState(false)
   const [attachmentUrls, setAttachmentUrls] = useState<Record<string, string>>({})
+  const [lightboxImg, setLightboxImg] = useState<{ src: string; alt: string } | null>(null)
 
   useEffect(() => {
     const atts = request.issue.attachments.filter((a) => a.kind === 'image' && !a.previewUrl)
@@ -234,7 +236,7 @@ export function RepairRequestDetail({
                   {request.issue.attachments.map((att) => {
                     const url = att.previewUrl ?? attachmentUrls[att.id]
                     return (
-                      <div className="attachment-thumb" key={att.id}>
+                      <div className="attachment-thumb" key={att.id} onClick={() => url && setLightboxImg({ src: url, alt: att.name })}>
                         {url ? <img src={url} alt={att.name} /> : <span>{att.name}</span>}
                       </div>
                     )
@@ -528,6 +530,10 @@ export function RepairRequestDetail({
             await onSendThreadMessage(request.id, activeThread.shopId, text, attachments, files)
           }}
         />
+      ) : null}
+
+      {lightboxImg ? (
+        <ImageLightbox src={lightboxImg.src} alt={lightboxImg.alt} onClose={() => setLightboxImg(null)} />
       ) : null}
     </section>
   )

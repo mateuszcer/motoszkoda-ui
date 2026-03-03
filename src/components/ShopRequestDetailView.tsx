@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ImageLightbox } from './ImageLightbox'
 import { PhoneInput } from './PhoneInput'
 import type { RepairRequest, ShopOwnResponse, ThreadMessage } from '../domain/types'
 import { getDownloadUrl } from '../services/attachmentApi'
@@ -46,6 +47,7 @@ export function ShopRequestDetailView({
   const isClosed = request.status === 'closed'
   const status = shopResponse?.status ?? 'PENDING'
   const [attachmentUrls, setAttachmentUrls] = useState<Record<string, string>>({})
+  const [lightboxImg, setLightboxImg] = useState<{ src: string; alt: string } | null>(null)
 
   useEffect(() => {
     const atts = request.issue.attachments.filter((a) => a.kind === 'image' && !a.previewUrl)
@@ -287,7 +289,7 @@ export function ShopRequestDetailView({
                 {request.issue.attachments.map((att) => {
                   const url = att.previewUrl ?? attachmentUrls[att.id]
                   return (
-                    <div className="attachment-thumb" key={att.id}>
+                    <div className="attachment-thumb" key={att.id} onClick={() => url && setLightboxImg({ src: url, alt: att.name })}>
                       {url ? <img src={url} alt={att.name} /> : <span>{att.name}</span>}
                     </div>
                   )
@@ -370,6 +372,10 @@ export function ShopRequestDetailView({
             </div>
           </div>
         </div>
+      ) : null}
+
+      {lightboxImg ? (
+        <ImageLightbox src={lightboxImg.src} alt={lightboxImg.alt} onClose={() => setLightboxImg(null)} />
       ) : null}
     </section>
   )

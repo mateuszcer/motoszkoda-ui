@@ -231,7 +231,7 @@ export function mapShopProfile(raw: ShopInfoResponse): ShopProfile {
     shopId: raw.shopId,
     name: raw.name,
     address: raw.address,
-    phone: raw.phone,
+    phone: raw.phone ?? '',
     description: raw.description,
     lat: raw.lat,
     lon: raw.lon,
