@@ -80,6 +80,7 @@
     "address": "Adres",
     "addressPlaceholder": "Ulica i miasto",
     "useCurrentLocation": "Użyj bieżącej lokalizacji",
+    "locating": "Lokalizowanie…",
     "searchRadius": "Zasięg wyszukiwania:",
     "radiusHelp": "Warsztaty w promieniu {{radius}} km otrzymają Twoje zgłoszenie.",
     "submitting": "Wysyłanie...",

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DEFAULT_RADIUS_KM, ISSUE_TAGS, MAX_CAR_YEAR, MAX_RADIUS_KM, MIN_CAR_YEAR, MIN_RADIUS_KM } from '../domain/constants'
 import type { Attachment, CreateRepairRequestPayload, RepairRequest } from '../domain/types'
+import { useAddressAutocomplete } from '../hooks/useAddressAutocomplete'
 import { fileToAttachment, revokeAttachmentPreview, revokeAttachmentsPreview } from '../utils/attachments'
 import { isValidVin, normalizeVin, validateYear } from '../utils/validation'
 import { AttachmentGrid } from './AttachmentGrid'
@@ -61,9 +62,10 @@ export function CreateRepairRequestFlow({
   const [attachmentError, setAttachmentError] = useState<string | null>(null)
   const fileMapRef = useRef<Map<string, File>>(new Map())
 
-  const [address, setAddress] = useState('')
-  const [latitude, setLatitude] = useState(52.2297)
-  const [longitude, setLongitude] = useState(21.0122)
+  const autocomplete = useAddressAutocomplete()
+  const [showDropdown, setShowDropdown] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [geolocating, setGeolocating] = useState(false)
   const [radiusKm, setRadiusKm] = useState(DEFAULT_RADIUS_KM)
 
   const [carErrors, setCarErrors] = useState<CarErrors>({})
@@ -75,6 +77,63 @@ export function CreateRepairRequestFlow({
       revokeAttachmentsPreview(issueAttachments)
     }
   }, [issueAttachments])
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const handleUseCurrentLocation = () => {
+    if (!navigator.geolocation) return
+    setGeolocating(true)
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude: lat, longitude: lon } = position.coords
+        try {
+          const params = new URLSearchParams({
+            lat: lat.toString(),
+            lon: lon.toString(),
+            format: 'json',
+            addressdetails: '1',
+          })
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?${params}`,
+            { headers: { 'Accept-Language': 'pl,en' } },
+          )
+          if (res.ok) {
+            const data = await res.json()
+            autocomplete.pick({
+              displayName: data.display_name ?? `${lat.toFixed(4)}, ${lon.toFixed(4)}`,
+              lat,
+              lon,
+              street: data.address
+                ? [data.address.road, data.address.house_number].filter(Boolean).join(' ') || undefined
+                : undefined,
+              city: data.address?.city ?? data.address?.town ?? data.address?.village,
+              postcode: data.address?.postcode,
+            })
+          }
+        } catch {
+          // Reverse geocode failed — still set coords
+          autocomplete.pick({
+            displayName: `${lat.toFixed(4)}, ${lon.toFixed(4)}`,
+            lat,
+            lon,
+          })
+        } finally {
+          setGeolocating(false)
+        }
+      },
+      () => {
+        setGeolocating(false)
+      },
+    )
+  }
 
   const stepLabels = useMemo(() => [t('form.stepCar'), t('form.stepIssue'), t('form.stepLocation')], [t])
 
@@ -148,8 +207,10 @@ export function CreateRepairRequestFlow({
 
   const validateLocation = (): boolean => {
     const nextErrors: LocationErrors = {}
-    if (!address.trim()) {
+    if (!autocomplete.query.trim()) {
       nextErrors.address = 'validation.addressRequired'
+    } else if (!autocomplete.selected) {
+      nextErrors.address = 'validation.selectAddress'
     }
 
     if (radiusKm < MIN_RADIUS_KM || radiusKm > MAX_RADIUS_KM) {
@@ -209,9 +270,9 @@ export function CreateRepairRequestFlow({
         attachments: issueAttachments,
       },
       location: {
-        address: address.trim(),
-        latitude,
-        longitude,
+        address: autocomplete.query.trim(),
+        latitude: autocomplete.selected?.lat ?? 0,
+        longitude: autocomplete.selected?.lon ?? 0,
         radiusKm,
       },
     }
@@ -504,37 +565,69 @@ export function CreateRepairRequestFlow({
                 </svg>
               </div>
               <div>
-                <strong>{address || t('form.noAddress')}</strong>
-                <p>
-                  {latitude.toFixed(4)}, {longitude.toFixed(4)}
-                </p>
+                <strong>{autocomplete.selected?.displayName || t('form.noAddress')}</strong>
+                {autocomplete.selected ? (
+                  <p className="address-coords">
+                    {autocomplete.selected.lat.toFixed(5)}, {autocomplete.selected.lon.toFixed(5)}
+                  </p>
+                ) : null}
               </div>
             </div>
 
-            <label>
-              {t('form.address')}
-              <input
-                value={address}
-                onChange={(event) => {
-                  setAddress(event.target.value)
-                }}
-                placeholder={t('form.addressPlaceholder')}
-              />
-              {locationErrors.address ? (
-                <small className="field-error">{t(locationErrors.address)}</small>
+            <div className="address-autocomplete" ref={dropdownRef}>
+              <label>
+                {t('form.address')}
+                <div className="address-input-wrap">
+                  <input
+                    type="text"
+                    value={autocomplete.query}
+                    onChange={(e) => {
+                      autocomplete.setQuery(e.target.value)
+                      setShowDropdown(true)
+                      if (autocomplete.selected) {
+                        autocomplete.clear()
+                        autocomplete.setQuery(e.target.value)
+                      }
+                    }}
+                    onFocus={() => {
+                      if (autocomplete.suggestions.length > 0) setShowDropdown(true)
+                    }}
+                    placeholder={t('form.addressPlaceholder')}
+                    autoComplete="off"
+                  />
+                  {autocomplete.loading ? <span className="address-spinner" /> : null}
+                </div>
+                {locationErrors.address ? (
+                  <small className="field-error">{t(locationErrors.address)}</small>
+                ) : null}
+              </label>
+
+              {showDropdown && autocomplete.suggestions.length > 0 ? (
+                <ul className="address-suggestions">
+                  {autocomplete.suggestions.map((s, i) => (
+                    <li key={i}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          autocomplete.pick(s)
+                          setShowDropdown(false)
+                        }}
+                      >
+                        {s.displayName}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               ) : null}
-            </label>
+            </div>
 
             <button
               type="button"
               className="btn btn-ghost inline-button"
-              onClick={() => {
-                setAddress('Marszałkowska 1, Warsaw')
-                setLatitude(52.2299)
-                setLongitude(21.012)
-              }}
+              onClick={handleUseCurrentLocation}
+              disabled={geolocating}
             >
-              {t('form.useCurrentLocation')}
+              {geolocating ? t('form.locating') : t('form.useCurrentLocation')}
             </button>
 
             <label>
