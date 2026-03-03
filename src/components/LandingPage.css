@@ -9,9 +9,9 @@
   --lp-font-body: 'Outfit', system-ui, sans-serif;
   --lp-font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  --lp-dark: #0f1114;
-  --lp-dark-2: #181b20;
-  --lp-dark-3: #1f2228;
+  --lp-dark: #161a1e;
+  --lp-dark-2: #1e2228;
+  --lp-dark-3: #262a30;
   --lp-teal-700: #085a48;
   --lp-teal-600: #0a6e58;
   --lp-teal-500: #0d9373;
@@ -53,7 +53,7 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(15, 17, 20, 0.88);
+  background: rgba(22, 26, 30, 0.88);
   backdrop-filter: blur(16px) saturate(1.6);
   -webkit-backdrop-filter: blur(16px) saturate(1.6);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -212,6 +212,18 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+}
+
+.lp-hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
 }
 
 .lp-hero__glow {
@@ -1528,12 +1540,27 @@
 
 /* ── Footer ─────────────────────────────────────────────── */
 .lp-footer {
+  position: relative;
   padding: 32px;
   background: var(--lp-dark);
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.lp-footer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
 .lp-footer__inner {
+  position: relative;
+  z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
