@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ShopProfile, UpdateShopProfilePayload } from '../domain/types'
 import { useAddressAutocomplete } from '../hooks/useAddressAutocomplete'
+import { PhoneInput } from './PhoneInput'
 
 interface ShopProfileViewProps {
   profile: ShopProfile | null
@@ -164,10 +165,9 @@ export function ShopProfileView({ profile, onSave, onBack }: ShopProfileViewProp
 
           <label>
             {t('shopProfile.phone')}
-            <input
-              type="tel"
+            <PhoneInput
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={setPhone}
               placeholder={t('shopProfile.phonePlaceholder')}
             />
           </label>

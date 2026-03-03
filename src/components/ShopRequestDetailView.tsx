@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { PhoneInput } from './PhoneInput'
 import type { RepairRequest, ShopOwnResponse, ThreadMessage } from '../domain/types'
 import { getDownloadUrl } from '../services/attachmentApi'
 import { formatCurrencyPln, formatDateTime, formatLineItemRange } from '../utils/format'
@@ -204,11 +205,10 @@ export function ShopRequestDetailView({
               ))}
               {!shopResponse?.sharedPhone ? (
                 <div className="phone-share-row">
-                  <input
-                    type="tel"
-                    placeholder={t('shopDetail.phonePlaceholder')}
+                  <PhoneInput
                     value={phoneDraft}
-                    onChange={(e) => setPhoneDraft(e.target.value)}
+                    onChange={setPhoneDraft}
+                    placeholder={t('shopDetail.phonePlaceholder')}
                   />
                   <button
                     className="btn btn-sm btn-secondary"

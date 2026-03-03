@@ -2056,9 +2056,42 @@ label small {
   margin-top: var(--space-3);
 }
 
-.phone-share-row input[type="tel"] {
+.phone-share-row .phone-input-group {
   flex: 1;
   min-width: 160px;
+}
+
+/* Phone country-code selector */
+.phone-input-group {
+  display: flex;
+}
+
+.phone-input-group .phone-input-country,
+.phone-input-group .phone-input-number {
+  margin-top: 0;
+}
+
+.phone-input-group .phone-input-country {
+  flex-shrink: 0;
+  width: 150px;
+  background: var(--gray-50);
+  border-right: none;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  font-size: 14px;
+  padding-block: var(--space-2);
+}
+
+.phone-input-group .phone-input-number {
+  flex: 1;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.phone-input-group:focus-within .phone-input-country {
+  border-color: var(--brand-500);
+}
+
+.phone-input-group:focus-within .phone-input-number {
+  border-color: var(--brand-500);
 }
 
 /* Toggle label */

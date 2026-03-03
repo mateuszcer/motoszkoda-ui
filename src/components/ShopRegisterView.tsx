@@ -5,6 +5,7 @@ import type { ShopRegistrationRequest } from '../domain/apiTypes'
 import { useAddressAutocomplete } from '../hooks/useAddressAutocomplete'
 import { getSignupErrorMessage } from '../utils/signupErrors'
 import { isValidE164Phone, isValidNip, isValidPolishPostalCode } from '../utils/validation'
+import { PhoneInput } from './PhoneInput'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
@@ -122,9 +123,9 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
       lon: autocomplete.selected?.lon ?? 0,
       legalName: legalName.trim(),
       nip: nip.replace(/[\s-]/g, ''),
-      billingStreet: sameAsShop ? addressText : billingStreet.trim(),
-      billingCity: sameAsShop ? '' : billingCity.trim(),
-      billingPostalCode: sameAsShop ? '' : billingPostalCode.trim(),
+      billingStreet: sameAsShop ? (autocomplete.selected?.street ?? addressText) : billingStreet.trim(),
+      billingCity: sameAsShop ? (autocomplete.selected?.city ?? '') : billingCity.trim(),
+      billingPostalCode: sameAsShop ? (autocomplete.selected?.postcode ?? '') : billingPostalCode.trim(),
       invoiceEmail: invoiceEmail.trim() || undefined,
       termsVersion: '2026-03-01',
       captchaToken: captchaToken ?? null,
@@ -278,14 +279,12 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
           <div className="form-grid">
             <label>
               {t('shopRegister.contactPhone')}
-              <input
-                type="tel"
+              <PhoneInput
                 value={contactPhone}
-                onChange={(e) => setContactPhone(e.target.value)}
+                onChange={setContactPhone}
                 placeholder={t('shopRegister.contactPhonePlaceholder')}
               />
               {errors.contactPhone ? <small className="field-error">{errors.contactPhone}</small> : null}
-              <small className="field-hint">{t('shopRegister.phoneHint')}</small>
             </label>
 
             <label>

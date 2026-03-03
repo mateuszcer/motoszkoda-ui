@@ -273,7 +273,7 @@
     "quoteSent": "Twoja wycena",
     "sharePhone": "Udostępnij telefon",
     "sharing": "Udostępnianie...",
-    "phonePlaceholder": "+48 ...",
+    "phonePlaceholder": "123456789",
     "phoneShared": "Telefon udostępniony: {{phone}}",
     "tabDetails": "Szczegóły",
     "tabMessages": "Wiadomości",
@@ -310,7 +310,7 @@
     "note": "Uwagi",
     "notePlaceholder": "Dodaj uwagi dla kierowcy...",
     "sharePhoneLabel": "Udostępnij mój numer telefonu kierowcy",
-    "phonePlaceholder": "+48 ...",
+    "phonePlaceholder": "123456789",
     "submit": "Wyślij wycenę",
     "submitting": "Wysyłanie...",
     "submitFailed": "Nie udało się wysłać wyceny. Spróbuj ponownie.",
@@ -327,7 +327,7 @@
     "address": "Adres",
     "addressPlaceholder": "Ulica i miasto",
     "phone": "Telefon",
-    "phonePlaceholder": "+48 ...",
+    "phonePlaceholder": "123456789",
     "description": "Opis",
     "descriptionPlaceholder": "Opisz specjalizacje swojego warsztatu...",
     "save": "Zapisz profil",
@@ -469,8 +469,7 @@
     "addressPlaceholder": "Ulica i miasto",
     "selectAddress": "Wybierz adres z podpowiedzi.",
     "contactPhone": "Numer telefonu",
-    "contactPhonePlaceholder": "+48123456789",
-    "phoneHint": "Format E.164, np. +48123456789",
+    "contactPhonePlaceholder": "123456789",
     "contactEmail": "Email kontaktowy",
     "contactEmailPlaceholder": "warsztat@przykład.pl",
     "legalName": "Nazwa firmy",
@@ -531,6 +530,12 @@
     "voucherCreateFailed": "Nie udało się utworzyć vouchera. Spróbuj ponownie.",
     "recentVouchers": "Ostatnio utworzone",
     "copy": "Kopiuj"
+  },
+
+  "signupConfirmation": {
+    "title": "Rejestracja zakończona",
+    "message": "Twoje konto zostało utworzone. Sprawdź swoją skrzynkę email, aby zweryfikować adres, a następnie się zaloguj.",
+    "goToLogin": "Przejdź do logowania"
   },
 
   "shopEnroll": {

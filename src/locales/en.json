@@ -269,7 +269,7 @@
     "quoteSent": "Your Quote",
     "sharePhone": "Share Phone",
     "sharing": "Sharing...",
-    "phonePlaceholder": "+48 ...",
+    "phonePlaceholder": "123456789",
     "phoneShared": "Phone shared: {{phone}}",
     "tabDetails": "Details",
     "tabMessages": "Messages",
@@ -306,7 +306,7 @@
     "note": "Note",
     "notePlaceholder": "Add any notes for the driver...",
     "sharePhoneLabel": "Share my phone number with the driver",
-    "phonePlaceholder": "+48 ...",
+    "phonePlaceholder": "123456789",
     "submit": "Send Quote",
     "submitting": "Sending...",
     "submitFailed": "Failed to send quote. Please try again.",
@@ -323,7 +323,7 @@
     "address": "Address",
     "addressPlaceholder": "Street and city",
     "phone": "Phone",
-    "phonePlaceholder": "+48 ...",
+    "phonePlaceholder": "123456789",
     "description": "Description",
     "descriptionPlaceholder": "Describe your shop's specialties...",
     "save": "Save Profile",
@@ -465,8 +465,7 @@
     "addressPlaceholder": "Street and city",
     "selectAddress": "Please select an address from the suggestions.",
     "contactPhone": "Phone Number",
-    "contactPhonePlaceholder": "+48123456789",
-    "phoneHint": "E.164 format, e.g. +48123456789",
+    "contactPhonePlaceholder": "123456789",
     "contactEmail": "Contact Email",
     "contactEmailPlaceholder": "shop@example.com",
     "legalName": "Legal Company Name",
@@ -527,6 +526,12 @@
     "voucherCreateFailed": "Failed to create voucher. Please try again.",
     "recentVouchers": "Recently Created",
     "copy": "Copy"
+  },
+
+  "signupConfirmation": {
+    "title": "Registration successful",
+    "message": "Your account has been created. Please check your email to verify your address, then sign in.",
+    "goToLogin": "Go to Sign in"
   },
 
   "shopEnroll": {

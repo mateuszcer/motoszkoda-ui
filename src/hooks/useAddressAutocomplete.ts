@@ -4,12 +4,25 @@ export interface GeocodedAddress {
   displayName: string
   lat: number
   lon: number
+  street?: string
+  city?: string
+  postcode?: string
+}
+
+interface NominatimAddress {
+  road?: string
+  house_number?: string
+  city?: string
+  town?: string
+  village?: string
+  postcode?: string
 }
 
 interface NominatimResult {
   display_name: string
   lat: string
   lon: string
+  address?: NominatimAddress
 }
 
 const DEBOUNCE_MS = 400
@@ -33,7 +46,7 @@ export function useAddressAutocomplete() {
       const params = new URLSearchParams({
         q,
         format: 'json',
-        addressdetails: '0',
+        addressdetails: '1',
         limit: '5',
         countrycodes: 'pl',
       })
@@ -47,11 +60,21 @@ export function useAddressAutocomplete() {
       if (!res.ok) throw new Error('Nominatim request failed')
       const data: NominatimResult[] = await res.json()
       setSuggestions(
-        data.map((r) => ({
-          displayName: r.display_name,
-          lat: parseFloat(r.lat),
-          lon: parseFloat(r.lon),
-        })),
+        data.map((r) => {
+          const a = r.address
+          const street = a
+            ? [a.road, a.house_number].filter(Boolean).join(' ')
+            : undefined
+          const city = a?.city ?? a?.town ?? a?.village
+          return {
+            displayName: r.display_name,
+            lat: parseFloat(r.lat),
+            lon: parseFloat(r.lon),
+            street: street || undefined,
+            city: city || undefined,
+            postcode: a?.postcode || undefined,
+          }
+        }),
       )
     } catch (err) {
       if ((err as Error).name !== 'AbortError') {

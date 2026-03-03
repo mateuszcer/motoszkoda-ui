@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { PhoneInput } from './PhoneInput'
 import type { LineItemPayload, RepairRequest, SubmitQuotePayload } from '../domain/types'
 import { formatCurrencyPln } from '../utils/format'
 
@@ -393,11 +394,10 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
             {t('shopQuoteForm.sharePhoneLabel')}
           </label>
           {sharePhone ? (
-            <input
-              type="tel"
-              placeholder={t('shopQuoteForm.phonePlaceholder')}
+            <PhoneInput
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={setPhone}
+              placeholder={t('shopQuoteForm.phonePlaceholder')}
             />
           ) : null}
         </div>

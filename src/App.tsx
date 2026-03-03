@@ -10,6 +10,7 @@ import { LandingPage } from './components/LandingPage'
 import { LoginView } from './components/LoginView'
 import { MyRequestsView } from './components/MyRequestsView'
 import { RegisterView } from './components/RegisterView'
+import { SignupConfirmationView } from './components/SignupConfirmationView'
 import { RepairRequestDetail } from './components/RepairRequestDetail'
 import { ShopInboxView } from './components/ShopInboxView'
 import { ShopProfileView } from './components/ShopProfileView'
@@ -127,10 +128,12 @@ function App() {
   const shop = useShopPortal(auth.user?.id ?? null)
   const [shopSelectedRequestId, setShopSelectedRequestId] = useState<string | null>(null)
 
-  // URL-based admin entry
+  // URL-based entry points
   useEffect(() => {
     if (window.location.pathname.startsWith('/admin')) {
       setScreen('admin-login')
+    } else if (window.location.pathname.startsWith('/signup-confirmation')) {
+      setScreen('signup-confirmation')
     }
   }, [])
 
@@ -411,6 +414,24 @@ function App() {
         onGetStarted={() => setScreen('login')}
         onJoinAsShop={() => setScreen('shop-login')}
       />
+    )
+  }
+
+  // Signup confirmation screen (auth provider redirect target)
+  if (!auth.isAuthenticated && screen === 'signup-confirmation') {
+    return (
+      <main className="app-shell">
+        <header className="app-header">
+          <div className="brand" onClick={() => setScreen('landing')} style={{ cursor: 'pointer' }}>
+            <div className="brand-mark">AC</div>
+            <h1>Autoceny</h1>
+          </div>
+          <div className="header-actions">
+            <LanguageToggle />
+          </div>
+        </header>
+        <SignupConfirmationView onGoToLogin={() => setScreen('login')} />
+      </main>
     )
   }
 
