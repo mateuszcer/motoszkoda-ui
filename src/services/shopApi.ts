@@ -1,4 +1,5 @@
 import type {
+  AttachmentResponse,
   MessageResponse,
   RepairRequestResponse,
   ShopInfoResponse,
@@ -8,6 +9,7 @@ import type {
   UpdateShopRequest,
 } from '../domain/apiTypes'
 import {
+  mapAttachment,
   mapMessage,
   mapRepairRequest,
   mapShopOwnResponse,
@@ -39,9 +41,15 @@ export const shopApi = {
   },
 
   async fetchRequestDetail(requestId: string): Promise<RepairRequest | null> {
-    const raw = await api.get<RepairRequestResponse>(`/api/repair-requests/${requestId}`).catch(() => null)
+    const [raw, rawAttachments] = await Promise.all([
+      api.get<RepairRequestResponse>(`/api/repair-requests/${requestId}`).catch(() => null),
+      api.get<AttachmentResponse[]>('/api/attachments', {
+        params: { targetType: 'REPAIR_REQUEST', repairRequestId: requestId },
+      }).catch(() => [] as AttachmentResponse[]),
+    ])
     if (!raw) return null
-    return mapRepairRequest(raw)
+    const attachments = rawAttachments.filter((a) => a.status === 'ACTIVE').map(mapAttachment)
+    return mapRepairRequest(raw, [], {}, attachments)
   },
 
   async fetchOwnResponse(requestId: string): Promise<ShopOwnResponse | null> {
