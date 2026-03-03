@@ -54,12 +54,25 @@ export interface LocationDetails {
   radiusKm: number
 }
 
+export interface LineItem {
+  id?: string
+  position: number
+  description: string
+  totalPriceMinPln?: number
+  totalPriceMaxPln?: number
+  workPriceMinPln?: number
+  workPriceMaxPln?: number
+  partsPriceMinPln?: number
+  partsPriceMaxPln?: number
+}
+
 export interface QuoteOffer {
   minPricePln: number
   maxPricePln?: number
   comment?: string
   durationDays?: number
   validUntil?: string
+  lineItems?: LineItem[]
 }
 
 export interface ShopQuoteCard {
@@ -169,11 +182,24 @@ export interface ShopOwnResponse {
   updatedAt: string
 }
 
+export interface LineItemPayload {
+  position: number
+  description: string
+  totalPriceMinMinor?: number
+  totalPriceMaxMinor?: number
+  workPriceMinMinor?: number
+  workPriceMaxMinor?: number
+  partsPriceMinMinor?: number
+  partsPriceMaxMinor?: number
+}
+
 export interface SubmitQuotePayload {
-  priceMinorUnits: number
+  priceMinMinorUnits?: number
+  priceMaxMinorUnits?: number
   currency: string
   estimatedDays?: number
   note?: string
+  lineItems?: LineItemPayload[]
 }
 
 export interface SharePhonePayload {

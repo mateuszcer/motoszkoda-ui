@@ -80,12 +80,26 @@ export interface RepairRequestResponse {
 
 export type ApiShopRequestStatus = 'PENDING' | 'ACKNOWLEDGED' | 'QUOTED' | 'DECLINED'
 
+export interface LineItemResponse {
+  id: string
+  position: number
+  description: string
+  totalPriceMinMinor: number | null
+  totalPriceMaxMinor: number | null
+  workPriceMinMinor: number | null
+  workPriceMaxMinor: number | null
+  partsPriceMinMinor: number | null
+  partsPriceMaxMinor: number | null
+}
+
 export interface QuoteResponse {
   id: string
-  priceMinorUnits: number
+  priceMinMinorUnits: number
+  priceMaxMinorUnits: number
   currency: string
   estimatedDays: number | null
   note: string | null
+  lineItems: LineItemResponse[]
   createdAt: string
 }
 
@@ -118,7 +132,8 @@ export interface ShopResponseForDriverView {
 // ── Read Model (Compare View) ────────────────────────────────────────
 
 export interface CompareQuoteSummary {
-  priceMinorUnits: number
+  priceMinMinorUnits: number
+  priceMaxMinorUnits: number
   currency: string
   estimatedDays: number | null
 }
@@ -251,11 +266,24 @@ export interface ShopQueueResponse {
 
 // ── Shop Submit Quote ───────────────────────────────────────────────
 
+export interface LineItemRequest {
+  position: number
+  description: string
+  totalPriceMinMinor?: number
+  totalPriceMaxMinor?: number
+  workPriceMinMinor?: number
+  workPriceMaxMinor?: number
+  partsPriceMinMinor?: number
+  partsPriceMaxMinor?: number
+}
+
 export interface SubmitQuoteRequest {
-  priceMinorUnits: number
+  priceMinMinorUnits?: number
+  priceMaxMinorUnits?: number
   currency: string
   estimatedDays?: number
   note?: string
+  lineItems?: LineItemRequest[]
 }
 
 export interface SharePhoneRequest {

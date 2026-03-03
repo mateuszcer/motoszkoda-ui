@@ -1,4 +1,4 @@
-import type { QuoteOffer } from '../domain/types'
+import type { LineItem, QuoteOffer } from '../domain/types'
 
 const localeMap: Record<string, string> = {
   pl: 'pl-PL',
@@ -54,4 +54,12 @@ export const formatQuoteRange = (quote: QuoteOffer, locale: string): string => {
   }
 
   return `${min} – ${formatCurrencyPln(quote.maxPricePln, locale)}`
+}
+
+export const formatLineItemRange = (item: LineItem, locale: string): string => {
+  const min = item.totalPriceMinPln ?? ((item.workPriceMinPln ?? 0) + (item.partsPriceMinPln ?? 0))
+  const max = item.totalPriceMaxPln ?? ((item.workPriceMaxPln ?? 0) + (item.partsPriceMaxPln ?? 0))
+  const minStr = formatCurrencyPln(min, locale)
+  if (max === min || max === 0) return minStr
+  return `${minStr} – ${formatCurrencyPln(max, locale)}`
 }

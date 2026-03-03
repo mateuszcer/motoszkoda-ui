@@ -11,6 +11,7 @@ import type {
 import type {
   Attachment,
   AttachmentKind,
+  LineItem,
   QuoteOffer,
   QuoteState,
   RepairRequest,
@@ -115,8 +116,11 @@ export function mapCompareToShopQuote(
 ): ShopQuoteCard {
   let quote: QuoteOffer | undefined
   if (cv.quoteSummary) {
+    const min = cv.quoteSummary.priceMinMinorUnits / 100
+    const max = cv.quoteSummary.priceMaxMinorUnits / 100
     quote = {
-      minPricePln: cv.quoteSummary.priceMinorUnits / 100,
+      minPricePln: min,
+      maxPricePln: max !== min ? max : undefined,
       durationDays: cv.quoteSummary.estimatedDays ?? undefined,
     }
   }
@@ -183,12 +187,33 @@ export function mapShopQueueItem(raw: ShopQueueItemResponse): ShopQueueItem {
   }
 }
 
-export function mapShopOwnResponse(raw: ShopRequestResponse): ShopOwnResponse {
-  const quotes: QuoteOffer[] = raw.quotes.map((q) => ({
-    minPricePln: q.priceMinorUnits / 100,
-    durationDays: q.estimatedDays ?? undefined,
-    comment: q.note ?? undefined,
+function mapLineItems(items: ShopRequestResponse['quotes'][number]['lineItems']): LineItem[] | undefined {
+  if (!items || items.length === 0) return undefined
+  return items.map((li) => ({
+    id: li.id,
+    position: li.position,
+    description: li.description,
+    totalPriceMinPln: li.totalPriceMinMinor != null ? li.totalPriceMinMinor / 100 : undefined,
+    totalPriceMaxPln: li.totalPriceMaxMinor != null ? li.totalPriceMaxMinor / 100 : undefined,
+    workPriceMinPln: li.workPriceMinMinor != null ? li.workPriceMinMinor / 100 : undefined,
+    workPriceMaxPln: li.workPriceMaxMinor != null ? li.workPriceMaxMinor / 100 : undefined,
+    partsPriceMinPln: li.partsPriceMinMinor != null ? li.partsPriceMinMinor / 100 : undefined,
+    partsPriceMaxPln: li.partsPriceMaxMinor != null ? li.partsPriceMaxMinor / 100 : undefined,
   }))
+}
+
+export function mapShopOwnResponse(raw: ShopRequestResponse): ShopOwnResponse {
+  const quotes: QuoteOffer[] = raw.quotes.map((q) => {
+    const min = q.priceMinMinorUnits / 100
+    const max = q.priceMaxMinorUnits / 100
+    return {
+      minPricePln: min,
+      maxPricePln: max !== min ? max : undefined,
+      durationDays: q.estimatedDays ?? undefined,
+      comment: q.note ?? undefined,
+      lineItems: mapLineItems(q.lineItems),
+    }
+  })
 
   return {
     id: raw.id,

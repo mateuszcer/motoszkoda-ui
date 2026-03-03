@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Attachment, RepairRequest, ShopQuoteCard, SortQuotesBy } from '../domain/types'
 import { getDownloadUrl } from '../services/attachmentApi'
-import { formatDateTime, formatQuoteRange } from '../utils/format'
+import { formatDateTime, formatLineItemRange, formatQuoteRange } from '../utils/format'
 import { ShopThreadPanel } from './ShopThreadPanel'
 
 interface RepairRequestDetailProps {
@@ -397,6 +397,17 @@ export function RepairRequestDetail({
                               <small>{t('detail.validUntil', { date: formatDateTime(shop.quote.validUntil, i18n.language) })}</small>
                             ) : null}
                           </div>
+                          {shop.quote.lineItems && shop.quote.lineItems.length > 0 ? (
+                            <div className="quote-line-items-display">
+                              <h5>{t('detail.lineItemsBreakdown')}</h5>
+                              {shop.quote.lineItems.map((li, idx) => (
+                                <div className="quote-line-item-row" key={li.id ?? idx}>
+                                  <span>{li.description}</span>
+                                  <span>{formatLineItemRange(li, i18n.language)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : null}
                           {!shop.interested && !shop.ignored ? (
                             <div className="split-actions">
                               <button

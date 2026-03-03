@@ -3,9 +3,10 @@ info:
   title: Shop Response API
   description: >
     API for shops to respond to delivered repair requests — acknowledge, decline,
-    submit quotes, and share phone numbers. Also provides read endpoints for
-    shops (inbox, own response) and drivers (shop responses for their request).
-  version: 1.0.0
+    submit quotes (with optional price ranges and line-item breakdowns), and share
+    phone numbers. Also provides read endpoints for shops (inbox, own response) and
+    drivers (shop responses for their request).
+  version: 2.0.0
 
 paths:
   /api/repair-requests/{id}/shop-actions/acknowledge:
@@ -77,6 +78,11 @@ paths:
   /api/repair-requests/{id}/shop-actions/quote:
     post:
       summary: Submit a quote
+      description: >
+        Submit a quote with a price range (min/max). When `priceMaxMinorUnits` is omitted,
+        it defaults to `priceMinMinorUnits` (single price). Optionally include `lineItems`
+        for a detailed breakdown — when line items are provided, `priceMinMinorUnits` and
+        `priceMaxMinorUnits` are ignored and auto-calculated from the line item totals.
       operationId: submitQuote
       tags: [ShopResponse]
       security:
@@ -261,13 +267,24 @@ components:
   schemas:
     SubmitQuoteRequest:
       type: object
-      required: [priceMinorUnits, currency]
+      required: [currency]
+      description: >
+        Either provide `priceMinMinorUnits` (and optionally `priceMaxMinorUnits`)
+        for a flat quote, or provide `lineItems` for a detailed breakdown.
+        When line items are present, top-level prices are ignored.
       properties:
-        priceMinorUnits:
+        priceMinMinorUnits:
           type: integer
           format: int64
-          minimum: 1
-          description: Price in minor currency units (e.g. 15000 = 150.00 PLN)
+          minimum: 0
+          description: >
+            Minimum price in minor currency units. Required when lineItems is absent.
+            When `priceMaxMinorUnits` is omitted, defaults to this value (single price).
+        priceMaxMinorUnits:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Maximum price in minor currency units. Defaults to priceMinMinorUnits if omitted.
         currency:
           type: string
           maxLength: 3
@@ -280,6 +297,54 @@ components:
           type: string
           maxLength: 2000
           description: Optional explanation or scope of work
+        lineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineItemRequest'
+          description: Optional line-item breakdown. When provided, prices are auto-calculated.
+
+    LineItemRequest:
+      type: object
+      required: [position, description]
+      description: >
+        A single line item in a quote breakdown. Use either total pricing
+        OR work/parts pricing, not both.
+      properties:
+        position:
+          type: integer
+          minimum: 0
+          description: Display order (0-based)
+        description:
+          type: string
+          maxLength: 500
+        totalPriceMinMinor:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Total price min (mutually exclusive with work/parts)
+        totalPriceMaxMinor:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Total price max. Defaults to min if omitted.
+        workPriceMinMinor:
+          type: integer
+          format: int64
+          minimum: 0
+        workPriceMaxMinor:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Work price max. Defaults to min if omitted.
+        partsPriceMinMinor:
+          type: integer
+          format: int64
+          minimum: 0
+        partsPriceMaxMinor:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Parts price max. Defaults to min if omitted.
 
     SharePhoneRequest:
       type: object
@@ -362,9 +427,14 @@ components:
         id:
           type: string
           format: uuid
-        priceMinorUnits:
+        priceMinMinorUnits:
           type: integer
           format: int64
+          description: Minimum total price in minor currency units
+        priceMaxMinorUnits:
+          type: integer
+          format: int64
+          description: Maximum total price in minor currency units
         currency:
           type: string
         estimatedDays:
@@ -373,9 +443,49 @@ components:
         note:
           type: string
           nullable: true
+        lineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineItemResponse'
+          description: Empty array when no line items were provided
         createdAt:
           type: string
           format: date-time
+
+    LineItemResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        position:
+          type: integer
+        description:
+          type: string
+        totalPriceMinMinor:
+          type: integer
+          format: int64
+          nullable: true
+        totalPriceMaxMinor:
+          type: integer
+          format: int64
+          nullable: true
+        workPriceMinMinor:
+          type: integer
+          format: int64
+          nullable: true
+        workPriceMaxMinor:
+          type: integer
+          format: int64
+          nullable: true
+        partsPriceMinMinor:
+          type: integer
+          format: int64
+          nullable: true
+        partsPriceMaxMinor:
+          type: integer
+          format: int64
+          nullable: true
 
     ErrorResponse:
       type: object

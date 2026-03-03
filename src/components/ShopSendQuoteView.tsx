@@ -1,6 +1,16 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { RepairRequest, SubmitQuotePayload } from '../domain/types'
+import type { LineItemPayload, RepairRequest, SubmitQuotePayload } from '../domain/types'
+import { formatCurrencyPln } from '../utils/format'
+
+type PriceMode = 'single' | 'range'
+
+interface LineItemDraft {
+  key: number
+  description: string
+  priceMin: string
+  priceMax: string
+}
 
 interface ShopSendQuoteViewProps {
   request: RepairRequest
@@ -8,9 +18,16 @@ interface ShopSendQuoteViewProps {
   onBack: () => void
 }
 
+let nextLineItemKey = 1
+
 export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteViewProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const [priceMode, setPriceMode] = useState<PriceMode>('single')
   const [pricePln, setPricePln] = useState('')
+  const [priceMinPln, setPriceMinPln] = useState('')
+  const [priceMaxPln, setPriceMaxPln] = useState('')
+  const [useLineItems, setUseLineItems] = useState(false)
+  const [lineItems, setLineItems] = useState<LineItemDraft[]>([])
   const [estimatedDays, setEstimatedDays] = useState('')
   const [note, setNote] = useState('')
   const [sharePhone, setSharePhone] = useState(false)
@@ -18,12 +35,78 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<string[]>([])
 
+  const addLineItem = () => {
+    setLineItems((prev) => [
+      ...prev,
+      { key: nextLineItemKey++, description: '', priceMin: '', priceMax: '' },
+    ])
+  }
+
+  const removeLineItem = (key: number) => {
+    setLineItems((prev) => prev.filter((item) => item.key !== key))
+  }
+
+  const updateLineItem = (key: number, field: keyof Omit<LineItemDraft, 'key'>, value: string) => {
+    setLineItems((prev) =>
+      prev.map((item) => (item.key === key ? { ...item, [field]: value } : item)),
+    )
+  }
+
+  const toggleLineItems = () => {
+    if (useLineItems) {
+      setUseLineItems(false)
+      setLineItems([])
+    } else {
+      setUseLineItems(true)
+      if (lineItems.length === 0) {
+        setLineItems([{ key: nextLineItemKey++, description: '', priceMin: '', priceMax: '' }])
+      }
+    }
+  }
+
+  const lineItemsTotal = useMemo(() => {
+    if (!useLineItems || lineItems.length === 0) return null
+    let totalMin = 0
+    let totalMax = 0
+    for (const item of lineItems) {
+      const min = parseFloat(item.priceMin) || 0
+      const max = parseFloat(item.priceMax) || min
+      totalMin += min
+      totalMax += max
+    }
+    return { totalMin, totalMax }
+  }, [useLineItems, lineItems])
+
   const validate = (): boolean => {
     const errs: string[] = []
-    const price = parseFloat(pricePln)
-    if (!pricePln || isNaN(price) || price <= 0) {
-      errs.push(t('shopQuoteForm.priceRequired'))
+
+    if (useLineItems) {
+      if (lineItems.length === 0) {
+        errs.push(t('shopQuoteForm.lineItemPriceRequired'))
+      }
+      for (const item of lineItems) {
+        if (!item.description.trim()) {
+          errs.push(t('shopQuoteForm.lineItemDescriptionRequired'))
+          break
+        }
+        const min = parseFloat(item.priceMin)
+        if (!item.priceMin || isNaN(min) || min <= 0) {
+          errs.push(t('shopQuoteForm.lineItemPriceRequired'))
+          break
+        }
+      }
+    } else if (priceMode === 'range') {
+      const min = parseFloat(priceMinPln)
+      if (!priceMinPln || isNaN(min) || min <= 0) {
+        errs.push(t('shopQuoteForm.priceRequired'))
+      }
+    } else {
+      const price = parseFloat(pricePln)
+      if (!pricePln || isNaN(price) || price <= 0) {
+        errs.push(t('shopQuoteForm.priceRequired'))
+      }
     }
+
     if (sharePhone && !phone.trim()) {
       errs.push(t('shopQuoteForm.phoneRequired'))
     }
@@ -37,12 +120,47 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
 
     setSubmitting(true)
     try {
-      const payload: SubmitQuotePayload = {
-        priceMinorUnits: Math.round(parseFloat(pricePln) * 100),
-        currency: 'PLN',
-        estimatedDays: estimatedDays ? parseInt(estimatedDays, 10) : undefined,
-        note: note.trim() || undefined,
+      let payload: SubmitQuotePayload
+
+      if (useLineItems) {
+        const items: LineItemPayload[] = lineItems.map((item, i) => {
+          const min = Math.round(parseFloat(item.priceMin) * 100)
+          const maxVal = parseFloat(item.priceMax)
+          const max = !isNaN(maxVal) && maxVal > 0 ? Math.round(maxVal * 100) : undefined
+          return {
+            position: i,
+            description: item.description.trim(),
+            totalPriceMinMinor: min,
+            totalPriceMaxMinor: max,
+          }
+        })
+        payload = {
+          currency: 'PLN',
+          estimatedDays: estimatedDays ? parseInt(estimatedDays, 10) : undefined,
+          note: note.trim() || undefined,
+          lineItems: items,
+        }
+      } else if (priceMode === 'range') {
+        const min = Math.round(parseFloat(priceMinPln) * 100)
+        const maxVal = parseFloat(priceMaxPln)
+        const max = !isNaN(maxVal) && maxVal > 0 ? Math.round(maxVal * 100) : undefined
+        payload = {
+          priceMinMinorUnits: min,
+          priceMaxMinorUnits: max,
+          currency: 'PLN',
+          estimatedDays: estimatedDays ? parseInt(estimatedDays, 10) : undefined,
+          note: note.trim() || undefined,
+        }
+      } else {
+        const price = Math.round(parseFloat(pricePln) * 100)
+        payload = {
+          priceMinMinorUnits: price,
+          currency: 'PLN',
+          estimatedDays: estimatedDays ? parseInt(estimatedDays, 10) : undefined,
+          note: note.trim() || undefined,
+        }
       }
+
       await onSubmit(payload, sharePhone ? phone.trim() : undefined)
     } catch (err) {
       setErrors([err instanceof Error ? err.message : t('shopQuoteForm.submitFailed')])
@@ -75,20 +193,172 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
         ) : null}
 
         <div className="form-grid">
-          <label>
-            {t('shopQuoteForm.price')}
-            <div className="input-with-suffix">
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={pricePln}
-                onChange={(e) => setPricePln(e.target.value)}
-                placeholder="0.00"
-              />
-              <span className="input-suffix">PLN</span>
+          {/* Price mode toggle */}
+          {!useLineItems ? (
+            <>
+              <div className="quote-price-mode">
+                <button
+                  type="button"
+                  className={`chip ${priceMode === 'single' ? 'chip-active' : ''}`}
+                  onClick={() => setPriceMode('single')}
+                >
+                  {t('shopQuoteForm.singlePrice')}
+                </button>
+                <button
+                  type="button"
+                  className={`chip ${priceMode === 'range' ? 'chip-active' : ''}`}
+                  onClick={() => setPriceMode('range')}
+                >
+                  {t('shopQuoteForm.priceRange')}
+                </button>
+              </div>
+
+              {/* Single price input */}
+              {priceMode === 'single' ? (
+                <label>
+                  {t('shopQuoteForm.price')}
+                  <div className="input-with-suffix">
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={pricePln}
+                      onChange={(e) => setPricePln(e.target.value)}
+                      placeholder="0.00"
+                    />
+                    <span className="input-suffix">PLN</span>
+                  </div>
+                </label>
+              ) : null}
+
+              {/* Range price inputs */}
+              {priceMode === 'range' ? (
+                <div className="price-inputs-row">
+                  <label>
+                    {t('shopQuoteForm.priceMin')}
+                    <div className="input-with-suffix">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={priceMinPln}
+                        onChange={(e) => setPriceMinPln(e.target.value)}
+                        placeholder="0.00"
+                      />
+                      <span className="input-suffix">PLN</span>
+                    </div>
+                  </label>
+                  <label>
+                    {t('shopQuoteForm.priceMax')}
+                    <div className="input-with-suffix">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={priceMaxPln}
+                        onChange={(e) => setPriceMaxPln(e.target.value)}
+                        placeholder="0.00"
+                      />
+                      <span className="input-suffix">PLN</span>
+                    </div>
+                  </label>
+                </div>
+              ) : null}
+            </>
+          ) : null}
+
+          {/* Line items */}
+          <button
+            type="button"
+            className={`line-items-toggle ${useLineItems ? 'line-items-toggle-remove' : ''}`}
+            onClick={toggleLineItems}
+          >
+            {useLineItems ? t('shopQuoteForm.removeLineItems') : t('shopQuoteForm.addLineItems')}
+          </button>
+
+          {useLineItems ? (
+            <div className="quote-line-items quote-line-items-visible">
+              {lineItems.map((item, i) => (
+                <div className="line-item-card" key={item.key}>
+                  <div className="line-item-header">
+                    <span className="line-item-number">{i + 1}.</span>
+                    <div className="line-item-desc">
+                      <input
+                        type="text"
+                        value={item.description}
+                        onChange={(e) => updateLineItem(item.key, 'description', e.target.value)}
+                        placeholder={t('shopQuoteForm.lineItemDescriptionPlaceholder')}
+                      />
+                    </div>
+                    {lineItems.length > 1 ? (
+                      <button
+                        type="button"
+                        className="btn-remove-item"
+                        onClick={() => removeLineItem(item.key)}
+                        title={t('shopQuoteForm.removeItem')}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 6L6 18" /><path d="M6 6l12 12" />
+                        </svg>
+                      </button>
+                    ) : null}
+                  </div>
+                  <div className="line-item-prices">
+                    <label>
+                      {priceMode === 'range' ? t('shopQuoteForm.lineItemPriceMin') : t('shopQuoteForm.lineItemPrice')}
+                      <div className="input-with-suffix">
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={item.priceMin}
+                          onChange={(e) => updateLineItem(item.key, 'priceMin', e.target.value)}
+                          placeholder="0.00"
+                        />
+                        <span className="input-suffix">PLN</span>
+                      </div>
+                    </label>
+                    {priceMode === 'range' ? (
+                      <label>
+                        {t('shopQuoteForm.lineItemPriceMax')}
+                        <div className="input-with-suffix">
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={item.priceMax}
+                            onChange={(e) => updateLineItem(item.key, 'priceMax', e.target.value)}
+                            placeholder="0.00"
+                          />
+                          <span className="input-suffix">PLN</span>
+                        </div>
+                      </label>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                className="line-items-toggle"
+                onClick={addLineItem}
+              >
+                {t('shopQuoteForm.addLineItem')}
+              </button>
+
+              {/* Line items total */}
+              {lineItemsTotal && lineItemsTotal.totalMin > 0 ? (
+                <div className="line-items-total">
+                  <span>{t('shopQuoteForm.lineItemTotal')}</span>
+                  <strong>
+                    {lineItemsTotal.totalMax > lineItemsTotal.totalMin
+                      ? `${formatCurrencyPln(lineItemsTotal.totalMin, i18n.language)} – ${formatCurrencyPln(lineItemsTotal.totalMax, i18n.language)}`
+                      : formatCurrencyPln(lineItemsTotal.totalMin, i18n.language)}
+                  </strong>
+                </div>
+              ) : null}
             </div>
-          </label>
+          ) : null}
 
           <label>
             {t('shopQuoteForm.estimatedDays')} <small>({t('form.optional')})</small>

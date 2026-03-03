@@ -60,10 +60,12 @@ export const shopApi = {
 
   async submitQuote(requestId: string, payload: SubmitQuotePayload): Promise<void> {
     const body: SubmitQuoteRequest = {
-      priceMinorUnits: payload.priceMinorUnits,
+      priceMinMinorUnits: payload.priceMinMinorUnits,
+      priceMaxMinorUnits: payload.priceMaxMinorUnits,
       currency: payload.currency,
       estimatedDays: payload.estimatedDays,
       note: payload.note,
+      lineItems: payload.lineItems,
     }
     await api.post<void>(`/api/repair-requests/${requestId}/shop-actions/quote`, { body })
   },

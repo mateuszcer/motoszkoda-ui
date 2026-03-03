@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { RepairRequest, ShopOwnResponse, ThreadMessage } from '../domain/types'
 import { getDownloadUrl } from '../services/attachmentApi'
-import { formatCurrencyPln, formatDateTime } from '../utils/format'
+import { formatCurrencyPln, formatDateTime, formatLineItemRange } from '../utils/format'
 
 interface ShopRequestDetailViewProps {
   request: RepairRequest
@@ -184,10 +184,23 @@ export function ShopRequestDetailView({
             <div className="shop-quote-summary">
               <h4>{t('shopDetail.quoteSent')}</h4>
               {shopResponse?.quotes.map((q, i) => (
-                <p key={i}>
-                  {formatCurrencyPln(q.minPricePln, i18n.language)}
-                  {q.durationDays ? ` · ${t('detail.durationDays', { count: q.durationDays })}` : ''}
-                </p>
+                <div key={i}>
+                  <p>
+                    {formatCurrencyPln(q.minPricePln, i18n.language)}
+                    {q.maxPricePln ? ` – ${formatCurrencyPln(q.maxPricePln, i18n.language)}` : ''}
+                    {q.durationDays ? ` · ${t('detail.durationDays', { count: q.durationDays })}` : ''}
+                  </p>
+                  {q.lineItems && q.lineItems.length > 0 ? (
+                    <div className="quote-line-items-display">
+                      {q.lineItems.map((li, idx) => (
+                        <div className="quote-line-item-row" key={li.id ?? idx}>
+                          <span>{li.description}</span>
+                          <span>{formatLineItemRange(li, i18n.language)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
               ))}
               {!shopResponse?.sharedPhone ? (
                 <div className="phone-share-row">

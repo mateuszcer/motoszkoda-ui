@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: MotoSzkoda Read Model API
   description: Read-only aggregated views — driver compare view and shop incoming queue.
-  version: 1.0.0
+  version: 2.0.0
 
 paths:
   /api/repair-requests/{repairRequestId}/compare:
@@ -134,9 +134,14 @@ components:
       type: object
       nullable: true
       properties:
-        priceMinorUnits:
+        priceMinMinorUnits:
           type: integer
           format: int64
+          description: Minimum total price from the latest quote
+        priceMaxMinorUnits:
+          type: integer
+          format: int64
+          description: Maximum total price from the latest quote
         currency:
           type: string
         estimatedDays:
