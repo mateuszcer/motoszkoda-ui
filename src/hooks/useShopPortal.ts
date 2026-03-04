@@ -109,11 +109,10 @@ export function useShopPortal(userId: string | null) {
 
   const handleShopSendMessage = useCallback(async (requestId: string, text: string) => {
     if (!userId) return
-    const resolvedShopId = shopProfile?.shopId ?? userId
-    await shopApi.sendMessage(requestId, resolvedShopId, text)
+    await shopApi.sendQuestion(requestId, text)
     const msgs = await shopApi.fetchMessages(requestId, userId)
     setShopMessages(msgs)
-  }, [userId, shopProfile?.shopId])
+  }, [userId])
 
   const loadShopProfile = useCallback(async () => {
     try {
