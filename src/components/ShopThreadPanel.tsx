@@ -138,6 +138,20 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
                   }
                 }}
               />
+              {hasNeedsAnswer ? (
+                <div className="quick-reply-chips">
+                  {(['quickReplyPhoto', 'quickReplySymptoms', 'quickReplyDontKnow'] as const).map((key) => (
+                    <button
+                      key={key}
+                      className="chip"
+                      type="button"
+                      onClick={() => setDraft((prev) => prev ? `${prev} ${t(`thread.${key}`)}` : t(`thread.${key}`))}
+                    >
+                      {t(`thread.${key}`)}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
               <div className="composer-actions">
                 <label className="btn btn-ghost file-input-btn" htmlFor="thread-attachment-input">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

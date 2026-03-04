@@ -149,16 +149,27 @@ export function RepairRequestDetail({
     }
   }, [activeThreadShopId, request.shopQuotes, request.threads])
 
+  const unansweredCount = useMemo(() => {
+    return request.shopQuotes.filter((shop) => {
+      if (shop.state !== 'question_sent') return false
+      const thread = request.threads[shop.shopId]
+      if (!thread || thread.messages.length === 0) return true
+      return thread.messages[thread.messages.length - 1].author === 'shop'
+    }).length
+  }, [request.shopQuotes, request.threads])
+
   const threadRows = useMemo(() => {
     const rows = request.shopQuotes
       .filter((shop) => request.threads[shop.shopId] || shop.state === 'question_sent')
       .map((shop) => {
         const thread = request.threads[shop.shopId]
         const lastMessage = thread?.messages[thread.messages.length - 1]
+        const needsReply = shop.state === 'question_sent' && (!thread || thread.messages.length === 0 || thread.messages[thread.messages.length - 1].author === 'shop')
         return {
           shop,
           unreadCount: thread?.unreadCount ?? 0,
           preview: lastMessage?.text ?? shop.questionPreview ?? 'No messages yet.',
+          needsReply,
         }
       })
 
@@ -291,13 +302,14 @@ export function RepairRequestDetail({
           {t('detail.quotesTab', { count: request.shopQuotes.filter((s) => s.state === 'quote_sent').length })}
         </button>
         <button
-          className={`tab-btn ${activeTab === 'qna' ? 'tab-btn-active' : ''}`}
+          className={`tab-btn ${activeTab === 'qna' ? 'tab-btn-active' : ''} ${unansweredCount > 0 ? 'tab-btn-urgent' : ''}`}
           role="tab"
           onClick={() => {
             setActiveTab('qna')
           }}
         >
           {t('detail.qnaTab', { count: threadRows.length })}
+          {unansweredCount > 0 ? <span className="tab-badge">{unansweredCount}</span> : null}
         </button>
       </div>
 
@@ -344,6 +356,7 @@ export function RepairRequestDetail({
                     <div>
                       <h3>{shop.shopName}</h3>
                       <small>{t('detail.kmAway', { distance: shop.distanceKm.toFixed(1) })}</small>
+                      <small className="shop-card-timestamp">{t('detail.receivedAt', { date: formatDateTime(shop.lastUpdatedAt, i18n.language) })}</small>
                     </div>
                     <div className="shop-card-badges">
                       <span className={`pill state-${shop.state}`}>{t(`quoteState.${shop.state}`)}</span>
@@ -445,12 +458,17 @@ export function RepairRequestDetail({
                               </button>
                             </div>
                           ) : null}
-                          {shop.interested && shop.phone ? (
-                            <div className="phone-reveal">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-                              </svg>
-                              {shop.phone}
+                          {shop.interested ? (
+                            <div className="quote-actions-interested">
+                              <span className="pill pill-interested">{t('detail.filterInterested')}</span>
+                              {shop.phone ? (
+                                <a href={`tel:${shop.phone}`} className="btn btn-primary btn-call">
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                                  </svg>
+                                  {t('detail.callShop')}
+                                </a>
+                              ) : null}
                             </div>
                           ) : null}
                         </div>
@@ -481,11 +499,20 @@ export function RepairRequestDetail({
       {/* Q&A tab */}
       {activeTab === 'qna' ? (
         <div className="cards-stack">
+          {unansweredCount > 0 ? (
+            <div className="qna-urgency-banner">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              {t('detail.unansweredBanner')}
+            </div>
+          ) : null}
+
           {threadRows.length === 0 ? <article className="empty-state">{t('detail.noConversations')}</article> : null}
 
           {threadRows.map((row) => (
             <article
-              className="thread-row"
+              className={`thread-row ${row.needsReply ? 'thread-row-pending' : ''}`}
               key={row.shop.shopId}
               onClick={() => {
                 openThread(row.shop.shopId)
@@ -501,6 +528,7 @@ export function RepairRequestDetail({
                 <p>{row.preview}</p>
               </div>
               <div className="thread-row-actions">
+                {row.needsReply ? <span className="pill pill-pending-question">{t('detail.pendingQuestion')}</span> : null}
                 {row.unreadCount > 0 ? <span className="pill pill-alert">{row.unreadCount}</span> : null}
               </div>
             </article>

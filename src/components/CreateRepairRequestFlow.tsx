@@ -6,6 +6,8 @@ import { useAddressAutocomplete } from '../hooks/useAddressAutocomplete'
 import { fileToAttachment, revokeAttachmentPreview, revokeAttachmentsPreview } from '../utils/attachments'
 import { isValidVin, normalizeVin, validateYear } from '../utils/validation'
 import { AttachmentGrid } from './AttachmentGrid'
+import { CarBrandCombobox } from './CarBrandCombobox'
+import { LocationStep } from './LocationStep'
 
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
@@ -63,9 +65,6 @@ export function CreateRepairRequestFlow({
   const fileMapRef = useRef<Map<string, File>>(new Map())
 
   const autocomplete = useAddressAutocomplete()
-  const [showDropdown, setShowDropdown] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  const [geolocating, setGeolocating] = useState(false)
   const [radiusKm, setRadiusKm] = useState(DEFAULT_RADIUS_KM)
 
   const [carErrors, setCarErrors] = useState<CarErrors>({})
@@ -77,63 +76,6 @@ export function CreateRepairRequestFlow({
       revokeAttachmentsPreview(issueAttachments)
     }
   }, [issueAttachments])
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowDropdown(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
-
-  const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) return
-    setGeolocating(true)
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude: lat, longitude: lon } = position.coords
-        try {
-          const params = new URLSearchParams({
-            lat: lat.toString(),
-            lon: lon.toString(),
-            format: 'json',
-            addressdetails: '1',
-          })
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?${params}`,
-            { headers: { 'Accept-Language': 'pl,en' } },
-          )
-          if (res.ok) {
-            const data = await res.json()
-            autocomplete.pick({
-              displayName: data.display_name ?? `${lat.toFixed(4)}, ${lon.toFixed(4)}`,
-              lat,
-              lon,
-              street: data.address
-                ? [data.address.road, data.address.house_number].filter(Boolean).join(' ') || undefined
-                : undefined,
-              city: data.address?.city ?? data.address?.town ?? data.address?.village,
-              postcode: data.address?.postcode,
-            })
-          }
-        } catch {
-          // Reverse geocode failed — still set coords
-          autocomplete.pick({
-            displayName: `${lat.toFixed(4)}, ${lon.toFixed(4)}`,
-            lat,
-            lon,
-          })
-        } finally {
-          setGeolocating(false)
-        }
-      },
-      () => {
-        setGeolocating(false)
-      },
-    )
-  }
 
   const stepLabels = useMemo(() => [t('form.stepCar'), t('form.stepIssue'), t('form.stepLocation')], [t])
 
@@ -339,13 +281,7 @@ export function CreateRepairRequestFlow({
 
             <label>
               {t('form.make')}
-              <input
-                value={make}
-                onChange={(event) => {
-                  setMake(event.target.value)
-                }}
-                placeholder="Audi"
-              />
+              <CarBrandCombobox value={make} onChange={setMake} />
               {carErrors.make ? <small className="field-error">{t(carErrors.make)}</small> : null}
             </label>
 
@@ -556,118 +492,15 @@ export function CreateRepairRequestFlow({
         ) : null}
 
         {step === 3 ? (
-          <div className="form-grid">
-            <div className="map-card" aria-label="Location map preview">
-              <div className="pin-marker">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--brand-600)' }}>
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-              </div>
-              <div>
-                <strong>{autocomplete.selected?.displayName || t('form.noAddress')}</strong>
-                {autocomplete.selected ? (
-                  <p className="address-coords">
-                    {autocomplete.selected.lat.toFixed(5)}, {autocomplete.selected.lon.toFixed(5)}
-                  </p>
-                ) : null}
-              </div>
-            </div>
-
-            <div className="address-autocomplete" ref={dropdownRef}>
-              <label>
-                {t('form.address')}
-                <div className="address-input-wrap">
-                  <input
-                    type="text"
-                    value={autocomplete.query}
-                    onChange={(e) => {
-                      autocomplete.setQuery(e.target.value)
-                      setShowDropdown(true)
-                      if (autocomplete.selected) {
-                        autocomplete.clear()
-                        autocomplete.setQuery(e.target.value)
-                      }
-                    }}
-                    onFocus={() => {
-                      if (autocomplete.suggestions.length > 0) setShowDropdown(true)
-                    }}
-                    placeholder={t('form.addressPlaceholder')}
-                    autoComplete="off"
-                  />
-                  {autocomplete.loading ? <span className="address-spinner" /> : null}
-                </div>
-                {locationErrors.address ? (
-                  <small className="field-error">{t(locationErrors.address)}</small>
-                ) : null}
-              </label>
-
-              {showDropdown && autocomplete.suggestions.length > 0 ? (
-                <ul className="address-suggestions">
-                  {autocomplete.suggestions.map((s, i) => (
-                    <li key={i}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          autocomplete.pick(s)
-                          setShowDropdown(false)
-                        }}
-                      >
-                        {s.displayName}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
-
-            <button
-              type="button"
-              className="btn btn-ghost inline-button"
-              onClick={handleUseCurrentLocation}
-              disabled={geolocating}
-            >
-              {geolocating ? t('form.locating') : t('form.useCurrentLocation')}
-            </button>
-
-            <label>
-              {t('form.searchRadius')} <strong>{radiusKm} km</strong>
-              <input
-                type="range"
-                min={MIN_RADIUS_KM}
-                max={MAX_RADIUS_KM}
-                value={radiusKm}
-                onChange={(event) => {
-                  setRadiusKm(Number.parseInt(event.target.value, 10))
-                }}
-              />
-              <small style={{ color: 'var(--gray-500)' }}>
-                {t('form.radiusHelp', { radius: radiusKm })}
-              </small>
-              {locationErrors.radiusKm ? (
-                <small className="field-error">{t(locationErrors.radiusKm, { min: MIN_RADIUS_KM, max: MAX_RADIUS_KM })}</small>
-              ) : null}
-            </label>
-
-            <div className="sticky-cta" style={{ display: 'flex', gap: 'var(--space-3)' }}>
-              <button
-                className="btn btn-ghost"
-                onClick={() => {
-                  setStep(2)
-                }}
-              >
-                {t('common.back')}
-              </button>
-              <button
-                className="btn btn-primary btn-lg"
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                style={{ flex: 1 }}
-              >
-                {isSubmitting ? t('form.submitting') : t('form.submitRequest')}
-              </button>
-            </div>
-          </div>
+          <LocationStep
+            autocomplete={autocomplete}
+            radiusKm={radiusKm}
+            onRadiusChange={setRadiusKm}
+            locationErrors={locationErrors}
+            isSubmitting={isSubmitting}
+            onBack={() => setStep(2)}
+            onSubmit={handleSubmit}
+          />
         ) : null}
 
         {step === 4 ? (

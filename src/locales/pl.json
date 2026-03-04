@@ -6,13 +6,13 @@
 
   "app": {
     "loading": "Wczytywanie...",
-    "loadError": "Nie udało się załadować zgłoszeń. Spróbuj ponownie.",
-    "notFound": "Nie znaleziono zgłoszenia.",
+    "loadError": "Nie udało się załadować zleceń. Spróbuj ponownie.",
+    "notFound": "Nie znaleziono zlecenia.",
     "home": "Strona główna"
   },
 
   "notification": {
-    "requestSubmittedTitle": "Zgłoszenie wysłane",
+    "requestSubmittedTitle": "Zlecenie wysłane",
     "requestSubmittedMessage": "Powiadamiamy pobliskie warsztaty."
   },
 
@@ -30,12 +30,15 @@
     "eyebrow": "Panel kierowcy",
     "headline": "Znajdź najlepszą wycenę naprawy",
     "subheadline": "Opisz usterkę raz, otrzymaj wyceny z okolicznych warsztatów i wybierz najlepszą ofertę.",
-    "createRequest": "Nowe zgłoszenie",
-    "myRequests": "Moje zgłoszenia",
+    "createRequest": "Nowe zlecenie",
+    "myRequests": "Moje zlecenia",
     "statOpen": "Otwarte",
     "statClosed": "Zamknięte",
     "statTotal": "Wszystkie",
-    "activeRequests": "Aktywne zgłoszenia",
+    "tabOpen": "Otwarte ({{count}})",
+    "tabClosed": "Zamknięte ({{count}})",
+    "tabAll": "Wszystkie ({{count}})",
+    "activeRequests": "Aktywne zlecenia",
     "updated": "Zaktualizowano {{date}}",
     "quoteCount_one": "{{count}} wycena",
     "quoteCount_few": "{{count}} wyceny",
@@ -43,9 +46,9 @@
   },
 
   "myRequests": {
-    "title": "Moje zgłoszenia",
+    "title": "Moje zlecenia",
     "filterAll": "Wszystkie",
-    "noRequests": "Brak zgłoszeń.",
+    "noRequests": "Brak zleceń.",
     "updated": "Zaktualizowano {{date}}",
     "quoteCount_one": "{{count}} wycena",
     "quoteCount_few": "{{count}} wyceny",
@@ -56,7 +59,7 @@
   },
 
   "form": {
-    "newRequest": "Nowe zgłoszenie",
+    "newRequest": "Nowe zlecenie",
     "done": "Gotowe",
     "stepCar": "Auto",
     "stepIssue": "Usterka",
@@ -64,7 +67,7 @@
     "titleCar": "Dane pojazdu",
     "titleIssue": "Opisz usterkę",
     "titleLocation": "Lokalizacja i zasięg",
-    "titleSubmitted": "Zgłoszenie wysłane",
+    "titleSubmitted": "Zlecenie wysłane",
     "vin": "VIN",
     "make": "Marka",
     "model": "Model",
@@ -83,11 +86,18 @@
     "addFile": "+ Dodaj",
     "noAddress": "Brak adresu",
     "address": "Adres",
+    "addressLabel": "Miasto lub adres",
     "addressPlaceholder": "Ulica i miasto",
     "useCurrentLocation": "Użyj bieżącej lokalizacji",
     "locating": "Lokalizowanie…",
     "searchRadius": "Zasięg wyszukiwania:",
-    "radiusHelp": "Warsztaty w promieniu {{radius}} km otrzymają Twoje zgłoszenie.",
+    "radiusHelp": "Warsztaty w promieniu {{radius}} km otrzymają Twoje zlecenie.",
+    "cityCenterHint": "Pinezka wskazuje centrum miasta. Przeciągnij ją, aby doprecyzować lokalizację.",
+    "radiusHiddenHint": "Wybierz lokalizację, aby ustawić zasięg wyszukiwania.",
+    "geolocationDenied": "Dostęp do lokalizacji odrzucony. Zezwól na lokalizację lub wpisz miasto.",
+    "geolocationFailed": "Nie udało się ustalić lokalizacji. Wpisz adres ręcznie.",
+    "noResults": "Brak wyników. Spróbuj innego zapytania.",
+    "locationAdjusted": "Lokalizacja skorygowana",
     "submitting": "Wysyłanie...",
     "uploading": "Przesyłanie zdjęć...",
     "uploadCount": "Przesyłanie {{current}}/{{total}}...",
@@ -95,10 +105,10 @@
     "fileTooLarge": "Plik przekracza limit 5 MB",
     "fileTypeNotAllowed": "Dozwolone tylko pliki JPEG, PNG i WebP",
     "maxAttachments": "Maksymalnie 5 załączników",
-    "submitRequest": "Wyślij zgłoszenie",
+    "submitRequest": "Wyślij zlecenie",
     "confirmTitle": "Powiadamiamy pobliskie warsztaty",
-    "confirmMessage": "Twoje zgłoszenie zostało wysłane. Wkrótce otrzymasz wyceny.",
-    "viewRequest": "Zobacz zgłoszenie"
+    "confirmMessage": "Twoje zlecenie zostało wysłane. Wkrótce otrzymasz wyceny.",
+    "viewRequest": "Zobacz zlecenie"
   },
 
   "detail": {
@@ -117,7 +127,7 @@
     "stateQuestionSent": "Warsztat zadał pytanie",
     "stateQuoteSent": "Wycena dostępna",
     "lineItemsBreakdown": "Pozycje",
-    "stateDeclined": "Warsztat odrzucił zgłoszenie",
+    "stateDeclined": "Warsztat odrzucił zlecenie",
     "answer": "Odpowiedz",
     "ignore": "Ignoruj",
     "markInterested": "Zainteresowany",
@@ -126,15 +136,19 @@
     "durationDays_many": "{{count}} dni",
     "validUntil": "Ważne do {{date}}",
     "viewThread": "Pokaż wątek ({{count}} nowych)",
-    "requestClosed": "Zgłoszenie zamknięte.",
+    "requestClosed": "Zlecenie zamknięte.",
     "noConversations": "Brak rozmów.",
-    "closeDialogTitle": "Zamknąć zgłoszenie?",
+    "closeDialogTitle": "Zamknąć zlecenie?",
     "closeDialogMessage": "Nowe wyceny i pytania zostaną wstrzymane. Tej operacji nie można cofnąć.",
     "closing": "Zamykanie...",
-    "closeRequest": "Zamknij zgłoszenie",
+    "closeRequest": "Zamknij zlecenie",
     "less": "Mniej",
     "more": "Więcej",
-    "ignored": "Zignorowany"
+    "ignored": "Zignorowany",
+    "callShop": "Zadzwoń",
+    "receivedAt": "Otrzymano {{date}}",
+    "unansweredBanner": "Masz pytanie od warsztatu — odpowiedz, aby dostać wycenę.",
+    "pendingQuestion": "Oczekuje odpowiedzi"
   },
 
   "thread": {
@@ -143,7 +157,10 @@
     "placeholder": "Wpisz odpowiedź...",
     "sending": "Wysyłanie...",
     "send": "Wyślij",
-    "readOnly": "Zgłoszenie zamknięte. Pytania i odpowiedzi tylko do odczytu."
+    "readOnly": "Zlecenie zamknięte. Pytania i odpowiedzi tylko do odczytu.",
+    "quickReplyPhoto": "Dodam zdjęcie",
+    "quickReplySymptoms": "Opiszę objawy",
+    "quickReplyDontKnow": "Nie wiem"
   },
 
   "attachment": {
@@ -185,7 +202,7 @@
 
   "auth": {
     "loginTitle": "Witaj ponownie",
-    "loginSubtitle": "Zaloguj się, aby zarządzać zgłoszeniami",
+    "loginSubtitle": "Zaloguj się, aby zarządzać zleceniami",
     "registerTitle": "Utwórz konto",
     "registerSubtitle": "Rozpocznij korzystanie z Autoceny",
     "email": "Email",
@@ -371,7 +388,7 @@
     },
     "flow": {
       "title": "Jak to działa",
-      "subtitle": "Śledź proces od zgłoszenia do naprawy",
+      "subtitle": "Śledź proces od zlecenia do naprawy",
       "driverColumn": "Kierowca",
       "shopColumn": "Warsztat",
       "step1": {
@@ -381,7 +398,7 @@
       },
       "step2": {
         "title": "Warsztat analizuje",
-        "driverText": "Sprawdź, które warsztaty aktywnie przeglądają Twoje zgłoszenie.",
+        "driverText": "Sprawdź, które warsztaty aktywnie przeglądają Twoje zlecenie.",
         "shopText": "Jedno kliknięcie, by potwierdzić, że przygotowujesz wycenę."
       },
       "step3": {
@@ -407,7 +424,7 @@
         "benefit1": "Oszczędzaj",
         "benefit1Desc": "Porównuj realne wyceny zamiast zgadywać ceny.",
         "benefit2": "Bez obdzwaniania",
-        "benefit2Desc": "Jedno zgłoszenie trafia do każdego warsztatu w promieniu.",
+        "benefit2Desc": "Jedno zlecenie trafia do każdego warsztatu w promieniu.",
         "benefit3": "Łatwe porównanie",
         "benefit3Desc": "Ceny, odległości i opinie obok siebie."
       },

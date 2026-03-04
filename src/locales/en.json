@@ -35,6 +35,9 @@
     "statOpen": "Open",
     "statClosed": "Closed",
     "statTotal": "Total",
+    "tabOpen": "Open ({{count}})",
+    "tabClosed": "Closed ({{count}})",
+    "tabAll": "All ({{count}})",
     "activeRequests": "Active Requests",
     "updated": "Updated {{date}}",
     "quoteCount_one": "{{count}} quote",
@@ -80,11 +83,18 @@
     "addFile": "+ Add",
     "noAddress": "No address yet",
     "address": "Address",
+    "addressLabel": "City or address",
     "addressPlaceholder": "Street and city",
     "useCurrentLocation": "Use current location",
     "locating": "Locating…",
     "searchRadius": "Search radius:",
     "radiusHelp": "Shops within {{radius}} km will receive your request.",
+    "cityCenterHint": "Pin is set to the city center. Drag it to refine the location.",
+    "radiusHiddenHint": "Choose a location to set the search radius.",
+    "geolocationDenied": "Location access denied. Please allow location or type a city.",
+    "geolocationFailed": "Could not determine your location. Please type an address.",
+    "noResults": "No results found. Try a different query.",
+    "locationAdjusted": "Location adjusted",
     "submitting": "Submitting...",
     "uploading": "Uploading photos...",
     "uploadCount": "Uploading {{current}}/{{total}}...",
@@ -130,7 +140,11 @@
     "closeRequest": "Close Request",
     "less": "Less",
     "more": "More",
-    "ignored": "Ignored"
+    "ignored": "Ignored",
+    "callShop": "Call",
+    "receivedAt": "Received {{date}}",
+    "unansweredBanner": "A shop asked you a question — reply to get a quote.",
+    "pendingQuestion": "Needs reply"
   },
 
   "thread": {
@@ -139,7 +153,10 @@
     "placeholder": "Type your answer...",
     "sending": "Sending...",
     "send": "Send",
-    "readOnly": "Request is closed. Q&A is read-only."
+    "readOnly": "Request is closed. Q&A is read-only.",
+    "quickReplyPhoto": "I'll add a photo",
+    "quickReplySymptoms": "I'll describe symptoms",
+    "quickReplyDontKnow": "I don't know"
   },
 
   "attachment": {

@@ -1,0 +1,110 @@
+Goal
+
+Collect a valid search origin and search radius to match the Repair Request to Shops, with minimal friction and clear user understanding.
+
+Definitions
+
+Location: a geo point (lat/lng) + human-readable label (city or address).
+
+Radius: numeric kilometers used for matching.
+
+Screen behavior (Step 3: Location)
+1) Location input (required)
+
+User must provide location via one of:
+
+Use current location (device geolocation)
+
+Search input (autocomplete) that accepts:
+
+City (e.g., “Kraków”)
+
+Address (e.g., “Grunwaldzka 10, Gdańsk”)
+
+UI requirements
+
+Show a single prominent field: City or address
+
+Show a clear secondary button: Use current location
+
+Validation
+
+“Continue/Submit” must be disabled until location is resolved to a geo point.
+
+2) Map preview (appears after location is set)
+
+Once location is resolved:
+
+Display a map with a pin at the resolved point.
+
+Allow user to adjust location by:
+
+dragging the pin, or
+
+clicking “Adjust on map” which opens map interaction mode.
+
+Copy
+
+If only city is entered: “Pin is set to the city center. Add street for more accuracy.”
+
+3) Radius control (hidden until location is set)
+
+Before location is set:
+
+Radius UI is hidden or disabled with a hint: “Choose location to set radius”.
+
+After location is set:
+
+Show radius section:
+
+Search radius: 15 km (value visible)
+
+slider (or +/- buttons) controlling radius
+
+map draws a circle around the pin representing the radius
+
+Radius constraints
+
+Min/max configurable.
+
+User can set with:
+
+slider + numeric label (mandatory)
+
+optional: make numeric label editable
+
+4) Submission
+
+CTA label: consistent with your chosen term (either “Wyślij zlecenie” or “Wyślij zgłoszenie”).
+
+When submitting:
+
+show loading state
+
+handle errors (geolocation denied, autocomplete failure)
+
+States to implement
+
+Empty: no location selected
+
+show input + “Use current location”
+
+hide radius + map
+
+Resolving: user selected suggestion / geolocation in progress
+
+loading indicator in field/button
+
+Location set: pin + map visible, radius UI visible, circle drawn
+
+Location adjusted: user moved pin
+
+update label to “Custom location” (or keep city name + “adjusted”)
+
+Error:
+
+Geolocation denied → “Allow location or type a city”
+
+Autocomplete no results → “Try city + voivodeship” / “Check spelling”
+
+Map API down (if applicable) → fallback to city input + radius slider without map
