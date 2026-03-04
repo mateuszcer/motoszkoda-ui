@@ -4,11 +4,13 @@ import type {
   CreateRepairRequestRequest,
   MessageResponse,
   RepairRequestResponse,
+  ShopResponseForDriverView,
   ThreadSummaryResponse,
 } from '../domain/apiTypes'
 import {
   mapAttachment,
   mapCompareToShopQuote,
+  mapLineItems,
   mapMessage,
   mapRepairRequest,
   mapThread,
@@ -66,14 +68,15 @@ const repairRequestApiImpl: RepairRequestApi = {
   },
 
   async fetchRequestDetail(requestId: string, currentUserId: string): Promise<RepairRequest | null> {
-    // Fetch repair-request, compare view, thread summaries, and attachments in parallel
-    const [rawRequest, compareData, threadSummaries, rawAttachments] = await Promise.all([
+    // Fetch repair-request, compare view, thread summaries, attachments, and shop responses in parallel
+    const [rawRequest, compareData, threadSummaries, rawAttachments, shopResponses] = await Promise.all([
       api.get<RepairRequestResponse>(`/api/repair-requests/${requestId}`).catch(() => null),
       api.get<CompareViewResponse[]>(`/api/repair-requests/${requestId}/compare`).catch(() => [] as CompareViewResponse[]),
       api.get<ThreadSummaryResponse[]>(`/api/repair-requests/${requestId}/messages/threads`).catch(() => [] as ThreadSummaryResponse[]),
       api.get<AttachmentResponse[]>('/api/attachments', {
         params: { targetType: 'REPAIR_REQUEST', repairRequestId: requestId },
       }).catch(() => [] as AttachmentResponse[]),
+      api.get<ShopResponseForDriverView[]>(`/api/repair-requests/${requestId}/shop-responses`).catch(() => [] as ShopResponseForDriverView[]),
     ])
 
     if (!rawRequest) return null
@@ -92,6 +95,23 @@ const repairRequestApiImpl: RepairRequestApi = {
         prefs.isIgnored(requestId, cv.shopId),
       ),
     )
+
+    // Merge line items from shop responses into quote cards
+    if (shopResponses.length > 0) {
+      const lineItemsByShopId = new Map<string, ReturnType<typeof mapLineItems>>()
+      for (const sr of shopResponses) {
+        const latestQuote = sr.quotes[sr.quotes.length - 1]
+        if (latestQuote?.lineItems?.length) {
+          lineItemsByShopId.set(sr.shopId, mapLineItems(latestQuote.lineItems))
+        }
+      }
+      for (const card of shopQuotes) {
+        const items = lineItemsByShopId.get(card.shopId)
+        if (items && card.quote) {
+          card.quote.lineItems = items
+        }
+      }
+    }
 
     // Fetch messages for each thread in parallel
     const threadEntries = await Promise.all(

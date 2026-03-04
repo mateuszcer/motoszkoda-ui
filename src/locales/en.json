@@ -147,6 +147,15 @@
     "closed": "Closed"
   },
 
+  "quoteDetail": {
+    "eyebrow": "Quote Details",
+    "total": "Total",
+    "labor": "Labor",
+    "parts": "Parts",
+    "noBreakdown": "This quote has no itemized breakdown.",
+    "viewDetails": "View details"
+  },
+
   "quoteState": {
     "delivered": "Waiting",
     "acknowledged": "Reviewing",
@@ -423,7 +432,15 @@
       "q5": "Can I close a request early?",
       "a5": "Yes, you can close a request at any time. Open quotes remain visible but no new ones will arrive.",
       "q6": "What happens after I mark a shop as 'Interested'?",
-      "a6": "The shop is notified. If they shared their phone number, you'll see it immediately. You can then contact them directly."
+      "a6": "The shop is notified. If they shared their phone number, you'll see it immediately. You can then contact them directly.",
+      "q7": "How quickly will I receive quotes?",
+      "a7": "Shops typically respond within a few hours. Timing depends on the number of shops in your radius and the type of repair.",
+      "q8": "What types of repairs can I get quotes for?",
+      "a8": "Any type — from brakes, suspension, and engine work to electronics, air conditioning, and bodywork. Describe the issue and shops will assess if they can help.",
+      "q9": "How can a shop join the platform?",
+      "a9": "Click 'Join as a Shop', fill in your business details, and activate your account. The process takes just a few minutes.",
+      "q10": "Is my personal data safe?",
+      "a10": "Yes. Your contact details are never shared with shops without your consent. Shops only see the issue description, car details, and location."
     },
     "footer": {
       "copy": "\u00a9 2026 Autoceny. All rights reserved."

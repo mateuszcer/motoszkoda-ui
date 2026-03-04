@@ -151,6 +151,15 @@
     "closed": "Zamknięte"
   },
 
+  "quoteDetail": {
+    "eyebrow": "Szczegóły wyceny",
+    "total": "Suma",
+    "labor": "Robocizna",
+    "parts": "Części",
+    "noBreakdown": "Ta wycena nie zawiera szczegółowych pozycji.",
+    "viewDetails": "Szczegóły"
+  },
+
   "quoteState": {
     "delivered": "Oczekuje",
     "acknowledged": "W przygotowaniu",
@@ -427,7 +436,15 @@
       "q5": "Czy mogę zamknąć zlecenie wcześniej?",
       "a5": "Tak, możesz zamknąć zlecenie w dowolnym momencie. Otwarte wyceny pozostaną widoczne, ale nowe nie będą napływać.",
       "q6": "Co się stanie po oznaczeniu warsztatu jako 'Zainteresowany'?",
-      "a6": "Warsztat zostanie powiadomiony. Jeśli udostępnił numer telefonu, zobaczysz go od razu. Możesz wtedy skontaktować się bezpośrednio."
+      "a6": "Warsztat zostanie powiadomiony. Jeśli udostępnił numer telefonu, zobaczysz go od razu. Możesz wtedy skontaktować się bezpośrednio.",
+      "q7": "Jak szybko otrzymam wyceny?",
+      "a7": "Warsztaty zazwyczaj odpowiadają w ciągu kilku godzin. Czas zależy od liczby warsztatów w Twoim promieniu i rodzaju naprawy.",
+      "q8": "Jakie rodzaje napraw mogę wycenić?",
+      "a8": "Dowolne — od hamulców, zawieszenia i silnika po elektronikę, klimatyzację i blacharstwo. Opisz usterkę, a warsztaty ocenią, czy mogą pomóc.",
+      "q9": "Jak warsztat może dołączyć do platformy?",
+      "a9": "Wystarczy kliknąć \u201eDołącz jako Warsztat\u201d, wypełnić dane firmy i aktywować konto. Proces zajmuje kilka minut.",
+      "q10": "Czy moje dane osobowe są bezpieczne?",
+      "a10": "Tak. Twoje dane kontaktowe nie są udostępniane warsztatom bez Twojej zgody. Warsztaty widzą tylko opis usterki, dane auta i lokalizację."
     },
     "footer": {
       "copy": "\u00a9 2026 Autoceny. Wszelkie prawa zastrzeżone."

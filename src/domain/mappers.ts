@@ -188,7 +188,7 @@ export function mapShopQueueItem(raw: ShopQueueItemResponse): ShopQueueItem {
   }
 }
 
-function mapLineItems(items: ShopRequestResponse['quotes'][number]['lineItems']): LineItem[] | undefined {
+export function mapLineItems(items: ShopRequestResponse['quotes'][number]['lineItems']): LineItem[] | undefined {
   if (!items || items.length === 0) return undefined
   return items.map((li) => ({
     id: li.id,

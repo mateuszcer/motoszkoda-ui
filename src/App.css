@@ -2601,6 +2601,98 @@ label small {
   white-space: nowrap;
 }
 
+/* ── Quote Detail Panel body ─────────────────────────────────────── */
+
+.quote-detail-body {
+  padding: var(--space-4);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.quote-detail-body .quote-line-item-row {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.quote-line-item-subs {
+  padding-left: var(--space-4);
+}
+
+.quote-line-item-sub {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 2px 0;
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.quote-line-item-sub span:last-child {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.quote-detail-no-breakdown {
+  font-size: 14px;
+  color: var(--gray-500);
+  font-style: italic;
+  margin: 0;
+}
+
+.quote-detail-comment {
+  margin: var(--space-3) 0 0;
+  font-size: 14px;
+  color: var(--gray-600);
+}
+
+.quote-detail-duration {
+  display: block;
+  margin-top: var(--space-2);
+  color: var(--gray-500);
+}
+
+.quote-detail-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-top: 2px solid var(--gray-200);
+  background: var(--gray-50);
+  font-size: 16px;
+}
+
+.quote-detail-total strong {
+  font-size: 18px;
+  color: var(--success-700);
+}
+
+.quote-highlight-clickable {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+}
+
+.quote-highlight-clickable:hover {
+  text-decoration-style: solid;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--primary-600);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.btn-link:hover {
+  color: var(--primary-700);
+}
+
 .price-mode-toggle {
   display: flex;
   gap: var(--space-2);

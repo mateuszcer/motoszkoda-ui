@@ -4,6 +4,7 @@ import type { Attachment, RepairRequest, ShopQuoteCard, SortQuotesBy } from '../
 import { getDownloadUrl } from '../services/attachmentApi'
 import { formatDateTime, formatLineItemRange, formatQuoteRange } from '../utils/format'
 import { ImageLightbox } from './ImageLightbox'
+import { QuoteDetailPanel } from './QuoteDetailPanel'
 import { ShopThreadPanel } from './ShopThreadPanel'
 
 interface RepairRequestDetailProps {
@@ -85,6 +86,7 @@ export function RepairRequestDetail({
   const [summaryCollapsed, setSummaryCollapsed] = useState(false)
   const [attachmentUrls, setAttachmentUrls] = useState<Record<string, string>>({})
   const [lightboxImg, setLightboxImg] = useState<{ src: string; alt: string } | null>(null)
+  const [quoteDetailShop, setQuoteDetailShop] = useState<ShopQuoteCard | null>(null)
 
   useEffect(() => {
     const atts = request.issue.attachments.filter((a) => a.kind === 'image' && !a.previewUrl)
@@ -389,7 +391,15 @@ export function RepairRequestDetail({
 
                       {shop.state === 'quote_sent' && shop.quote ? (
                         <div className="quote-highlight">
-                          <strong>{formatQuoteRange(shop.quote, i18n.language)}</strong>
+                          <strong
+                            className="quote-highlight-clickable"
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => setQuoteDetailShop(shop)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setQuoteDetailShop(shop) }}
+                          >
+                            {formatQuoteRange(shop.quote, i18n.language)}
+                          </strong>
                           {shop.quote.comment ? <p>{shop.quote.comment}</p> : null}
                           <div className="quote-meta">
                             {shop.quote.durationDays ? (
@@ -398,6 +408,12 @@ export function RepairRequestDetail({
                             {shop.quote.validUntil ? (
                               <small>{t('detail.validUntil', { date: formatDateTime(shop.quote.validUntil, i18n.language) })}</small>
                             ) : null}
+                            <button
+                              className="btn-link"
+                              onClick={() => setQuoteDetailShop(shop)}
+                            >
+                              {t('quoteDetail.viewDetails')}
+                            </button>
                           </div>
                           {shop.quote.lineItems && shop.quote.lineItems.length > 0 ? (
                             <div className="quote-line-items-display">
@@ -529,6 +545,13 @@ export function RepairRequestDetail({
           onSend={async (text, attachments, files) => {
             await onSendThreadMessage(request.id, activeThread.shopId, text, attachments, files)
           }}
+        />
+      ) : null}
+
+      {quoteDetailShop ? (
+        <QuoteDetailPanel
+          shop={quoteDetailShop}
+          onClose={() => setQuoteDetailShop(null)}
         />
       ) : null}
 
