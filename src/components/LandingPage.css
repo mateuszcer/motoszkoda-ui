@@ -303,6 +303,7 @@
 
 .lp-hero__sub {
   font-size: clamp(16px, 1.6vw, 20px);
+  font-weight: 500;
   color: var(--lp-gray-400);
   margin: 0 0 32px;
   max-width: 480px;

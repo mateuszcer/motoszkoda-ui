@@ -187,6 +187,7 @@
   color: var(--gray-900);
   font-family: var(--font-sans);
   font-size: 15px;
+  font-weight: 500;
   line-height: 1.55;
   background: var(--gray-50);
   z-index: 0;
@@ -668,7 +669,7 @@
   margin-top: var(--space-1);
 }
 
-.loading {
+p.loading {
   max-width: 560px;
   margin: var(--space-8) auto;
   text-align: center;
@@ -682,7 +683,7 @@
 }
 
 /* ---- tire-on-road loader ---- */
-.loading::before {
+p.loading::before {
   content: '';
   display: block;
   width: 44px;
@@ -721,7 +722,7 @@
 }
 
 /* Road strip beneath the tire */
-.loading::after {
+p.loading::after {
   content: '';
   display: block;
   width: 140px;
@@ -2490,6 +2491,7 @@ label small {
 .detail-section p {
   margin: 0;
   font-size: 14px;
+  font-weight: 500;
   color: var(--gray-700);
   line-height: 1.6;
 }
