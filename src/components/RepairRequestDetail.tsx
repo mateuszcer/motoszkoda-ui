@@ -85,6 +85,7 @@ export function RepairRequestDetail({
   const [pendingShopAction, setPendingShopAction] = useState<string | null>(null)
   const [summaryCollapsed, setSummaryCollapsed] = useState(false)
   const [attachmentUrls, setAttachmentUrls] = useState<Record<string, string>>({})
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({})
   const [lightboxImg, setLightboxImg] = useState<{ src: string; alt: string } | null>(null)
   const [quoteDetailShop, setQuoteDetailShop] = useState<ShopQuoteCard | null>(null)
 
@@ -237,9 +238,10 @@ export function RepairRequestDetail({
                 <div className="attachment-grid" style={{ marginTop: 'var(--space-2)' }}>
                   {request.issue.attachments.map((att) => {
                     const url = att.previewUrl ?? attachmentUrls[att.id]
+                    const loaded = loadedImages[att.id]
                     return (
-                      <div className="attachment-thumb" key={att.id} onClick={() => url && setLightboxImg({ src: url, alt: att.name })}>
-                        {url ? <img src={url} alt={att.name} /> : <span>{att.name}</span>}
+                      <div className={`attachment-thumb${!loaded ? ' loading' : ''}`} key={att.id} onClick={() => url && loaded && setLightboxImg({ src: url, alt: att.name })}>
+                        {url ? <img src={url} alt={att.name} style={loaded ? undefined : { display: 'none' }} onLoad={() => setLoadedImages(prev => ({ ...prev, [att.id]: true }))} /> : null}
                       </div>
                     )
                   })}

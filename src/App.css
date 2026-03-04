@@ -268,6 +268,34 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .header-actions {
+    gap: var(--space-1);
+  }
+
+  .header-actions .btn-ghost:not(.lang-toggle):not(.theme-toggle) {
+    font-size: 12px;
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .lang-toggle,
+  .theme-toggle {
+    min-height: 28px;
+    min-width: 28px;
+    padding: 2px 6px;
+  }
+
+  .lang-toggle {
+    font-size: 11px;
+  }
+
+  .theme-toggle svg {
+    width: 13px;
+    height: 13px;
+  }
 }
 
 /* Ghost buttons in dark header become light-on-dark */
@@ -1179,11 +1207,18 @@ label small {
   cursor: pointer;
 }
 
+.attachment-thumb.loading {
+  background: linear-gradient(90deg, var(--gray-100) 0%, var(--gray-200) 50%, var(--gray-100) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease infinite;
+}
+
 .attachment-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  animation: fadeIn 0.3s ease;
 }
 
 /* Image Lightbox */

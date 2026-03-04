@@ -47,6 +47,7 @@ export function ShopRequestDetailView({
   const isClosed = request.status === 'closed'
   const status = shopResponse?.status ?? 'PENDING'
   const [attachmentUrls, setAttachmentUrls] = useState<Record<string, string>>({})
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({})
   const [lightboxImg, setLightboxImg] = useState<{ src: string; alt: string } | null>(null)
 
   useEffect(() => {
@@ -288,9 +289,10 @@ export function ShopRequestDetailView({
               <div className="attachment-grid">
                 {request.issue.attachments.map((att) => {
                   const url = att.previewUrl ?? attachmentUrls[att.id]
+                  const loaded = loadedImages[att.id]
                   return (
-                    <div className="attachment-thumb" key={att.id} onClick={() => url && setLightboxImg({ src: url, alt: att.name })}>
-                      {url ? <img src={url} alt={att.name} /> : <span>{att.name}</span>}
+                    <div className={`attachment-thumb${!loaded ? ' loading' : ''}`} key={att.id} onClick={() => url && loaded && setLightboxImg({ src: url, alt: att.name })}>
+                      {url ? <img src={url} alt={att.name} style={loaded ? undefined : { display: 'none' }} onLoad={() => setLoadedImages(prev => ({ ...prev, [att.id]: true }))} /> : null}
                     </div>
                   )
                 })}
