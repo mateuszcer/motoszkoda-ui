@@ -1,0 +1,183 @@
+openapi: 3.0.3
+info:
+  title: MotoSzkoda Phone Verification API
+  description: Phone OTP verification endpoints for user identity proof
+  version: 1.0.0
+
+paths:
+  /api/verification/phone/send:
+    post:
+      summary: Send OTP code to phone number
+      description: |
+        Sends a one-time verification code via SMS to the given phone number.
+        Phone numbers must use E.164 format and belong to an EU/EEA country.
+      operationId: sendOtp
+      tags:
+        - Verification
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phoneNumber
+              properties:
+                phoneNumber:
+                  type: string
+                  description: E.164 formatted EU/EEA phone number
+                  example: "+48123456789"
+      responses:
+        "200":
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendResponse"
+        "400":
+          description: Invalid phone number (non-EU or malformed)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: INVALID_PHONE_NUMBER
+                message: "Invalid phone number: +12025551234"
+                correlationId: "550e8400-e29b-41d4-a716-446655440000"
+        "401":
+          description: Missing or invalid JWT token
+        "409":
+          description: Phone number already associated with another account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: PHONE_ALREADY_TAKEN
+                message: "Phone number is already associated with another account"
+                correlationId: "550e8400-e29b-41d4-a716-446655440000"
+        "429":
+          description: Rate limit exceeded
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds until the rate limit resets
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: RATE_LIMITED
+                message: "Too many requests"
+
+  /api/verification/phone/check:
+    post:
+      summary: Verify OTP code
+      description: |
+        Checks the OTP code entered by the user. On success, the user's phone
+        is marked as verified and future repair requests are allowed.
+      operationId: checkOtp
+      tags:
+        - Verification
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phoneNumber
+                - code
+              properties:
+                phoneNumber:
+                  type: string
+                  description: E.164 formatted phone number (must match the one used in /send)
+                  example: "+48123456789"
+                code:
+                  type: string
+                  description: OTP code received via SMS
+                  minLength: 4
+                  maxLength: 8
+                  example: "123456"
+      responses:
+        "200":
+          description: Verification check result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckResponse"
+        "401":
+          description: Missing or invalid JWT token
+        "409":
+          description: Phone number already associated with another account (race condition)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Rate limit exceeded (too many check attempts)
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    SendResponse:
+      type: object
+      properties:
+        sent:
+          type: boolean
+          description: Whether the OTP was sent successfully
+        errorCode:
+          type: string
+          nullable: true
+          description: Error code if sending failed (e.g. RATE_LIMITED, PROVIDER_ERROR)
+      required:
+        - sent
+
+    CheckResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILURE
+            - EXPIRED
+          description: |
+            - SUCCESS: Code is valid, phone is now verified
+            - FAILURE: Code is incorrect
+            - EXPIRED: Code has expired or was not found
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+          nullable: true
+        correlationId:
+          type: string
+          format: uuid
+      required:
+        - code
+        - message

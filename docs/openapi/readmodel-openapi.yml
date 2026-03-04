@@ -147,6 +147,11 @@ components:
         estimatedDays:
           type: integer
           nullable: true
+        note:
+          type: string
+          nullable: true
+          maxLength: 2000
+          description: Optional note from the shop included with the quote
 
     ShopQueueResponse:
       type: object

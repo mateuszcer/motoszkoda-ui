@@ -624,8 +624,7 @@
     "statusSuspended": "Your shop account is suspended.",
     "statusActive": "Your shop is activated!",
     "contactSupport": "Please contact support at support@autoceny.pl.",
-    "tabVoucher": "Voucher",
-    "tabPayment": "Payment",
+    "haveVoucher": "Have a voucher code?",
     "voucherLabel": "Voucher Code",
     "voucherPlaceholder": "Enter your voucher code",
     "redeem": "Redeem Voucher",
@@ -635,7 +634,12 @@
     "payMonthly": "Pay Monthly",
     "paying": "Processing...",
     "paymentFailed": "Payment failed. Please try again.",
-    "paymentComingSoon": "Online payments coming soon.",
+    "pay": "Pay",
+    "processing": "Processing payment...",
+    "activating": "Activating your shop...",
+    "paymentSuccess": "Payment successful!",
+    "activationTimeout": "Activation is taking longer than expected. Please try refreshing or contact support.",
+    "retryActivation": "Retry",
     "continueToDashboard": "Continue to Dashboard"
   }
 }

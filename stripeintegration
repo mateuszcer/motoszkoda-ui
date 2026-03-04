@@ -1,0 +1,70 @@
+# Stripe Subscription Payment — Frontend Integration Guide
+
+## Setup
+
+- Install `@stripe/stripe-js` and `@stripe/react-stripe-js`
+- Initialize with your Stripe **publishable key** (starts with `pk_live_` or `pk_test_`)
+
+## Flow
+
+### 1. User fills enrollment form
+
+Billing info should already be saved to the shop profile.
+
+### 2. Call backend
+
+```
+POST /api/enrollment/payment
+Authorization: Bearer <jwt>
+```
+
+Response:
+
+```json
+{
+  "subscriptionId": "sub_...",
+  "clientSecret": "pi_..._secret_..."
+}
+```
+
+### 3. Confirm payment with Stripe.js
+
+Use the `clientSecret` to collect card details and confirm:
+
+```ts
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripe = await loadStripe('pk_test_...');
+
+// Using Stripe Elements (recommended):
+const { error } = await stripe.confirmCardPayment(clientSecret, {
+  payment_method: {
+    card: cardElement, // from <CardElement />
+  },
+});
+
+if (error) {
+  // Show error to user (e.g. card declined, 3DS failed)
+} else {
+  // Payment succeeded — poll for enrollment activation
+}
+```
+
+### 4. 3DS / SCA
+
+Handled automatically — `confirmCardPayment` opens the bank's 3DS challenge if needed.
+
+### 5. Poll for activation
+
+After successful payment, Stripe sends a webhook to the backend which activates the enrollment. Poll `GET /api/enrollment/status/{shopId}` until status changes from `PENDING_PAYMENT` to `ACTIVE` (typically 1-3 seconds).
+
+## Key points
+
+- The `clientSecret` is single-use and tied to the first invoice's PaymentIntent.
+- Card details never touch the backend — Stripe.js sends them directly to Stripe.
+- Recurring charges happen automatically — no frontend involvement after the first payment.
+- If payment fails later, the backend suspends the shop via webhook.
+
+## Why not Stripe Payment Links?
+
+Payment Links are a no-code hosted payment page from Stripe. They're great for simple one-off products, but for this use case (tying subscriptions to specific shop enrollments, tracking subscriptionId, custom billing info from shop profile) the Stripe.js integration gives full control. Payment Links wouldn't easily map payments back to enrollments.

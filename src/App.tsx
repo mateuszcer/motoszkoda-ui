@@ -530,7 +530,7 @@ function App() {
   }
 
   const handleEnrollmentPayment = async () => {
-    await enrollmentApi.initiatePayment()
+    return enrollmentApi.initiatePayment()
   }
 
   const handleEnrollmentStatusRefresh = async () => {

@@ -65,6 +65,10 @@ paths:
   /api/repair-requests/{id}:
     get:
       summary: Get a repair request by ID
+      description: >
+        Returns a repair request by its ID. Accessible by the driver who created
+        the request (role USER) or by a shop user whose shop has received a
+        delivery for this request (role SHOP_USER).
       operationId: getRepairRequest
       tags: [RepairRequest]
       security:
@@ -84,9 +88,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/RepairRequestResponse'
         '401':
-          description: Unauthorized
+          description: Unauthorized — missing or invalid JWT
         '403':
-          description: Forbidden — caller is not the owner
+          description: >
+            Forbidden — USER is not the owner, or SHOP_USER's shop has no
+            delivery for this repair request
           content:
             application/json:
               schema:

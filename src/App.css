@@ -3281,6 +3281,41 @@ label small {
   margin: 0 0 var(--space-3);
 }
 
+.stripe-element-container {
+  margin-bottom: var(--space-5);
+}
+
+.enroll-voucher-toggle {
+  text-align: center;
+  margin-top: var(--space-4);
+}
+
+.enroll-voucher-link {
+  background: none;
+  border: none;
+  color: var(--gray-500);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0;
+}
+
+.enroll-voucher-link:hover {
+  color: var(--brand-600);
+}
+
+.enroll-voucher-inline {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.enroll-voucher-inline input {
+  flex: 1;
+  font-size: 14px;
+}
+
 .status-banner-success {
   background: var(--success-50);
   border: 1px solid var(--success-100);

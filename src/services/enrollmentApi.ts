@@ -1,6 +1,6 @@
 import type {
   EnrollmentStatusResponse,
-  PaymentIntentResponse,
+  SubscriptionResponse,
   ShopRegistrationRequest,
   ShopRegistrationResponse,
 } from '../domain/apiTypes'
@@ -24,7 +24,7 @@ export const enrollmentApi = {
     })
   },
 
-  async initiatePayment(): Promise<PaymentIntentResponse> {
-    return api.post<PaymentIntentResponse>('/api/enrollment/payment')
+  async initiatePayment(): Promise<SubscriptionResponse> {
+    return api.post<SubscriptionResponse>('/api/enrollment/payment')
   },
 }

@@ -351,8 +351,8 @@ export interface EnrollmentStatusResponse {
   status: 'PENDING_PAYMENT' | 'ACTIVE' | 'SUSPENDED'
 }
 
-export interface PaymentIntentResponse {
-  paymentIntentId: string
+export interface SubscriptionResponse {
+  subscriptionId: string
   clientSecret: string
 }
 

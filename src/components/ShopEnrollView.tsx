@@ -1,11 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { SubscriptionResponse } from '../domain/apiTypes'
 import type { EnrollmentStatus } from '../domain/types'
+import { StripePaymentForm } from './StripePaymentForm'
+
+type PaymentStep = 'idle' | 'ready' | 'success' | 'polling' | 'timeout'
+
+const POLL_INTERVAL_MS = 2000
+const MAX_POLL_ATTEMPTS = 15
 
 interface ShopEnrollViewProps {
   enrollmentStatus: EnrollmentStatus
   onVoucherRedeem: (code: string) => Promise<void>
-  onPayment: () => Promise<void>
+  onPayment: () => Promise<SubscriptionResponse>
   onStatusRefresh: () => Promise<void>
   onLogout: () => void
 }
@@ -18,14 +25,57 @@ export function ShopEnrollView({
   onLogout,
 }: ShopEnrollViewProps) {
   const { t } = useTranslation()
-  const [activeTab, setActiveTab] = useState<'voucher' | 'payment'>('voucher')
+  const [voucherOpen, setVoucherOpen] = useState(false)
   const [voucherCode, setVoucherCode] = useState('')
   const [redeeming, setRedeeming] = useState(false)
   const [paying, setPaying] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
+  const [paymentStep, setPaymentStep] = useState<PaymentStep>('idle')
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const pollCountRef = useRef(0)
+
   const isSuspended = enrollmentStatus === 'SUSPENDED'
   const isActive = enrollmentStatus === 'ACTIVE'
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current)
+    }
+  }, [])
+
+  const startPolling = () => {
+    setPaymentStep('polling')
+    pollCountRef.current = 0
+
+    if (pollRef.current) clearInterval(pollRef.current)
+
+    pollRef.current = setInterval(() => {
+      pollCountRef.current += 1
+
+      if (pollCountRef.current > MAX_POLL_ATTEMPTS) {
+        if (pollRef.current) clearInterval(pollRef.current)
+        pollRef.current = null
+        setPaymentStep('timeout')
+        return
+      }
+
+      void onStatusRefresh().catch(() => {
+        // Network errors count toward max attempts but don't stop polling
+      })
+    }, POLL_INTERVAL_MS)
+  }
+
+  // If enrollment becomes ACTIVE while polling, stop and transition
+  useEffect(() => {
+    if (isActive && paymentStep === 'polling') {
+      if (pollRef.current) clearInterval(pollRef.current)
+      pollRef.current = null
+      setPaymentStep('success')
+    }
+  }, [isActive, paymentStep])
 
   const handleRedeem = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,16 +91,27 @@ export function ShopEnrollView({
     }
   }
 
-  const handlePayment = async () => {
+  const handleInitiatePayment = async () => {
     setError(null)
     setPaying(true)
     try {
-      await onPayment()
+      const result = await onPayment()
+      setClientSecret(result.clientSecret)
+      setPaymentStep('ready')
     } catch (err) {
       setError(err instanceof Error ? err.message : t('shopEnroll.paymentFailed'))
     } finally {
       setPaying(false)
     }
+  }
+
+  const handlePaymentSuccess = () => {
+    setPaymentStep('success')
+    startPolling()
+  }
+
+  const handleRetryPolling = () => {
+    startPolling()
   }
 
   const bannerClass = isActive
@@ -85,56 +146,75 @@ export function ShopEnrollView({
 
         {!isSuspended && !isActive ? (
           <>
-            <div className="tab-bar">
-              <button
-                type="button"
-                className={`tab${activeTab === 'voucher' ? ' tab-active' : ''}`}
-                onClick={() => setActiveTab('voucher')}
-              >
-                {t('shopEnroll.tabVoucher')}
-              </button>
-              <button
-                type="button"
-                className={`tab${activeTab === 'payment' ? ' tab-active' : ''}`}
-                onClick={() => setActiveTab('payment')}
-              >
-                {t('shopEnroll.tabPayment')}
-              </button>
-            </div>
-
-            {activeTab === 'voucher' ? (
-              <form className="form-grid" onSubmit={(e) => void handleRedeem(e)}>
-                <label>
-                  {t('shopEnroll.voucherLabel')}
-                  <input
-                    type="text"
-                    value={voucherCode}
-                    onChange={(e) => setVoucherCode(e.target.value)}
-                    placeholder={t('shopEnroll.voucherPlaceholder')}
-                    disabled={redeeming}
-                  />
-                </label>
-                <button
-                  className="btn btn-primary btn-lg auth-submit"
-                  type="submit"
-                  disabled={redeeming || !voucherCode.trim()}
-                >
-                  {redeeming ? t('shopEnroll.redeeming') : t('shopEnroll.redeem')}
-                </button>
-              </form>
-            ) : (
+            {paymentStep === 'polling' || paymentStep === 'timeout' ? (
               <div className="form-grid">
-                <p className="enroll-payment-desc">{t('shopEnroll.paymentDescription')}</p>
-                <button
-                  className="btn btn-primary btn-lg auth-submit"
-                  type="button"
-                  onClick={() => void handlePayment()}
-                  disabled={paying}
-                >
-                  {paying ? t('shopEnroll.paying') : t('shopEnroll.payMonthly')}
-                </button>
-                <small className="field-hint">{t('shopEnroll.paymentComingSoon')}</small>
+                {paymentStep === 'polling' ? (
+                  <p className="enroll-payment-desc">{t('shopEnroll.activating')}</p>
+                ) : (
+                  <>
+                    <div className="auth-error">{t('shopEnroll.activationTimeout')}</div>
+                    <button
+                      className="btn btn-primary btn-lg auth-submit"
+                      type="button"
+                      onClick={handleRetryPolling}
+                    >
+                      {t('shopEnroll.retryActivation')}
+                    </button>
+                  </>
+                )}
               </div>
+            ) : (
+              <>
+                <div className="form-grid">
+                  <p className="enroll-payment-desc">{t('shopEnroll.paymentDescription')}</p>
+                  {paymentStep === 'ready' && clientSecret ? (
+                    <StripePaymentForm
+                      clientSecret={clientSecret}
+                      onSuccess={handlePaymentSuccess}
+                    />
+                  ) : (
+                    <button
+                      className="btn btn-primary btn-lg auth-submit"
+                      type="button"
+                      onClick={() => void handleInitiatePayment()}
+                      disabled={paying}
+                    >
+                      {paying ? t('shopEnroll.paying') : t('shopEnroll.payMonthly')}
+                    </button>
+                  )}
+                </div>
+
+                {paymentStep === 'idle' ? (
+                  <div className="enroll-voucher-toggle">
+                    {!voucherOpen ? (
+                      <button
+                        type="button"
+                        className="enroll-voucher-link"
+                        onClick={() => setVoucherOpen(true)}
+                      >
+                        {t('shopEnroll.haveVoucher')}
+                      </button>
+                    ) : (
+                      <form className="enroll-voucher-inline" onSubmit={(e) => void handleRedeem(e)}>
+                        <input
+                          type="text"
+                          value={voucherCode}
+                          onChange={(e) => setVoucherCode(e.target.value)}
+                          placeholder={t('shopEnroll.voucherPlaceholder')}
+                          disabled={redeeming}
+                        />
+                        <button
+                          className="btn btn-primary btn-sm"
+                          type="submit"
+                          disabled={redeeming || !voucherCode.trim()}
+                        >
+                          {redeeming ? t('shopEnroll.redeeming') : t('shopEnroll.redeem')}
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                ) : null}
+              </>
             )}
           </>
         ) : null}

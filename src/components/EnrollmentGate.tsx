@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import type { SubscriptionResponse } from '../domain/apiTypes'
 import type { EnrollmentStatus } from '../domain/types'
 import { ShopEnrollView } from './ShopEnrollView'
 
@@ -6,7 +7,7 @@ interface EnrollmentGateProps {
   enrollmentStatus: EnrollmentStatus | null
   enrollmentLoading: boolean
   onVoucherRedeem: (code: string) => Promise<void>
-  onPayment: () => Promise<void>
+  onPayment: () => Promise<SubscriptionResponse>
   onStatusRefresh: () => Promise<void>
   onLogout: () => void
   children: React.ReactNode
