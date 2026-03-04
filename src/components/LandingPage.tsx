@@ -20,6 +20,8 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
   const [stickyVisible, setStickyVisible] = useState(false)
   const [demoPhase, setDemoPhase] = useState(0)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
+  const [driverPlan, setDriverPlan] = useState<'free' | 'premium'>('free')
 
   const heroRef = useRef<HTMLElement>(null)
   const stepElements = useRef<(HTMLElement | null)[]>([])
@@ -394,6 +396,129 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
               <span>Logo</span>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── PRICING ── */}
+      <section className="lp-pricing">
+        <div className="lp-section-head">
+          <h2>{t('landing.pricing.title')}</h2>
+          <p>{t('landing.pricing.subtitle')}</p>
+        </div>
+
+        <div className="lp-pricing__labels">
+          <span className="lp-flow__col-label lp-flow__col-label--driver">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0112 0v1"/></svg>
+            {t('landing.pricing.driverLabel')}
+          </span>
+          <span className="lp-flow__col-label lp-flow__col-label--shop">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 21V9l9-7 9 7v12"/><path d="M9 21v-6h6v6"/></svg>
+            {t('landing.pricing.shopLabel')}
+          </span>
+        </div>
+
+        <div className="lp-pricing__grid">
+          {/* Driver Card */}
+          <div className={`lp-pricing__card lp-pricing__card--driver ${driverPlan === 'premium' ? 'lp-pricing__card--premium' : ''}`}>
+            <div className="lp-pricing__plan-toggle">
+              <button
+                className={`lp-pricing__plan-btn ${driverPlan === 'free' ? 'lp-pricing__plan-btn--active' : ''}`}
+                onClick={() => setDriverPlan('free')}
+              >
+                {t('landing.pricing.freePlan')}
+              </button>
+              <button
+                className={`lp-pricing__plan-btn lp-pricing__plan-btn--prem ${driverPlan === 'premium' ? 'lp-pricing__plan-btn--active' : ''}`}
+                onClick={() => setDriverPlan('premium')}
+              >
+                {t('landing.pricing.premiumPlan')}
+              </button>
+            </div>
+
+            <div className="lp-pricing__body">
+              <p className="lp-pricing__desc">
+                {driverPlan === 'free' ? t('landing.pricing.freeDesc') : t('landing.pricing.shopDesc')}
+              </p>
+
+              <div className="lp-pricing__features">
+                <ul>
+                  <li>{t('landing.pricing.freeBullet1')}</li>
+                  <li>{t('landing.pricing.freeBullet2')}</li>
+                  <li>{t('landing.pricing.freeBullet3')}</li>
+                </ul>
+              </div>
+
+              <div className="lp-pricing__limits">
+                <div className="lp-pricing__limit-row">
+                  <span>{t('landing.pricing.limitOpen')}</span>
+                  <span className="lp-pricing__limit-val">{driverPlan === 'free' ? '3' : '10'}</span>
+                </div>
+                <div className="lp-pricing__limit-row">
+                  <span>{t('landing.pricing.limitDaily')}</span>
+                  <span className="lp-pricing__limit-val">{driverPlan === 'free' ? '1' : '5'}</span>
+                </div>
+                <div className="lp-pricing__limit-row">
+                  <span>{t('landing.pricing.limitQuestions')}</span>
+                  <span className="lp-pricing__limit-val">{driverPlan === 'free' ? '2' : '5'}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="lp-pricing__footer">
+              <div className="lp-pricing__price">
+                <span className="lp-pricing__amount">{driverPlan === 'free' ? '0' : 'XX'} zł</span>
+                <span className="lp-pricing__per-month">{t('landing.pricing.perMonth')}</span>
+              </div>
+              <button className="lp-btn lp-btn--primary lp-btn--lg" onClick={onGetStarted}>
+                {driverPlan === 'free' ? t('landing.pricing.driverCta') : t('landing.pricing.driverCtaPremium')}
+              </button>
+              <p className="lp-pricing__disclaimer">{t('landing.pricing.driverDisclaimer')}</p>
+            </div>
+          </div>
+
+          {/* Shop Card */}
+          <div className="lp-pricing__card lp-pricing__card--shop">
+            <div className="lp-pricing__toggle">
+              <button
+                className={`lp-pricing__toggle-btn ${billingCycle === 'monthly' ? 'lp-pricing__toggle-btn--active' : ''}`}
+                onClick={() => setBillingCycle('monthly')}
+              >
+                {t('landing.pricing.monthly')}
+              </button>
+              <button
+                className={`lp-pricing__toggle-btn ${billingCycle === 'annual' ? 'lp-pricing__toggle-btn--active' : ''}`}
+                onClick={() => setBillingCycle('annual')}
+              >
+                {t('landing.pricing.annual')}
+                {billingCycle === 'annual' && (
+                  <span className="lp-pricing__save-pill">{t('landing.pricing.savePercent', { percent: 20 })}</span>
+                )}
+              </button>
+            </div>
+
+            <div className="lp-pricing__body">
+              <p className="lp-pricing__desc">{t('landing.pricing.shopDesc')}</p>
+
+              <div className="lp-pricing__features">
+                <ul>
+                  <li>{t('landing.pricing.shopBullet1')}</li>
+                  <li>{t('landing.pricing.shopBullet2')}</li>
+                  <li>{t('landing.pricing.shopBullet3')}</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="lp-pricing__footer">
+              <div className="lp-pricing__price">
+                <span className="lp-pricing__amount">{billingCycle === 'monthly' ? 'XX' : 'XX'} zł</span>
+                <span className="lp-pricing__per-month">{t('landing.pricing.perMonth')}</span>
+              </div>
+              <button className="lp-btn lp-btn--accent lp-btn--lg" onClick={onJoinAsShop}>
+                {t('landing.pricing.shopCta')}
+              </button>
+              <p className="lp-pricing__disclaimer">{t('landing.pricing.shopDisclaimer')}</p>
+            </div>
+          </div>
         </div>
       </section>
 
