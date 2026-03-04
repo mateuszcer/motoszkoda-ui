@@ -2,54 +2,59 @@
    DESIGN TOKENS
    ============================================================ */
 :root {
-  /* Brand — deeper teal */
-  --brand-700: #085A48;
-  --brand-600: #0A6E58;
-  --brand-500: #0D9373;
-  --brand-400: #14B890;
-  --brand-100: #CCFBEF;
-  --brand-50: #EDFCF7;
+  /* Brand — vivid teal */
+  --brand-800: #044236;
+  --brand-700: #065F4E;
+  --brand-600: #0B7A65;
+  --brand-500: #0F9D80;
+  --brand-400: #22C49E;
+  --brand-300: #56DDBB;
+  --brand-200: #99ECDA;
+  --brand-100: #CCF5EC;
+  --brand-50: #ECFDF7;
 
   /* Accent — warm amber */
   --accent-600: #B8882A;
   --accent-500: #D4A035;
   --accent-400: #E4B84D;
+  --accent-300: #F0D06A;
   --accent-100: #FEF0C7;
   --accent-50: #FFFAEB;
 
-  /* Neutrals — warmer */
-  --gray-950: #1A1A1A;
-  --gray-900: #1F1F1F;
-  --gray-700: #3D3D3D;
-  --gray-600: #525252;
-  --gray-500: #6B6B6B;
-  --gray-400: #9E9E9E;
-  --gray-300: #D4D0CB;
-  --gray-200: #E8E5E0;
-  --gray-100: #F2F0EC;
-  --gray-50: #F7F6F4;
-  --off-white: #FAF9F7;
+  /* Neutrals — cool blue-gray */
+  --gray-950: #0A111F;
+  --gray-900: #121B2C;
+  --gray-800: #1E2D44;
+  --gray-700: #304159;
+  --gray-600: #465973;
+  --gray-500: #64778F;
+  --gray-400: #8E9DB0;
+  --gray-300: #BCC5D2;
+  --gray-200: #DDE2EA;
+  --gray-100: #EEF1F5;
+  --gray-50: #F6F8FA;
+  --off-white: #FAFBFC;
   --white: #FFFFFF;
 
   /* Semantic */
-  --success-600: #039855;
-  --success-100: #D1FADF;
-  --success-50: #ECFDF3;
+  --success-600: #059669;
+  --success-100: #D1FAE5;
+  --success-50: #ECFDF5;
 
-  --warning-600: #DC6803;
-  --warning-100: #FEF0C7;
-  --warning-50: #FFFAEB;
+  --warning-600: #D97706;
+  --warning-100: #FEF3C7;
+  --warning-50: #FFFBEB;
 
-  --error-600: #D92D20;
-  --error-100: #FEE4E2;
-  --error-50: #FEF3F2;
+  --error-600: #DC2626;
+  --error-100: #FEE2E2;
+  --error-50: #FEF2F2;
 
-  --info-600: #0E7C86;
-  --info-100: #C7F1F5;
-  --info-50: #EAFBFC;
+  --info-600: #0891B2;
+  --info-100: #CFFAFE;
+  --info-50: #ECFEFF;
 
   /* Typography */
-  --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Urbanist', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* Spacing (8pt grid) */
@@ -64,18 +69,18 @@
   --space-12: 48px;
   --space-16: 64px;
 
-  /* Radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 14px;
+  /* Radius — softer, more modern */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(26, 26, 26, 0.04);
-  --shadow-sm: 0 1px 3px rgba(26, 26, 26, 0.08), 0 1px 2px rgba(26, 26, 26, 0.04);
-  --shadow-md: 0 4px 8px -2px rgba(26, 26, 26, 0.08), 0 2px 4px -2px rgba(26, 26, 26, 0.04);
-  --shadow-lg: 0 12px 16px -4px rgba(26, 26, 26, 0.08), 0 4px 6px -2px rgba(26, 26, 26, 0.03);
-  --shadow-card-hover: 0 8px 24px -4px rgba(26, 26, 26, 0.12), 0 4px 8px -2px rgba(26, 26, 26, 0.06);
+  /* Shadows — cooler, more layered */
+  --shadow-xs: 0 1px 2px rgba(10, 17, 31, 0.05);
+  --shadow-sm: 0 1px 3px rgba(10, 17, 31, 0.07), 0 1px 2px rgba(10, 17, 31, 0.04);
+  --shadow-md: 0 4px 12px -2px rgba(10, 17, 31, 0.09), 0 2px 4px -2px rgba(10, 17, 31, 0.04);
+  --shadow-lg: 0 12px 28px -4px rgba(10, 17, 31, 0.11), 0 4px 8px -2px rgba(10, 17, 31, 0.04);
+  --shadow-card-hover: 0 12px 32px -4px rgba(10, 17, 31, 0.15), 0 4px 8px rgba(10, 17, 31, 0.06);
 
   /* Transitions */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -96,20 +101,15 @@
   color: var(--gray-900);
   font-family: var(--font-sans);
   font-size: 15px;
-  line-height: 1.5;
-  background: var(--off-white);
+  line-height: 1.55;
+  background: var(--gray-50);
   z-index: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Subtle noise overlay */
+/* Clean background — no noise */
 .app-shell::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  opacity: 0.3;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  display: none;
 }
 
 /* Remove old background orbs */
@@ -127,6 +127,18 @@
   align-items: center;
   padding: var(--space-3) var(--space-5);
   margin-bottom: var(--space-5);
+  position: relative;
+}
+
+.app-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--brand-600), var(--brand-400), transparent);
+  opacity: 0.4;
 }
 
 .app-header .brand {
@@ -312,14 +324,15 @@
 }
 
 .btn-primary {
-  background: var(--brand-600);
+  background: linear-gradient(135deg, var(--brand-600), var(--brand-500));
   color: var(--white);
-  box-shadow: 0 1px 3px rgba(10, 110, 88, 0.3), 0 1px 2px rgba(10, 110, 88, 0.2);
+  box-shadow: 0 1px 3px rgba(11, 122, 101, 0.3), 0 1px 2px rgba(11, 122, 101, 0.15);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--brand-700);
-  box-shadow: 0 2px 6px rgba(10, 110, 88, 0.35), 0 1px 3px rgba(10, 110, 88, 0.25);
+  background: linear-gradient(135deg, var(--brand-700), var(--brand-600));
+  box-shadow: 0 4px 14px rgba(11, 122, 101, 0.35), 0 2px 4px rgba(11, 122, 101, 0.2);
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -577,25 +590,27 @@ textarea {
   width: 100%;
   margin-top: var(--space-1);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--gray-300);
+  border: 1px solid var(--gray-200);
   padding: 10px var(--space-3);
   font-family: var(--font-sans);
   font-size: 15px;
   line-height: 1.5;
   color: var(--gray-900);
-  background: var(--white);
-  box-shadow: inset 0 1px 2px rgba(26, 26, 26, 0.04);
+  background: var(--gray-100);
+  box-shadow: none;
   transition: border-color var(--duration-fast) ease,
-              box-shadow var(--duration-fast) ease;
-  min-height: 44px;
+              box-shadow var(--duration-fast) ease,
+              background-color var(--duration-fast) ease;
+  min-height: 46px;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
   outline: none;
+  background: var(--white);
   border-color: var(--brand-500);
-  box-shadow: 0 0 0 3px rgba(10, 110, 88, 0.15), inset 0 1px 2px rgba(26, 26, 26, 0.04);
+  box-shadow: 0 0 0 3px rgba(15, 157, 128, 0.12);
 }
 
 input::placeholder,
@@ -731,17 +746,11 @@ label small {
 .home-screen .hero-section::after {
   content: '';
   position: absolute;
-  right: -20px;
-  top: -20px;
-  width: 200px;
-  height: 200px;
-  background: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 8px,
-    rgba(10, 110, 88, 0.04) 8px,
-    rgba(10, 110, 88, 0.04) 9px
-  );
+  right: -60px;
+  top: -60px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(15, 157, 128, 0.08) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -1222,23 +1231,24 @@ label small {
   display: inline-flex;
   background: var(--gray-100);
   border: 1px solid var(--gray-200);
-  border-radius: var(--radius-sm);
-  padding: 3px;
+  border-radius: var(--radius-md);
+  padding: 4px;
 }
 
 .tab-btn {
   border: none;
   background: transparent;
   padding: var(--space-2) var(--space-4);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-family: var(--font-sans);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--gray-500);
   min-height: 36px;
-  transition: background-color var(--duration-fast) ease,
-              color var(--duration-fast) ease;
+  transition: background-color var(--duration-normal) ease,
+              color var(--duration-normal) ease,
+              box-shadow var(--duration-normal) ease;
 }
 
 .tab-btn:hover {
@@ -1248,7 +1258,7 @@ label small {
 .tab-btn-active {
   background: var(--white);
   color: var(--gray-900);
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ============================================================
@@ -1414,9 +1424,23 @@ label small {
 .confirmation-card {
   padding: var(--space-8) var(--space-5);
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--success-50) 0%, var(--brand-50) 100%);
+  background: linear-gradient(135deg, var(--brand-50) 0%, var(--success-50) 50%, var(--white) 100%);
   border: 1px solid var(--success-100);
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.confirmation-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -30%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(5, 150, 105, 0.06) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .confirmation-card h4 {
@@ -1644,6 +1668,7 @@ label small {
   max-width: 420px;
   background: var(--white);
   border: 1px solid var(--gray-200);
+  border-top: 3px solid var(--brand-500);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   padding: var(--space-8) var(--space-6);
@@ -1659,7 +1684,7 @@ label small {
   width: 56px;
   height: 56px;
   border-radius: var(--radius-md);
-  background: var(--brand-600);
+  background: linear-gradient(135deg, var(--brand-600), var(--brand-500));
   display: inline-grid;
   place-items: center;
   color: var(--white);
@@ -1667,6 +1692,7 @@ label small {
   font-size: 20px;
   letter-spacing: -0.02em;
   margin-bottom: var(--space-3);
+  box-shadow: 0 4px 12px rgba(11, 122, 101, 0.25);
 }
 
 .auth-brand h2 {
@@ -1894,7 +1920,7 @@ label small {
 
 /* Brand mark — shop variant (amber) */
 .brand-mark-shop {
-  background: var(--accent-500) !important;
+  background: linear-gradient(135deg, var(--accent-500), var(--accent-400)) !important;
 }
 
 /* Shop inbox hero — amber-tinted */
@@ -1904,6 +1930,20 @@ label small {
   border-radius: var(--radius-lg);
   padding: var(--space-8) var(--space-6);
   margin-bottom: var(--space-6);
+  position: relative;
+  overflow: hidden;
+}
+
+.shop-inbox-hero::after {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(212, 160, 53, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .shop-inbox-hero .eyebrow {
@@ -1959,14 +1999,14 @@ label small {
 }
 
 .chip-active {
-  background: var(--gray-900);
-  border-color: var(--gray-900);
+  background: var(--brand-600);
+  border-color: var(--brand-600);
   color: var(--white);
 }
 
 .chip-active:hover {
-  background: var(--gray-700);
-  border-color: var(--gray-700);
+  background: var(--brand-700);
+  border-color: var(--brand-700);
   color: var(--white);
 }
 
@@ -2825,7 +2865,7 @@ label small {
 
 .admin-voucher-form {
   padding: var(--space-6);
-  border-top: 3px solid var(--gray-900);
+  border-top: 3px solid var(--brand-600);
 }
 
 .admin-voucher-input-row {

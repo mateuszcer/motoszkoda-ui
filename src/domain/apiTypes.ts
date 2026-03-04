@@ -136,6 +136,7 @@ export interface CompareQuoteSummary {
   priceMaxMinorUnits: number
   currency: string
   estimatedDays: number | null
+  note: string | null
 }
 
 export interface CompareViewResponse {

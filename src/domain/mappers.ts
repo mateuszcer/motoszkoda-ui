@@ -122,6 +122,7 @@ export function mapCompareToShopQuote(
       minPricePln: min,
       maxPricePln: max !== min ? max : undefined,
       durationDays: cv.quoteSummary.estimatedDays ?? undefined,
+      comment: cv.quoteSummary.note ?? undefined,
     }
   }
 
