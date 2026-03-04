@@ -399,6 +399,7 @@ export function RepairRequestDetail({
                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setQuoteDetailShop(shop) }}
                           >
                             {formatQuoteRange(shop.quote, i18n.language)}
+                            <svg className="quote-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                           </strong>
                           {shop.quote.comment ? <p>{shop.quote.comment}</p> : null}
                           <div className="quote-meta">
@@ -408,12 +409,6 @@ export function RepairRequestDetail({
                             {shop.quote.validUntil ? (
                               <small>{t('detail.validUntil', { date: formatDateTime(shop.quote.validUntil, i18n.language) })}</small>
                             ) : null}
-                            <button
-                              className="btn-link"
-                              onClick={() => setQuoteDetailShop(shop)}
-                            >
-                              {t('quoteDetail.viewDetails')}
-                            </button>
                           </div>
                           {shop.quote.lineItems && shop.quote.lineItems.length > 0 ? (
                             <div className="quote-line-items-display">

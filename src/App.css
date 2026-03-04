@@ -92,6 +92,92 @@
 }
 
 /* ============================================================
+   DARK THEME OVERRIDES
+   ============================================================ */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Neutrals — invert gray scale */
+  --gray-950: #E8ECF0;
+  --gray-900: #D0D6DE;
+  --gray-800: #B0BAC6;
+  --gray-700: #8E9DB0;
+  --gray-600: #7A8CA2;
+  --gray-500: #64778F;
+  --gray-400: #465973;
+  --gray-300: #304159;
+  --gray-200: #1E2D44;
+  --gray-100: #141F30;
+  --gray-50: #0E1726;
+  --off-white: #0C1322;
+  --white: #0A111F;
+
+  /* Brand — darken light tints for dark backgrounds */
+  --brand-50: #0B1E18;
+  --brand-100: #0E2B22;
+
+  /* Accent — darken light tints */
+  --accent-50: #1A1608;
+  --accent-100: #2B2410;
+
+  /* Semantic — darken light tints */
+  --success-50: #0B1E16;
+  --success-100: #0E2B20;
+
+  --warning-50: #1A1608;
+  --warning-100: #2B2410;
+
+  --error-50: #1E0B0B;
+  --error-100: #2B1010;
+
+  --info-50: #0B1A1E;
+  --info-100: #10242B;
+
+  /* Shadows — stronger for dark surfaces */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.35), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 12px 28px -4px rgba(0, 0, 0, 0.4), 0 4px 8px -2px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 12px 32px -4px rgba(0, 0, 0, 0.45), 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Header stays dark in both themes */
+[data-theme="dark"] .app-header {
+  background: #0A111F;
+}
+
+/* Empty state SVG — swap stroke to light */
+[data-theme="dark"] .empty-state::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 40'%3E%3Cpath d='M12 28h-4a4 4 0 01-4-4v-4l6-8h20l10 8h12l6 4v4a4 4 0 01-4 4h-4m-42 0a4 4 0 108 0m26 0a4 4 0 108 0' fill='none' stroke='%23B0BAC6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Dialog backdrop — stronger on dark */
+[data-theme="dark"] .dialog-backdrop,
+[data-theme="dark"] .thread-panel-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Input borders — subtle in dark */
+[data-theme="dark"] .input,
+[data-theme="dark"] .textarea,
+[data-theme="dark"] select {
+  border-color: #1E2D44;
+  background: #0E1726;
+}
+
+/* Theme toggle — match lang-toggle dimensions */
+.theme-toggle {
+  padding: var(--space-1) var(--space-2);
+  min-height: 32px;
+  min-width: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
    APP SHELL
    ============================================================ */
 .app-shell {
@@ -2668,29 +2754,20 @@ label small {
 
 .quote-highlight-clickable {
   cursor: pointer;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.quote-highlight-clickable:hover {
-  text-decoration-style: solid;
+.quote-chevron {
+  opacity: 0.5;
+  transition: opacity var(--duration-fast) ease, transform var(--duration-fast) ease;
+  flex-shrink: 0;
 }
 
-.btn-link {
-  background: none;
-  border: none;
-  color: var(--primary-600);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.btn-link:hover {
-  color: var(--primary-700);
+.quote-highlight-clickable:hover .quote-chevron {
+  opacity: 1;
+  transform: translateX(2px);
 }
 
 .price-mode-toggle {

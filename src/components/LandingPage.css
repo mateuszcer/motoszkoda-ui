@@ -1576,6 +1576,231 @@
   color: var(--lp-gray-500);
 }
 
+/* ── Dark Theme — light sections only ──────────────────── */
+/* Hero, CTA, footer are already dark — no changes needed */
+[data-theme="dark"] .lp-flow {
+  background: #0E1726;
+}
+
+[data-theme="dark"] .lp-section-head h2,
+[data-theme="dark"] .lp-step__title {
+  color: var(--lp-white);
+}
+
+[data-theme="dark"] .lp-section-head p,
+[data-theme="dark"] .lp-step__caption {
+  color: var(--lp-gray-400);
+}
+
+[data-theme="dark"] .lp-step-nav__item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .lp-step-nav__dot {
+  background: var(--lp-dark-3);
+  color: var(--lp-gray-400);
+}
+
+[data-theme="dark"] .lp-step-nav__item--active .lp-step-nav__label {
+  color: var(--lp-white);
+}
+
+[data-theme="dark"] .lp-step-nav__item--done .lp-step-nav__dot {
+  background: rgba(13, 147, 115, 0.2);
+  color: var(--lp-teal-400);
+}
+
+[data-theme="dark"] .lp-step-nav__item--done .lp-step-nav__label {
+  color: var(--lp-teal-300);
+}
+
+[data-theme="dark"] .lp-flow__line {
+  background: var(--lp-dark-3);
+}
+
+[data-theme="dark"] .lp-flow__col-label--driver {
+  color: var(--lp-teal-400);
+  background: rgba(13, 147, 115, 0.12);
+}
+
+[data-theme="dark"] .lp-flow__col-label--shop {
+  color: var(--lp-amber-400);
+  background: rgba(212, 160, 53, 0.12);
+}
+
+/* Mock cards in dark */
+[data-theme="dark"] .lp-mock--driver,
+[data-theme="dark"] .lp-mock--shop {
+  background: var(--lp-dark-2);
+  border-color: var(--lp-dark-3);
+}
+
+[data-theme="dark"] .mk__input,
+[data-theme="dark"] .mk__textarea,
+[data-theme="dark"] .mk__ask-input,
+[data-theme="dark"] .mk__sq-field {
+  background: var(--lp-dark-3);
+  color: var(--lp-gray-300);
+}
+
+[data-theme="dark"] .mk__shop-name,
+[data-theme="dark"] .mk__inbox-title,
+[data-theme="dark"] .mk__ack-header,
+[data-theme="dark"] .mk__toggle-row,
+[data-theme="dark"] .mk__sq-value {
+  color: var(--lp-gray-300);
+}
+
+[data-theme="dark"] .mk__slider-track {
+  background: var(--lp-dark-3);
+}
+
+[data-theme="dark"] .mk__slider-thumb {
+  border-color: var(--lp-dark-2);
+}
+
+[data-theme="dark"] .mk__shop-row:not(:last-child) {
+  border-bottom-color: var(--lp-dark-3);
+}
+
+[data-theme="dark"] .mk__badge--reviewing {
+  background: rgba(14, 124, 134, 0.15);
+}
+
+[data-theme="dark"] .mk__badge--delivered {
+  background: var(--lp-dark-3);
+}
+
+[data-theme="dark"] .mk__quote {
+  border-color: var(--lp-dark-3);
+}
+
+[data-theme="dark"] .mk__quote--hl {
+  background: rgba(13, 147, 115, 0.08);
+  border-color: rgba(34, 196, 158, 0.3);
+}
+
+[data-theme="dark"] .mk__chosen-card {
+  background: rgba(13, 147, 115, 0.08);
+  border-color: rgba(34, 196, 158, 0.3);
+}
+
+[data-theme="dark"] .mk__bubble--shop {
+  background: rgba(212, 160, 53, 0.1);
+  border-color: rgba(212, 160, 53, 0.2);
+}
+
+[data-theme="dark"] .mk__btn--ghost {
+  border-color: var(--lp-dark-3);
+  color: var(--lp-gray-400);
+}
+
+[data-theme="dark"] .mk__inbox-item {
+  background: rgba(212, 160, 53, 0.08);
+  border-color: rgba(212, 160, 53, 0.15);
+}
+
+[data-theme="dark"] .mk__inbox-header {
+  border-bottom-color: var(--lp-dark-3);
+}
+
+[data-theme="dark"] .mk__phone {
+  border-top-color: rgba(13, 147, 115, 0.2);
+}
+
+[data-theme="dark"] .mk__phone--muted {
+  border-top-color: var(--lp-dark-3);
+}
+
+[data-theme="dark"] .mk__toggle {
+  background: var(--lp-dark-3);
+}
+
+/* Trust section */
+[data-theme="dark"] .lp-trust {
+  background: #0A111F;
+}
+
+[data-theme="dark"] .lp-trust h2 {
+  color: var(--lp-white);
+}
+
+[data-theme="dark"] .lp-trust__item strong {
+  color: var(--lp-gray-300);
+}
+
+[data-theme="dark"] .lp-trust__item p {
+  color: var(--lp-gray-400);
+}
+
+[data-theme="dark"] .lp-trust__col--driver .lp-trust__icon {
+  background: rgba(13, 147, 115, 0.12);
+}
+
+[data-theme="dark"] .lp-trust__col--shop .lp-trust__icon {
+  background: rgba(212, 160, 53, 0.1);
+}
+
+[data-theme="dark"] .lp-trust__logos {
+  border-top-color: var(--lp-dark-3);
+}
+
+[data-theme="dark"] .lp-logo-ph {
+  border-color: var(--lp-dark-3);
+  color: var(--lp-gray-500);
+}
+
+/* FAQ section */
+[data-theme="dark"] .lp-faq {
+  background: #0E1726;
+}
+
+[data-theme="dark"] .lp-faq h2 {
+  color: var(--lp-white);
+}
+
+[data-theme="dark"] .lp-faq__item {
+  border-bottom-color: var(--lp-dark-3);
+}
+
+[data-theme="dark"] .lp-faq__q {
+  color: var(--lp-gray-300);
+}
+
+[data-theme="dark"] .lp-faq__q:hover {
+  color: var(--lp-teal-400);
+}
+
+[data-theme="dark"] .lp-faq__a p {
+  color: var(--lp-gray-400);
+}
+
+.lp-hero__nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Landing page theme toggle — match .lp-lang */
+.lp-theme-toggle {
+  font-family: var(--lp-font-mono);
+  font-size: 12px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--lp-gray-400);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.lp-theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--lp-white);
+}
+
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .lp-flow__wrap {

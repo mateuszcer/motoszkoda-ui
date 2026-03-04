@@ -18,6 +18,7 @@ import { ShopProfileView } from './components/ShopProfileView'
 import { ShopRegisterView } from './components/ShopRegisterView'
 import { ShopRequestDetailView } from './components/ShopRequestDetailView'
 import { ShopSendQuoteView } from './components/ShopSendQuoteView'
+import { ThemeToggle } from './components/ThemeToggle'
 import type { ShopRegistrationRequest } from './domain/apiTypes'
 import type { AuthState } from './domain/auth-types'
 import type {
@@ -431,6 +432,7 @@ function App() {
             <h1>Autoceny</h1>
           </div>
           <div className="header-actions">
+            <ThemeToggle />
             <LanguageToggle />
           </div>
         </header>
@@ -449,6 +451,7 @@ function App() {
             <h1>Autoceny</h1>
           </div>
           <div className="header-actions">
+            <ThemeToggle />
             <LanguageToggle />
           </div>
         </header>
@@ -467,6 +470,7 @@ function App() {
             <h1>Autoceny</h1>
           </div>
           <div className="header-actions">
+            <ThemeToggle />
             <LanguageToggle />
           </div>
         </header>
@@ -486,6 +490,7 @@ function App() {
             <h1>Autoceny</h1>
           </div>
           <div className="header-actions">
+            <ThemeToggle />
             <LanguageToggle />
           </div>
         </header>
@@ -547,6 +552,7 @@ function App() {
             <h1>Autoceny</h1>
           </div>
           <div className="header-actions">
+            <ThemeToggle />
             <LanguageToggle />
           </div>
         </header>
@@ -593,6 +599,7 @@ function App() {
               <button className="btn btn-ghost" onClick={() => void handleLogout()}>
                 {t('auth.logout')}
               </button>
+              <ThemeToggle />
               <LanguageToggle />
             </div>
           </header>
@@ -723,6 +730,7 @@ function App() {
           >
             {t('auth.logout')}
           </button>
+          <ThemeToggle />
           <LanguageToggle />
         </div>
       </header>

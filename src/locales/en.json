@@ -1,4 +1,9 @@
 {
+  "theme": {
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
+  },
+
   "app": {
     "loading": "Loading...",
     "loadError": "Could not load requests. Please retry.",
@@ -152,8 +157,7 @@
     "total": "Total",
     "labor": "Labor",
     "parts": "Parts",
-    "noBreakdown": "This quote has no itemized breakdown.",
-    "viewDetails": "View details"
+    "noBreakdown": "This quote has no itemized breakdown."
   },
 
   "quoteState": {
