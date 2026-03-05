@@ -475,7 +475,10 @@
       "shopBullet3": "Konkurujesz lokalnie wartością",
       "shopCta": "Dołącz jako warsztat",
       "shopDisclaimer": "Liczba zleceń zależy od Twojej okolicy i popytu.",
-      "perMonth": "/ miesiąc"
+      "perMonth": "/ miesiąc",
+      "perYear": "/ rok",
+      "unlimited": "Bez limitu",
+      "comingSoon": "Wkrótce"
     },
     "conversion": {
       "driverTitle": "Gotowy znaleźć najlepszą ofertę?",

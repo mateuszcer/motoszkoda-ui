@@ -471,7 +471,10 @@
       "shopBullet3": "Compete locally on value",
       "shopCta": "Join as a shop",
       "shopDisclaimer": "Lead volume depends on your area and demand.",
-      "perMonth": "/ month"
+      "perMonth": "/ month",
+      "perYear": "/ year",
+      "unlimited": "Unlimited",
+      "comingSoon": "Coming soon"
     },
     "conversion": {
       "driverTitle": "Ready to find the best deal?",

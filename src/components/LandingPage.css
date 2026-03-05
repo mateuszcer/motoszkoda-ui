@@ -1501,6 +1501,39 @@
 
 .lp-pricing__card--premium {
   border-top-color: var(--lp-teal-400);
+  position: relative;
+}
+
+.lp-pricing__card--premium .lp-pricing__body,
+.lp-pricing__card--premium .lp-pricing__footer {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.lp-pricing__card--premium::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 10px,
+    rgba(0, 0, 0, 0.018) 10px,
+    rgba(0, 0, 0, 0.018) 20px
+  );
+  pointer-events: none;
+}
+
+.lp-pricing__limit-val--unlimited {
+  color: var(--lp-teal-500);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.lp-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Description */
@@ -1591,6 +1624,14 @@
   font-size: 32px;
   color: var(--lp-dark);
   letter-spacing: -0.02em;
+}
+
+.lp-pricing__original-price {
+  font-size: 18px;
+  color: var(--lp-gray-400);
+  text-decoration: line-through;
+  margin-right: 8px;
+  font-weight: 600;
 }
 
 .lp-pricing__per-month {

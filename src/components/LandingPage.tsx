@@ -451,27 +451,33 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
               <div className="lp-pricing__limits">
                 <div className="lp-pricing__limit-row">
                   <span>{t('landing.pricing.limitOpen')}</span>
-                  <span className="lp-pricing__limit-val">{driverPlan === 'free' ? '3' : '10'}</span>
+                  <span className={`lp-pricing__limit-val ${driverPlan === 'premium' ? 'lp-pricing__limit-val--unlimited' : ''}`}>{driverPlan === 'free' ? '3' : t('landing.pricing.unlimited')}</span>
                 </div>
                 <div className="lp-pricing__limit-row">
                   <span>{t('landing.pricing.limitDaily')}</span>
-                  <span className="lp-pricing__limit-val">{driverPlan === 'free' ? '1' : '5'}</span>
+                  <span className={`lp-pricing__limit-val ${driverPlan === 'premium' ? 'lp-pricing__limit-val--unlimited' : ''}`}>{driverPlan === 'free' ? '1' : t('landing.pricing.unlimited')}</span>
                 </div>
                 <div className="lp-pricing__limit-row">
                   <span>{t('landing.pricing.limitQuestions')}</span>
-                  <span className="lp-pricing__limit-val">{driverPlan === 'free' ? '2' : '5'}</span>
+                  <span className={`lp-pricing__limit-val ${driverPlan === 'premium' ? 'lp-pricing__limit-val--unlimited' : ''}`}>{driverPlan === 'free' ? '2' : t('landing.pricing.unlimited')}</span>
                 </div>
               </div>
             </div>
 
             <div className="lp-pricing__footer">
               <div className="lp-pricing__price">
-                <span className="lp-pricing__amount">{driverPlan === 'free' ? '0' : 'XX'} zł</span>
+                <span className="lp-pricing__amount">{driverPlan === 'free' ? '0' : '15'} zł</span>
                 <span className="lp-pricing__per-month">{t('landing.pricing.perMonth')}</span>
               </div>
-              <button className="lp-btn lp-btn--primary lp-btn--lg" onClick={onGetStarted}>
-                {driverPlan === 'free' ? t('landing.pricing.driverCta') : t('landing.pricing.driverCtaPremium')}
-              </button>
+              {driverPlan === 'free' ? (
+                <button className="lp-btn lp-btn--primary lp-btn--lg" onClick={onGetStarted}>
+                  {t('landing.pricing.driverCta')}
+                </button>
+              ) : (
+                <button className="lp-btn lp-btn--primary lp-btn--lg lp-btn--disabled" disabled>
+                  {t('landing.pricing.comingSoon')}
+                </button>
+              )}
               <p className="lp-pricing__disclaimer">{t('landing.pricing.driverDisclaimer')}</p>
             </div>
           </div>
@@ -491,7 +497,7 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
               >
                 {t('landing.pricing.annual')}
                 {billingCycle === 'annual' && (
-                  <span className="lp-pricing__save-pill">{t('landing.pricing.savePercent', { percent: 20 })}</span>
+                  <span className="lp-pricing__save-pill">{t('landing.pricing.savePercent', { percent: Math.round((1 - 1200 / (120 * 12)) * 100) })}</span>
                 )}
               </button>
             </div>
@@ -510,8 +516,11 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
 
             <div className="lp-pricing__footer">
               <div className="lp-pricing__price">
-                <span className="lp-pricing__amount">{billingCycle === 'monthly' ? 'XX' : 'XX'} zł</span>
-                <span className="lp-pricing__per-month">{t('landing.pricing.perMonth')}</span>
+                {billingCycle === 'annual' && (
+                  <span className="lp-pricing__original-price">{120 * 12} zł</span>
+                )}
+                <span className="lp-pricing__amount">{billingCycle === 'monthly' ? '120' : '1200'} zł</span>
+                <span className="lp-pricing__per-month">{billingCycle === 'monthly' ? t('landing.pricing.perMonth') : t('landing.pricing.perYear')}</span>
               </div>
               <button className="lp-btn lp-btn--accent lp-btn--lg" onClick={onJoinAsShop}>
                 {t('landing.pricing.shopCta')}
