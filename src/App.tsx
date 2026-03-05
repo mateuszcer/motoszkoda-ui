@@ -38,7 +38,7 @@ import { fetchNotifications } from './services/notificationsApi'
 import { uploadAttachments } from './services/attachmentApi'
 import { repairRequestApi } from './services/repairRequestApi'
 
-const NOTIFICATION_POLL_INTERVAL = 15_000
+const NOTIFICATION_POLL_INTERVAL = 60_000
 
 const sortRequests = (requests: RepairRequest[]): RepairRequest[] => {
   return [...requests].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
