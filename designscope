@@ -1,0 +1,318 @@
+# Landing Page Redesign Guidelines
+## From Playful to Premium: Transforming Autoceny Using Qapital's Design Language
+
+---
+
+## 1. Executive Summary
+
+Qapital's landing page succeeds because every design decision serves a single message: **"We are trustworthy, calm, and effortless."** It achieves this through restrained typography, a deeply muted color palette, generous whitespace, and UI mockups that feel real rather than decorative. Your Autoceny page has strong bones — the dark hero, the step-by-step flow, the dual-audience concept — but the execution leans too playful and busy, which undercuts the trust a car-repair marketplace needs to build instantly.
+
+This document provides pixel-level guidance on how to shift Autoceny's visual language toward the sophisticated, professional, confidence-inspiring tone that Qapital demonstrates.
+
+---
+
+## 2. Typography — The Single Biggest Lever
+
+### What Qapital does
+
+Qapital uses what appears to be a **single serif/display typeface** for headlines — likely a custom or premium serif with soft, rounded terminals and generous letter-spacing. The key characteristics are:
+
+- **Headlines are large but never shout.** The hero headline ("Get your money off your mind") is roughly 56–72px, set in a medium or regular weight — *not bold*. This is critical. The lack of heavy weight makes the text feel elegant rather than aggressive.
+- **Body text is a clean, neutral sans-serif** (likely their own or something akin to Söhne, Graphik, or a similar geometric-humanist sans), set at ~16–18px with generous line-height (~1.6).
+- **Section headlines** ("Think less. Save more.", "Sit back, relax and invest") follow the same display font but drop to ~40–48px. They use very short, punchy copy — never more than 5–6 words.
+- **Subheadings / labels** ("Save", "Invest", "Budget", "Dream Team™") are set in the body sans-serif, uppercase or regular case, at ~14px, in a muted color. They act as quiet category markers above the big headline.
+
+### What Autoceny does differently
+
+- The hero headline uses an **ultra-bold italic white display font**. It's dramatic and eye-catching, but the heavy weight + italic + white-on-dark combination reads as flashy/startup-y rather than established/trustworthy.
+- The body text and step labels mix weights inconsistently — some bold, some regular, some in different sizes without clear hierarchy.
+
+### Guidelines for Autoceny
+
+1. **Choose a premium display typeface.** Consider: DM Serif Display, Playfair Display, Lora, or Source Serif 4. Set headlines in **regular or medium weight** — never bold. Let the size do the work.
+2. **Choose a single sans-serif for everything else.** Consider: DM Sans, Plus Jakarta Sans, or Outfit. Use it for body text, labels, buttons, navigation — everything that isn't a headline.
+3. **Establish exactly 5 type sizes** and use nothing else:
+   - Hero headline: 56–64px, display serif, regular weight
+   - Section headline: 40–48px, display serif, regular weight
+   - Section label: 14px, sans-serif, uppercase, letter-spacing 0.05em, muted color
+   - Body text: 16–18px, sans-serif, regular weight, line-height 1.6–1.7
+   - Small / caption: 13–14px, sans-serif, muted color
+4. **Line length matters.** Qapital's body text never exceeds ~60 characters per line. Constrain your text blocks to max-width 540–600px.
+5. **Hero headline should be dark green or deep teal on dark background** — Qapital uses a soft mint/sage green for its hero text, not pure white. This is a subtle but powerful distinction: it feels intentional and branded rather than default.
+
+---
+
+## 3. Color Palette — Muted, Earthy, Trustworthy
+
+### Qapital's exact palette
+
+| Role | Color | Hex (approximate) | Usage |
+|------|-------|--------------------|-------|
+| Primary dark | Deep forest green | `#1B3A2D` or `#1E3932` | Hero background, nav background, footer |
+| Primary accent | Soft mint/sage | `#5BBAA0` or `#6DC5A1` | Hero headline text, accent highlights |
+| Background | Off-white / warm white | `#F7F5F2` or `#FAFAF8` | Main page background (NOT pure white) |
+| Text primary | Near-black | `#1A1A1A` or `#2D2D2D` | Section headlines, body text |
+| Text secondary | Warm gray | `#6B6B6B` or `#7A7A7A` | Labels, descriptions, subdued copy |
+| Button primary | Dark forest green | `#1B3A2D` | CTA buttons ("Learn more") |
+| Button secondary | White with dark border | `#FFFFFF` + border | Secondary CTAs ("Get started" on hero) |
+| Card background | Pure white | `#FFFFFF` | UI mockup cards, testimonial cards |
+| Accent warm | Soft green for progress bars | `#2D8B6F` | Goal progress bars, positive indicators |
+
+### Key observations
+
+- **No blue anywhere.** This is unusual for fintech and makes Qapital feel distinct. The entire palette lives in the green-earth spectrum.
+- **The dark green is warm, not cold.** It has brown/olive undertones, which makes it feel organic and safe rather than corporate.
+- **The "white" sections aren't white.** They use a very subtle warm off-white (`#F7F5F2` range), which prevents the page from feeling sterile.
+- **There are essentially only 2 colors** — dark green and off-white — with everything else being shades and tints of those. This extreme restriction is what creates the premium feel.
+
+### What Autoceny does differently
+
+- The dark background is blue-black (`#0F1A2E` range) rather than green-dark. This is fine and moody, but it's a colder, more "tech startup" feel.
+- The accent green is more saturated and vivid (closer to `#4ADE80`), which feels playful/techy rather than calm/premium.
+- The "how it works" section uses a pure white background with olive/yellow-green accent tones for the workshop panels, creating a busier, less unified palette.
+
+### Guidelines for Autoceny
+
+1. **Shift your dark base to a deep forest green** (like `#162B23` or `#1A2F28`) instead of blue-black. This immediately warms the entire mood.
+2. **Desaturate your accent green.** Move from vivid `#4ADE80` to a softer sage/mint like `#5BBAA0` or `#6DC5A1`. The difference is subtle but transforms the feel from "startup" to "established."
+3. **Use warm off-white** (`#F5F3F0`) for all light sections instead of pure `#FFFFFF`.
+4. **Limit yourself to 3 functional colors**: dark green, off-white, and one muted accent. Everything else should be tints of these three.
+5. **Rethink the workshop-side accent color.** The golden/olive panels for workshops could become a warmer, muted tone — perhaps `#D4C5A0` (soft gold) — to maintain the two-sided marketplace distinction without breaking palette cohesion.
+
+---
+
+## 4. Layout & Spacing — The Power of Emptiness
+
+### What Qapital does
+
+This is where Qapital truly excels and where Autoceny has the most room to improve:
+
+- **Vertical section padding is enormous.** Each section has roughly 120–160px of padding top and bottom. Some sections have even more. This creates a sense of breathing room that subconsciously communicates luxury and confidence.
+- **Content occupies ~60% of the viewport width.** On a 1440px screen, the actual content area is roughly 900–1000px, with everything centered.
+- **Every section follows one of two layouts:**
+  - **Text left + visual right** (hero, save, invest sections)
+  - **Visual left + text right** (budget, dream team sections)
+  - These alternate, creating a natural zigzag reading flow.
+- **UI mockups are the visual anchors.** Instead of illustrations or stock photos, Qapital shows actual app interfaces — phones, cards, dashboard screens. These serve as both decoration and proof of product quality.
+- **Only one CTA per section.** Each section has either a "Learn more" button or nothing. There are no competing links, secondary actions, or distractions.
+- **The social proof bar (Editors' choice, 99k+ reviews, $3B saved, $4,900/year) is a single horizontal strip** with generous spacing between each metric. It sits between the hero and the feature sections as a trust accelerator.
+
+### What Autoceny does differently
+
+- The "Jak to działa" (How it works) section is **information-dense**. The dual-column layout showing both the driver and workshop flows is clever, but it creates visual complexity. There are step numbers, sub-headings, UI mockups, side panels, descriptions — all competing for attention simultaneously.
+- The vertical rhythm is tighter. Sections feel closer together, which makes the page feel busier even if the actual content volume is similar.
+- The hero section tries to do two things at once: explain the concept AND show the interface. Qapital's hero only does one thing — state the value proposition — and lets the phone mockup be purely atmospheric.
+
+### Guidelines for Autoceny
+
+1. **Double your section padding.** Minimum 120px top and bottom for every major section. This single change will have the most dramatic impact on perceived quality.
+2. **Constrain content width to 1100–1200px max**, centered on the page.
+3. **Adopt the zigzag layout.** Alternate text-left/visual-right and visual-left/text-right for feature sections. Each section should have: one small label (like "Dla Kierowców"), one big headline (5 words max), one short paragraph (2 lines max), and one CTA button.
+4. **Break the "How it works" into separate, full-width sections.** Instead of showing all 5 steps at once, give each step (or pair of steps) its own full-bleed section with generous spacing. Consider making the driver flow and workshop flow two separate pages entirely, with the homepage just teasing each.
+5. **Use a horizontal social proof bar** between the hero and the first feature section. Include metrics like: number of workshops, number of repair orders completed, average savings, average response time. Style them exactly like Qapital's — icon + big number + small descriptor.
+6. **One CTA per section, maximum.** The hero can have two (one for drivers, one for workshops), but every other section should have only one.
+
+---
+
+## 5. Hero Section — Setting the Tone in 3 Seconds
+
+### What Qapital does
+
+- Dark green background fills the entire viewport
+- Large serif headline in soft mint green, left-aligned, occupying ~40% of the width
+- One short supporting paragraph below (2 lines, ~40 words)
+- One pill-shaped CTA button ("Get started") in white with dark text
+- A phone mockup on the right side showing the actual app dashboard, slightly tilted, with a branded debit card overlapping it
+- The phone extends beyond the section boundary, creating depth
+
+### What Autoceny does differently
+
+- Ultra-bold italic white headline — high impact but reads as aggressive/urgent
+- The headline is a long sentence rather than a short punchy phrase
+- Two CTA buttons side by side ("Stwórz Zlecenie Naprawy" and "Dla Warsztatów") — functional but decision-heavy for a first impression
+- The UI preview on the right is a dark card showing form inputs — functional but not aspirational
+
+### Guidelines for Autoceny
+
+1. **Shorten the headline dramatically.** Instead of "Otrzymaj wyceny naprawy z okolicznych warsztatów — bez obdzwaniania" try something like: "Naprawa auta. Bez stresu." or "Wycena naprawy w minutę." — 4-5 words maximum. Move the detailed explanation to the subtitle paragraph below.
+2. **Switch headline to display serif, regular weight, in your accent color** (muted mint/sage green) — not bold white.
+3. **Reduce to one primary CTA.** Make "Stwórz Zlecenie Naprawy" the primary button. The workshop CTA can be a simple text link ("Jesteś warsztatem? Dołącz tutaj →") placed subtly below or in the nav.
+4. **Show aspirational UI on the right.** Instead of the dark input form, show a light-themed mockup of the results screen — a phone displaying repair quotes with prices and distances, looking polished and easy to read. The mockup should sell the *outcome* (getting clear, comparable quotes), not the *input* (filling in a form).
+5. **Add a subtle gradient overlay** at the bottom of the hero that fades to the next section color, instead of a hard edge.
+
+---
+
+## 6. Component Design — Cards, Buttons, and UI Elements
+
+### Cards (Qapital style)
+
+- **Border-radius: 16–20px** — generously rounded, never sharp
+- **Shadow: very subtle** — `box-shadow: 0 2px 20px rgba(0,0,0,0.06)` range. Barely visible. The card reads through background contrast, not shadow.
+- **Internal padding: 24–32px** — spacious
+- **Background: pure white** on off-white page background
+- **No visible borders** — the white-on-off-white contrast is sufficient
+
+### Buttons (Qapital style)
+
+- **Primary: dark green background, white text, pill-shaped** (border-radius equal to half the height, creating a full capsule shape)
+- **Secondary: white background, dark border, dark text, pill-shaped**
+- **Size: 48–56px height**, 24px horizontal padding minimum
+- **Font: sans-serif, 15–16px, medium weight** — never bold, never uppercase
+- **No hover glow/gradient effects** — just a subtle shade shift
+- **Icons in buttons: never.** Qapital's buttons are text-only.
+
+### What to change on Autoceny
+
+1. **Soften all border-radii.** Your current cards have moderate rounding — push to 16–20px consistently.
+2. **Remove visible borders from cards.** Let white-on-off-white do the work.
+3. **Standardize button shape to pills.** Both "Stwórz Zlecenie Naprawy" and "Dla Warsztatów" should be full-capsule pill shapes.
+4. **Reduce button count and prominence.** Where you currently show "Odpowiedz" and "Ignoruj" as two equal buttons, consider making one a link and the other a subtle button.
+5. **Simplify card interiors.** Your step cards contain a lot of nested UI elements (distance sliders, tag badges, form inputs). Consider showing a cleaner, more abstracted version of each step — less literal, more aspirational.
+
+---
+
+## 7. Imagery & Visual Assets
+
+### What Qapital does
+
+- **No stock photography on the homepage** (except in the Dream Team section, where it uses carefully cropped circular portraits)
+- **Product UI screenshots are the primary visual.** Phone mockups, card mockups, dashboard screenshots — all rendered with high production value
+- **Illustrations are minimal and purposeful.** A watering can illustration, a graduation cap icon, a luggage icon — small, soft, and used sparingly within UI mockups
+- **Icons are line-style**, monochromatic, and small — never the visual focus
+
+### Guidelines for Autoceny
+
+1. **Invest in high-fidelity app mockups.** Show your actual UI (or an idealized version) in phone/browser frames. These are your most powerful trust signals.
+2. **If you use icons, keep them simple line-style in one color.** No filled, multicolor, or 3D icons.
+3. **Consider showing real workshop photos** in the social proof section — but only if they're high-quality, well-lit, and consistently styled (apply a consistent color overlay or filter).
+4. **Remove any decorative elements that don't serve communication.** Every visual should either show the product or illustrate a specific concept.
+
+---
+
+## 8. Motion & Interaction
+
+### What Qapital does
+
+- **Minimal animation.** The page relies on strong static composition rather than motion.
+- **Scroll-triggered fade-ins** are subtle — elements simply appear with a gentle opacity + translate-Y transition as you scroll down.
+- **No parallax, no particle effects, no complex hover states.**
+- **Transitions are slow and gentle** — around 400–600ms with ease-out curves.
+
+### Guidelines for Autoceny
+
+1. **Use scroll-triggered fade-up animations** with staggered delays for elements within each section. Keep durations at 500ms, ease-out.
+2. **Remove any fast, bouncy, or playful animations.** Everything should feel deliberate and slow.
+3. **Hover states on buttons**: subtle background shade shift only, transition 200ms.
+4. **Hover states on cards**: very subtle shadow increase, transition 300ms. No scale transforms.
+
+---
+
+## 9. Trust & Social Proof Section
+
+### What Qapital does
+
+This is one of Qapital's most effective sections. Between the hero and the features, there's a full-width dark green bar displaying:
+
+- Editors' Choice — Google Play (with laurel icon)
+- 99k+ 5-Star Reviews — iOS & Android Users (with star icons)
+- $3B Saved — By Our Users (with dollar icon)
+- $4,900/Year Saved — On Average Per User (with hand icon)
+
+Later, a full section shows user testimonials in clean white cards with star ratings.
+
+### Guidelines for Autoceny
+
+1. **Create a trust bar** immediately below the hero. Include 4 metrics such as:
+   - Number of completed repair orders
+   - Average user savings vs. calling workshops individually
+   - Number of workshops in the network
+   - Average response time for quotes
+2. **Style it as a dark-background horizontal strip** with white text, generous spacing between each metric.
+3. **Add a testimonials section** with 3 cards, each containing: a short title, star rating, 2-3 sentence review, and the reviewer's name. Use the same clean white card style.
+
+---
+
+## 10. Navigation
+
+### Qapital's nav
+
+- **Sticky white bar** with logo left, links center-ish, CTA button right
+- **Logo**: clean wordmark, no symbol
+- **Links**: Features ▾, About ▾, Pricing, Help — 4 items only, with dropdown indicators
+- **CTA**: "Get Started" in a dark pill button
+- **No hamburger on desktop.** Everything is visible.
+
+### Guidelines for Autoceny
+
+1. **Simplify to 4–5 nav items maximum.** Consider: "Jak to działa", "Dla Warsztatów", "Cennik", "Pomoc"
+2. **Keep the two CTAs in the nav** ("Stwórz Zlecenie" and "Dołącz jako Warsztat") but make one primary (filled pill) and one secondary (outline pill). The primary should be for drivers (your larger audience).
+3. **Ensure the nav background matches the hero** when at the top, then transitions to white/light when scrolled — Qapital does this and it creates a seamless entry experience.
+
+---
+
+## 11. Implementation Priority Checklist
+
+If you can only change 10 things, do these in order:
+
+1. **Switch headline font** to a premium display serif in regular weight
+2. **Desaturate and warm your color palette** (green → sage, dark bg → forest green)
+3. **Double all section vertical padding** (aim for 120–160px)
+4. **Shorten the hero headline** to 4–5 words maximum
+5. **Add the social proof / trust metrics bar** below the hero
+6. **Adopt alternating zigzag layout** for feature sections
+7. **Use off-white** (`#F5F3F0`) instead of pure white for light sections
+8. **Simplify the "How it works" section** — one step per section or fewer elements visible at once
+9. **Standardize buttons to pill shape**, reduce total button count per viewport
+10. **Add slow, subtle scroll-triggered fade-in animations**
+
+---
+
+## 12. Quick Reference: Design Tokens
+
+```
+/* Typography */
+--font-display: 'DM Serif Display', serif;
+--font-body: 'DM Sans', sans-serif;
+--font-size-hero: 60px;
+--font-size-section-heading: 44px;
+--font-size-label: 14px;
+--font-size-body: 17px;
+--font-size-small: 13px;
+--line-height-heading: 1.15;
+--line-height-body: 1.65;
+--letter-spacing-label: 0.05em;
+
+/* Colors */
+--color-bg-dark: #1A2F28;
+--color-bg-light: #F5F3F0;
+--color-bg-white: #FFFFFF;
+--color-accent-mint: #6DC5A1;
+--color-text-primary: #1F2D28;
+--color-text-secondary: #6B7B74;
+--color-text-on-dark: #6DC5A1;
+--color-button-primary: #1A2F28;
+--color-button-secondary-border: #1A2F28;
+
+/* Spacing */
+--section-padding-y: 140px;
+--content-max-width: 1140px;
+--card-padding: 28px;
+--card-radius: 18px;
+--button-radius: 999px;
+--button-height: 52px;
+--button-padding-x: 28px;
+
+/* Shadows */
+--shadow-card: 0 2px 24px rgba(0, 0, 0, 0.06);
+--shadow-card-hover: 0 4px 32px rgba(0, 0, 0, 0.10);
+
+/* Motion */
+--transition-fast: 200ms ease-out;
+--transition-medium: 400ms ease-out;
+--transition-slow: 600ms ease-out;
+--scroll-reveal-distance: 30px;
+```
+
+---
+
+*These guidelines are designed to shift Autoceny from "clever startup" to "trusted platform" — the same territory Qapital occupies. The core principle: restraint builds trust. Every time you're tempted to add boldness, color, or complexity, ask whether removing it would make the page feel more confident.*

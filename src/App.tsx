@@ -22,13 +22,13 @@ import { ThemeToggle } from './components/ThemeToggle'
 import type { BillingInterval, ShopRegistrationRequest } from './domain/apiTypes'
 import type { AuthState } from './domain/auth-types'
 import type {
-  AppScreen,
   Attachment,
   CreateRepairRequestPayload,
   EnrollmentStatus,
   NotificationEvent,
   RepairRequest,
 } from './domain/types'
+import { useRouting } from './hooks/useRouting'
 import { useShopPortal } from './hooks/useShopPortal'
 import { setOnUnauthorized } from './services/apiClient'
 import { authApi } from './services/authApi'
@@ -62,7 +62,7 @@ function LanguageToggle() {
 
 function App() {
   const { t } = useTranslation()
-  const [screen, setScreen] = useState<AppScreen>('landing')
+  const { screen, navigate } = useRouting()
   const [requests, setRequests] = useState<RepairRequest[]>([])
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -98,8 +98,8 @@ function App() {
     setEnrollmentStatus(null)
     setRequests([])
     setBanners([])
-    setScreen(wasAdmin ? 'admin-login' : 'landing')
-  }, [auth.user?.role])
+    navigate(wasAdmin ? 'admin-login' : 'landing', { replace: true })
+  }, [auth.user?.role, navigate])
 
   // Wire up 401 auto-logout
   useEffect(() => {
@@ -132,15 +132,6 @@ function App() {
   const shop = useShopPortal(auth.user?.id ?? null)
   const [shopSelectedRequestId, setShopSelectedRequestId] = useState<string | null>(null)
 
-  // URL-based entry points
-  useEffect(() => {
-    if (window.location.pathname.startsWith('/admin')) {
-      setScreen('admin-login')
-    } else if (window.location.pathname.startsWith('/signup-confirmation')) {
-      setScreen('signup-confirmation')
-    }
-  }, [])
-
   // Restore session on mount
   useEffect(() => {
     const restore = async () => {
@@ -152,7 +143,7 @@ function App() {
           isAuthenticated: true,
         })
         if (session.user.role === 'ADMIN') {
-          setScreen('admin-vouchers')
+          navigate('admin-vouchers', { replace: true })
         } else if (session.user.role === 'SHOP_USER') {
           setEnrollmentLoading(true)
           try {
@@ -163,9 +154,9 @@ function App() {
           } finally {
             setEnrollmentLoading(false)
           }
-          setScreen('shop-inbox')
+          navigate('shop-inbox', { replace: true })
         } else {
-          setScreen('home')
+          navigate('home', { replace: true })
         }
       }
       setAuthLoading(false)
@@ -189,13 +180,13 @@ function App() {
   const handleLogin = async (email: string, password: string, captchaToken?: string) => {
     const result = await authApi.login(email, password, captchaToken)
     setAuth({ user: result.user, token: result.token, isAuthenticated: true })
-    setScreen('home')
+    navigate('home', { replace: true })
   }
 
   const handleRegister = async (email: string, password: string, captchaToken?: string) => {
     await authApi.register(email, password, captchaToken)
     setPendingEmail(email)
-    setScreen('check-email')
+    navigate('check-email', { replace: true })
   }
 
   const handleShopLogin = async (email: string, password: string, captchaToken?: string) => {
@@ -210,19 +201,19 @@ function App() {
     } finally {
       setEnrollmentLoading(false)
     }
-    setScreen('shop-inbox')
+    navigate('shop-inbox', { replace: true })
   }
 
   const handleShopRegister = async (payload: ShopRegistrationRequest) => {
     await enrollmentApi.register(payload)
     setPendingEmail(payload.email)
-    setScreen('check-email')
+    navigate('check-email', { replace: true })
   }
 
   const handleAdminLogin = async (email: string, password: string, captchaToken?: string) => {
     const result = await authApi.adminLogin(email, password, captchaToken)
     setAuth({ user: result.user, token: result.token, isAuthenticated: true })
-    setScreen('admin-vouchers')
+    navigate('admin-vouchers', { replace: true })
   }
 
   const handleLogout = async () => {
@@ -239,7 +230,7 @@ function App() {
 
   const openRequestDetail = async (requestId: string) => {
     setSelectedRequestId(requestId)
-    setScreen('request-detail')
+    navigate('request-detail')
 
     if (!auth.user) return
 
@@ -416,8 +407,8 @@ function App() {
   if (!auth.isAuthenticated && screen === 'landing') {
     return (
       <LandingPage
-        onGetStarted={() => setScreen('login')}
-        onJoinAsShop={() => setScreen('shop-login')}
+        onGetStarted={() => navigate('login')}
+        onJoinAsShop={() => navigate('shop-login')}
       />
     )
   }
@@ -427,7 +418,7 @@ function App() {
     return (
       <main className="app-shell">
         <header className="app-header">
-          <div className="brand" onClick={() => setScreen('landing')} style={{ cursor: 'pointer' }}>
+          <div className="brand" onClick={() => navigate('landing')} style={{ cursor: 'pointer' }}>
             <div className="brand-mark">AC</div>
             <h1>Autoceny</h1>
           </div>
@@ -436,7 +427,7 @@ function App() {
             <LanguageToggle />
           </div>
         </header>
-        <CheckEmailView email={pendingEmail} onGoToLogin={() => setScreen('login')} />
+        <CheckEmailView email={pendingEmail} onGoToLogin={() => navigate('login')} />
       </main>
     )
   }
@@ -446,7 +437,7 @@ function App() {
     return (
       <main className="app-shell">
         <header className="app-header">
-          <div className="brand" onClick={() => setScreen('landing')} style={{ cursor: 'pointer' }}>
+          <div className="brand" onClick={() => navigate('landing')} style={{ cursor: 'pointer' }}>
             <div className="brand-mark">AC</div>
             <h1>Autoceny</h1>
           </div>
@@ -455,7 +446,7 @@ function App() {
             <LanguageToggle />
           </div>
         </header>
-        <SignupConfirmationView onGoToLogin={() => setScreen('login')} />
+        <SignupConfirmationView onGoToLogin={() => navigate('login')} />
       </main>
     )
   }
@@ -485,7 +476,7 @@ function App() {
     return (
       <main className="app-shell">
         <header className="app-header">
-          <div className="brand" onClick={() => setScreen('landing')} style={{ cursor: 'pointer' }}>
+          <div className="brand" onClick={() => navigate('landing')} style={{ cursor: 'pointer' }}>
             <div className={`brand-mark${isShopAuth ? ' brand-mark-shop' : ''}`}>{isShopAuth ? 'W' : 'AC'}</div>
             <h1>Autoceny</h1>
           </div>
@@ -498,12 +489,12 @@ function App() {
         {screen === 'shop-register' ? (
           <ShopRegisterView
             onRegister={handleShopRegister}
-            onSwitchToLogin={() => setScreen('shop-login')}
+            onSwitchToLogin={() => navigate('shop-login')}
           />
         ) : screen === 'shop-login' ? (
           <LoginView
             onLogin={handleShopLogin}
-            onSwitchToRegister={() => setScreen('shop-register')}
+            onSwitchToRegister={() => navigate('shop-register')}
             titleKey="shopAuth.loginTitle"
             subtitleKey="shopAuth.loginSubtitle"
             brandMark="W"
@@ -511,12 +502,12 @@ function App() {
         ) : screen === 'register' ? (
           <RegisterView
             onRegister={handleRegister}
-            onSwitchToLogin={() => setScreen('login')}
+            onSwitchToLogin={() => navigate('login')}
           />
         ) : (
           <LoginView
             onLogin={handleLogin}
-            onSwitchToRegister={() => setScreen('register')}
+            onSwitchToRegister={() => navigate('register')}
           />
         )}
       </main>
@@ -566,7 +557,7 @@ function App() {
     const shopOpenDetail = (requestId: string) => {
       setShopSelectedRequestId(requestId)
       void shop.openShopRequestDetail(requestId)
-      setScreen('shop-request-detail')
+      navigate('shop-request-detail')
     }
 
     return (
@@ -580,19 +571,19 @@ function App() {
       >
         <main className="app-shell">
           <header className="app-header">
-            <div className="brand" onClick={() => setScreen('shop-inbox')} style={{ cursor: 'pointer' }}>
+            <div className="brand" onClick={() => navigate('shop-inbox')} style={{ cursor: 'pointer' }}>
               <div className="brand-mark brand-mark-shop">W</div>
               <h1>Autoceny</h1>
             </div>
             <div className="header-actions">
               {screen !== 'shop-inbox' ? (
-                <button className="btn btn-ghost" onClick={() => setScreen('shop-inbox')}>
+                <button className="btn btn-ghost" onClick={() => navigate('shop-inbox')}>
                   {t('shopNav.inbox')}
                 </button>
               ) : null}
               <button className="btn btn-ghost" onClick={() => {
                 void shop.loadShopProfile()
-                setScreen('shop-profile')
+                navigate('shop-profile')
               }}>
                 {t('shopNav.profile')}
               </button>
@@ -628,7 +619,7 @@ function App() {
               }}
               onProfile={() => {
                 void shop.loadShopProfile()
-                setScreen('shop-profile')
+                navigate('shop-profile')
               }}
             />
           ) : null}
@@ -640,7 +631,7 @@ function App() {
               messages={shop.shopMessages}
               onBack={() => {
                 void shop.loadShopQueue()
-                setScreen('shop-inbox')
+                navigate('shop-inbox')
               }}
               onAcknowledge={() => {
                 if (shopSelectedRequestId) {
@@ -653,11 +644,11 @@ function App() {
                 if (shopSelectedRequestId) {
                   void shop.handleShopDecline(shopSelectedRequestId).then(() => {
                     void shop.loadShopQueue()
-                    setScreen('shop-inbox')
+                    navigate('shop-inbox')
                   })
                 }
               }}
-              onSendQuote={() => setScreen('shop-send-quote')}
+              onSendQuote={() => navigate('shop-send-quote')}
               onAskQuestion={async (text) => {
                 if (shopSelectedRequestId) {
                   await shop.handleShopAskQuestion(shopSelectedRequestId, text)
@@ -686,10 +677,10 @@ function App() {
               onSubmit={async (payload, phone) => {
                 if (shopSelectedRequestId) {
                   await shop.handleSubmitQuote(shopSelectedRequestId, payload, phone)
-                  setScreen('shop-request-detail')
+                  navigate('shop-request-detail')
                 }
               }}
-              onBack={() => setScreen('shop-request-detail')}
+              onBack={() => navigate('shop-request-detail')}
             />
           ) : null}
 
@@ -697,7 +688,7 @@ function App() {
             <ShopProfileView
               profile={shop.shopProfile}
               onSave={shop.handleSaveProfile}
-              onBack={() => setScreen('shop-inbox')}
+              onBack={() => navigate('shop-inbox')}
             />
           ) : null}
         </main>
@@ -709,7 +700,7 @@ function App() {
   return (
     <main className="app-shell">
       <header className="app-header">
-        <div className="brand" onClick={() => setScreen('home')} style={{ cursor: 'pointer' }}>
+        <div className="brand" onClick={() => navigate('home')} style={{ cursor: 'pointer' }}>
           <div className="brand-mark">AC</div>
           <h1>Autoceny</h1>
         </div>
@@ -718,7 +709,7 @@ function App() {
             <button
               className="btn btn-ghost"
               onClick={() => {
-                setScreen('home')
+                navigate('home')
               }}
             >
               {t('app.home')}
@@ -751,10 +742,10 @@ function App() {
         <HomeView
           requests={requests}
           onCreateRequest={() => {
-            setScreen('create-request')
+            navigate('create-request')
           }}
           onMyRequests={() => {
-            setScreen('my-requests')
+            navigate('my-requests')
           }}
           onOpenRequest={(requestId) => {
             void openRequestDetail(requestId)
@@ -765,7 +756,7 @@ function App() {
       {!loading && !error && screen === 'create-request' ? (
         <CreateRepairRequestFlow
           onCancel={() => {
-            setScreen('home')
+            navigate('home')
           }}
           onSubmitRequest={handleCreateRequest}
           onViewRequest={(requestId) => {
@@ -778,7 +769,7 @@ function App() {
         <MyRequestsView
           requests={requests}
           onBackHome={() => {
-            setScreen('home')
+            navigate('home')
           }}
           onOpenRequest={(requestId) => {
             void openRequestDetail(requestId)
@@ -790,7 +781,7 @@ function App() {
         <RepairRequestDetail
           request={selectedRequest}
           onBackHome={() => {
-            setScreen('home')
+            navigate('home')
           }}
           onCloseRequest={handleCloseRequest}
           onMarkInterested={handleMarkInterested}
