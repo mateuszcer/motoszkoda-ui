@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { SubscriptionResponse } from '../domain/apiTypes'
+import type { BillingInterval, SubscriptionResponse } from '../domain/apiTypes'
 import type { EnrollmentStatus } from '../domain/types'
 import { StripePaymentForm } from './StripePaymentForm'
 
@@ -12,7 +12,7 @@ const MAX_POLL_ATTEMPTS = 15
 interface ShopEnrollViewProps {
   enrollmentStatus: EnrollmentStatus
   onVoucherRedeem: (code: string) => Promise<void>
-  onPayment: () => Promise<SubscriptionResponse>
+  onPayment: (billingInterval: BillingInterval) => Promise<SubscriptionResponse>
   onStatusRefresh: () => Promise<void>
   onLogout: () => void
 }
@@ -25,6 +25,7 @@ export function ShopEnrollView({
   onLogout,
 }: ShopEnrollViewProps) {
   const { t } = useTranslation()
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>('MONTHLY')
   const [voucherOpen, setVoucherOpen] = useState(false)
   const [voucherCode, setVoucherCode] = useState('')
   const [redeeming, setRedeeming] = useState(false)
@@ -95,7 +96,7 @@ export function ShopEnrollView({
     setError(null)
     setPaying(true)
     try {
-      const result = await onPayment()
+      const result = await onPayment(billingInterval)
       setClientSecret(result.clientSecret)
       setPaymentStep('ready')
     } catch (err) {
@@ -167,6 +168,42 @@ export function ShopEnrollView({
               <>
                 <div className="form-grid">
                   <p className="enroll-payment-desc">{t('shopEnroll.paymentDescription')}</p>
+
+                  {paymentStep === 'idle' ? (
+                    <>
+                      <div className="enroll-billing-toggle">
+                        <button
+                          type="button"
+                          className={`enroll-billing-btn${billingInterval === 'MONTHLY' ? ' enroll-billing-btn--active' : ''}`}
+                          onClick={() => setBillingInterval('MONTHLY')}
+                        >
+                          {t('shopEnroll.monthly')}
+                        </button>
+                        <button
+                          type="button"
+                          className={`enroll-billing-btn${billingInterval === 'ANNUAL' ? ' enroll-billing-btn--active' : ''}`}
+                          onClick={() => setBillingInterval('ANNUAL')}
+                        >
+                          {t('shopEnroll.annual')}
+                          {' '}
+                          <span className="enroll-save-pill">{t('shopEnroll.savePercent', { percent: 17 })}</span>
+                        </button>
+                      </div>
+
+                      <div className="enroll-price">
+                        {billingInterval === 'ANNUAL' ? (
+                          <>
+                            <span className="enroll-price-original">{t('shopEnroll.priceOriginalAnnual')}</span>
+                            {' '}
+                            <strong>{t('shopEnroll.priceAnnual')}</strong>
+                          </>
+                        ) : (
+                          <strong>{t('shopEnroll.priceMonthly')}</strong>
+                        )}
+                      </div>
+                    </>
+                  ) : null}
+
                   {paymentStep === 'ready' && clientSecret ? (
                     <StripePaymentForm
                       clientSecret={clientSecret}
@@ -179,7 +216,11 @@ export function ShopEnrollView({
                       onClick={() => void handleInitiatePayment()}
                       disabled={paying}
                     >
-                      {paying ? t('shopEnroll.paying') : t('shopEnroll.payMonthly')}
+                      {paying
+                        ? t('shopEnroll.paying')
+                        : billingInterval === 'ANNUAL'
+                          ? t('shopEnroll.payAnnual')
+                          : t('shopEnroll.payMonthly')}
                     </button>
                   )}
                 </div>

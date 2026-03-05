@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: MotoSzkoda Auth API
   description: Authentication endpoints proxying Supabase Auth. All endpoints are public (no JWT required).
-  version: 1.1.0
+  version: 1.2.0
 
 paths:
   /api/auth/users/signup:
@@ -326,6 +326,156 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /api/auth/account/resend-confirmation:
+    post:
+      operationId: resendConfirmation
+      summary: Resend signup confirmation email
+      description: |
+        Resends the email confirmation for a user who signed up but didn't receive or lost the original email.
+        Always returns 200 OK regardless of whether the email exists, to prevent email enumeration.
+        Only RATE_LIMITED and CAPTCHA_FAILED errors are surfaced.
+      tags: [Auth - Account Recovery]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailOnlyRequest"
+      responses:
+        "200":
+          description: Request accepted (always returned, even if email is unknown)
+        "400":
+          description: Validation error or CAPTCHA failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation:
+                  summary: Validation error
+                  value:
+                    code: VALIDATION_ERROR
+                    message: Validation failed
+                    details:
+                      - Invalid email format
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+                captchaFailed:
+                  summary: CAPTCHA verification failed
+                  value:
+                    code: CAPTCHA_FAILED
+                    message: CAPTCHA verification failed
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /api/auth/account/request-password-reset:
+    post:
+      operationId: requestPasswordReset
+      summary: Send password reset email
+      description: |
+        Sends a password reset email to the specified address.
+        Always returns 200 OK regardless of whether the email exists, to prevent email enumeration.
+        Only RATE_LIMITED and CAPTCHA_FAILED errors are surfaced.
+      tags: [Auth - Account Recovery]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailOnlyRequest"
+      responses:
+        "200":
+          description: Request accepted (always returned, even if email is unknown)
+        "400":
+          description: Validation error or CAPTCHA failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation:
+                  summary: Validation error
+                  value:
+                    code: VALIDATION_ERROR
+                    message: Validation failed
+                    details:
+                      - Invalid email format
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+                captchaFailed:
+                  summary: CAPTCHA verification failed
+                  value:
+                    code: CAPTCHA_FAILED
+                    message: CAPTCHA verification failed
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /api/auth/account/reset-password:
+    post:
+      operationId: resetPassword
+      summary: Set new password using recovery token
+      description: |
+        Sets a new password using the access token obtained from the password reset email link.
+        Unlike resend-confirmation and request-password-reset, this endpoint surfaces all errors.
+      tags: [Auth - Account Recovery]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+      responses:
+        "200":
+          description: Password reset successfully
+        "400":
+          description: Validation error or weak password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation:
+                  summary: Validation error
+                  value:
+                    code: VALIDATION_ERROR
+                    message: Validation failed
+                    details:
+                      - Access token is required
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+                weakPassword:
+                  summary: Weak password
+                  value:
+                    code: WEAK_PASSWORD
+                    message: Password is too weak
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "401":
+          description: Invalid or expired recovery token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: INVALID_RECOVERY_TOKEN
+                message: Invalid or expired recovery token
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "422":
+          description: New password is the same as the current password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: SAME_PASSWORD
+                message: New password must be different from the current password
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   schemas:
     AuthRequest:
@@ -416,6 +566,35 @@ components:
           format: int64
           description: Access token lifetime in seconds
           example: 3600
+
+    EmailOnlyRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        captchaToken:
+          type: string
+          nullable: true
+          description: Cloudflare Turnstile CAPTCHA token. Required when CAPTCHA is enabled in Supabase dashboard.
+          example: 0.abc123def456
+
+    ResetPasswordRequest:
+      type: object
+      required: [accessToken, newPassword]
+      properties:
+        accessToken:
+          type: string
+          description: The access token from the password reset email redirect
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        newPassword:
+          type: string
+          format: password
+          minLength: 1
+          description: The new password to set
+          example: NewStrongPass1!
 
     Role:
       type: string

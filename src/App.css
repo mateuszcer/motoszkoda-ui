@@ -3316,6 +3316,57 @@ label small {
   font-size: 14px;
 }
 
+.enroll-billing-toggle {
+  display: flex;
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.enroll-billing-btn {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.enroll-billing-btn--active {
+  background: var(--surface-1);
+  color: var(--brand-600);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.enroll-price {
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-1);
+}
+
+.enroll-price-original {
+  text-decoration: line-through;
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.enroll-save-pill {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--green-100, #dcfce7);
+  color: var(--green-700, #15803d);
+  vertical-align: middle;
+}
+
 .status-banner-success {
   background: var(--success-50);
   border: 1px solid var(--success-100);

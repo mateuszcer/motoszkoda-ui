@@ -1,4 +1,5 @@
 import type {
+  BillingInterval,
   EnrollmentStatusResponse,
   SubscriptionResponse,
   ShopRegistrationRequest,
@@ -24,7 +25,9 @@ export const enrollmentApi = {
     })
   },
 
-  async initiatePayment(): Promise<SubscriptionResponse> {
-    return api.post<SubscriptionResponse>('/api/enrollment/payment')
+  async initiatePayment(billingInterval: BillingInterval): Promise<SubscriptionResponse> {
+    return api.post<SubscriptionResponse>('/api/enrollment/payment', {
+      body: { billingInterval },
+    })
   },
 }

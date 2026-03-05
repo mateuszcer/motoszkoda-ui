@@ -81,9 +81,16 @@ paths:
         Creates a Stripe Customer and Subscription with `payment_behavior=default_incomplete`.
         Returns `subscriptionId` and `clientSecret` from the first invoice's PaymentIntent.
         Frontend uses `clientSecret` with Stripe.js to confirm payment.
+        Requires a `billingInterval` to select monthly or annual pricing.
       tags: [Enrollment - Shop]
       security:
         - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InitiatePaymentRequest"
       responses:
         "200":
           description: Subscription created
@@ -401,6 +408,18 @@ components:
         code:
           type: string
           example: FREESHOP2024
+
+    BillingInterval:
+      type: string
+      enum: [MONTHLY, ANNUAL]
+      description: Billing cycle for the enrollment subscription
+
+    InitiatePaymentRequest:
+      type: object
+      required: [billingInterval]
+      properties:
+        billingInterval:
+          $ref: "#/components/schemas/BillingInterval"
 
     EnrollmentStatus:
       type: string

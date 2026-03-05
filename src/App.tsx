@@ -19,7 +19,7 @@ import { ShopRegisterView } from './components/ShopRegisterView'
 import { ShopRequestDetailView } from './components/ShopRequestDetailView'
 import { ShopSendQuoteView } from './components/ShopSendQuoteView'
 import { ThemeToggle } from './components/ThemeToggle'
-import type { ShopRegistrationRequest } from './domain/apiTypes'
+import type { BillingInterval, ShopRegistrationRequest } from './domain/apiTypes'
 import type { AuthState } from './domain/auth-types'
 import type {
   AppScreen,
@@ -529,8 +529,8 @@ function App() {
     setEnrollmentStatus(result.status)
   }
 
-  const handleEnrollmentPayment = async () => {
-    return enrollmentApi.initiatePayment()
+  const handleEnrollmentPayment = async (billingInterval: BillingInterval) => {
+    return enrollmentApi.initiatePayment(billingInterval)
   }
 
   const handleEnrollmentStatusRefresh = async () => {

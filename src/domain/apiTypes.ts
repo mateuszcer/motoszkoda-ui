@@ -312,6 +312,14 @@ export interface UpdateShopRequest {
   lon: number
 }
 
+// ── Billing ─────────────────────────────────────────────────────────
+
+export type BillingInterval = 'MONTHLY' | 'ANNUAL'
+
+export interface InitiatePaymentRequest {
+  billingInterval: BillingInterval
+}
+
 // ── Enrollment ──────────────────────────────────────────────────────
 
 export interface ShopRegistrationRequest {
