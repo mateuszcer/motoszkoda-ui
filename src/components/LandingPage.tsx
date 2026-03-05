@@ -437,7 +437,7 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
 
             <div className="lp-pricing__body">
               <p className="lp-pricing__desc">
-                {driverPlan === 'free' ? t('landing.pricing.freeDesc') : t('landing.pricing.shopDesc')}
+                {driverPlan === 'free' ? t('landing.pricing.freeDesc') : t('landing.pricing.premiumDesc')}
               </p>
 
               <div className="lp-pricing__features">

@@ -444,6 +444,7 @@
       "limitDaily": "Requests / day",
       "limitQuestions": "Questions / request",
       "premiumPlan": "Premium Plan",
+      "premiumDesc": "Unlimited requests and questions without any limits.",
       "premiumBullet1": "More open requests",
       "premiumBullet2": "More requests per day",
       "premiumBullet3": "More questions — faster clarification",
