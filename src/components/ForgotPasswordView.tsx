@@ -4,21 +4,17 @@ import { useTranslation } from 'react-i18next'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
-interface LoginViewProps {
-  onLogin: (email: string, password: string, captchaToken?: string) => Promise<void>
-  onSwitchToRegister: () => void
-  onForgotPassword?: () => void
-  titleKey?: string
-  subtitleKey?: string
-  brandMark?: string
+interface ForgotPasswordViewProps {
+  onSubmit: (email: string, captchaToken?: string) => Promise<void>
+  onBackToLogin: () => void
 }
 
-export function LoginView({ onLogin, onSwitchToRegister, onForgotPassword, titleKey, subtitleKey, brandMark }: LoginViewProps) {
+export function ForgotPasswordView({ onSubmit, onBackToLogin }: ForgotPasswordViewProps) {
   const { t } = useTranslation()
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [sent, setSent] = useState(false)
   const [captchaToken, setCaptchaToken] = useState<string | undefined>(undefined)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,8 +25,8 @@ export function LoginView({ onLogin, onSwitchToRegister, onForgotPassword, title
       setError(t('auth.emailRequired'))
       return
     }
-    if (!password) {
-      setError(t('auth.passwordRequired'))
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError(t('auth.emailInvalid'))
       return
     }
     if (TURNSTILE_SITE_KEY && !captchaToken) {
@@ -40,21 +36,40 @@ export function LoginView({ onLogin, onSwitchToRegister, onForgotPassword, title
 
     setSubmitting(true)
     try {
-      await onLogin(email.trim(), password, captchaToken)
+      await onSubmit(email.trim(), captchaToken)
+      setSent(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('auth.loginFailed'))
+      setError(err instanceof Error ? err.message : t('auth.forgotPasswordFailed'))
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (sent) {
+    return (
+      <section className="auth-screen">
+        <div className="auth-card" style={{ textAlign: 'center' }}>
+          <div className="auth-brand">
+            <div className="brand-mark">AC</div>
+            <h2>{t('auth.forgotPasswordSentTitle')}</h2>
+            <p>{t('auth.forgotPasswordSentMessage', { email })}</p>
+          </div>
+
+          <button className="btn btn-primary btn-lg auth-submit" onClick={onBackToLogin}>
+            {t('auth.backToLogin')}
+          </button>
+        </div>
+      </section>
+    )
   }
 
   return (
     <section className="auth-screen">
       <form className="auth-card" onSubmit={(e) => void handleSubmit(e)}>
         <div className="auth-brand">
-          <div className="brand-mark">{brandMark ?? 'AC'}</div>
-          <h2>{titleKey ? t(titleKey as 'auth.loginTitle') : t('auth.loginTitle')}</h2>
-          <p>{subtitleKey ? t(subtitleKey as 'auth.loginSubtitle') : t('auth.loginSubtitle')}</p>
+          <div className="brand-mark">AC</div>
+          <h2>{t('auth.forgotPasswordTitle')}</h2>
+          <p>{t('auth.forgotPasswordSubtitle')}</p>
         </div>
 
         {error ? <div className="auth-error">{error}</div> : null}
@@ -70,25 +85,6 @@ export function LoginView({ onLogin, onSwitchToRegister, onForgotPassword, title
               autoComplete="email"
             />
           </label>
-
-          <label>
-            {t('auth.password')}
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={t('auth.passwordPlaceholder')}
-              autoComplete="current-password"
-            />
-          </label>
-
-          {onForgotPassword ? (
-            <div className="auth-forgot">
-              <button type="button" className="btn-link" onClick={onForgotPassword}>
-                {t('auth.forgotPassword')}
-              </button>
-            </div>
-          ) : null}
         </div>
 
         {TURNSTILE_SITE_KEY ? (
@@ -98,13 +94,12 @@ export function LoginView({ onLogin, onSwitchToRegister, onForgotPassword, title
         ) : null}
 
         <button className="btn btn-primary btn-lg auth-submit" type="submit" disabled={submitting}>
-          {submitting ? t('auth.loggingIn') : t('auth.login')}
+          {submitting ? t('auth.sendingResetLink') : t('auth.sendResetLink')}
         </button>
 
         <p className="auth-switch">
-          {t('auth.noAccount')}{' '}
-          <button type="button" className="btn-link" onClick={onSwitchToRegister}>
-            {t('auth.registerLink')}
+          <button type="button" className="btn-link" onClick={onBackToLogin}>
+            {t('auth.backToLogin')}
           </button>
         </p>
       </form>

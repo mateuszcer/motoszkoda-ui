@@ -7,6 +7,8 @@ const PATH_TO_SCREEN: Record<string, AppScreen> = {
   '/register': 'register',
   '/check-email': 'check-email',
   '/signup-confirmation': 'signup-confirmation',
+  '/forgot-password': 'forgot-password',
+  '/reset-password': 'reset-password',
   '/home': 'home',
   '/create-request': 'create-request',
   '/my-requests': 'my-requests',

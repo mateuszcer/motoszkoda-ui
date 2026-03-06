@@ -81,6 +81,27 @@ const authApiImpl: AuthApi = {
     await Promise.resolve()
   },
 
+  async resendConfirmation(email: string, captchaToken?: string): Promise<void> {
+    await api.post('/api/auth/account/resend-confirmation', {
+      auth: false,
+      body: { email, captchaToken: captchaToken ?? null },
+    })
+  },
+
+  async requestPasswordReset(email: string, captchaToken?: string): Promise<void> {
+    await api.post('/api/auth/account/request-password-reset', {
+      auth: false,
+      body: { email, captchaToken: captchaToken ?? null },
+    })
+  },
+
+  async resetPassword(accessToken: string, newPassword: string): Promise<void> {
+    await api.post('/api/auth/account/reset-password', {
+      auth: false,
+      body: { accessToken, newPassword },
+    })
+  },
+
   restoreSession(): StoredSession | null {
     try {
       const raw = localStorage.getItem(AUTH_STORAGE_KEY)

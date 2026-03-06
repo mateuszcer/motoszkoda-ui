@@ -45,4 +45,7 @@ export interface AuthApi {
   adminLogin(email: string, password: string, captchaToken?: string): Promise<AuthResult>
   logout(): Promise<void>
   restoreSession(): StoredSession | null
+  resendConfirmation(email: string, captchaToken?: string): Promise<void>
+  requestPasswordReset(email: string, captchaToken?: string): Promise<void>
+  resetPassword(accessToken: string, newPassword: string): Promise<void>
 }

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import './App.css'
 import { AdminLoginView } from './components/AdminLoginView'
 import { CheckEmailView } from './components/CheckEmailView'
+import { ForgotPasswordView } from './components/ForgotPasswordView'
 import { AdminVouchersView } from './components/AdminVouchersView'
 import { CreateRepairRequestFlow } from './components/CreateRepairRequestFlow'
 import { EnrollmentGate } from './components/EnrollmentGate'
@@ -11,6 +12,7 @@ import { LandingPage } from './components/LandingPage'
 import { LoginView } from './components/LoginView'
 import { MyRequestsView } from './components/MyRequestsView'
 import { RegisterView } from './components/RegisterView'
+import { ResetPasswordView } from './components/ResetPasswordView'
 import { SignupConfirmationView } from './components/SignupConfirmationView'
 import { RepairRequestDetail } from './components/RepairRequestDetail'
 import { ShopInboxView } from './components/ShopInboxView'
@@ -214,6 +216,18 @@ function App() {
     const result = await authApi.adminLogin(email, password, captchaToken)
     setAuth({ user: result.user, token: result.token, isAuthenticated: true })
     navigate('admin-vouchers', { replace: true })
+  }
+
+  const handleRequestPasswordReset = async (email: string, captchaToken?: string) => {
+    await authApi.requestPasswordReset(email, captchaToken)
+  }
+
+  const handleResendConfirmation = async (email: string) => {
+    await authApi.resendConfirmation(email)
+  }
+
+  const handleResetPassword = async (accessToken: string, newPassword: string) => {
+    await authApi.resetPassword(accessToken, newPassword)
   }
 
   const handleLogout = async () => {
@@ -427,7 +441,7 @@ function App() {
             <LanguageToggle />
           </div>
         </header>
-        <CheckEmailView email={pendingEmail} onGoToLogin={() => navigate('login')} />
+        <CheckEmailView email={pendingEmail} onGoToLogin={() => navigate('login')} onResendConfirmation={handleResendConfirmation} />
       </main>
     )
   }
@@ -447,6 +461,53 @@ function App() {
           </div>
         </header>
         <SignupConfirmationView onGoToLogin={() => navigate('login')} />
+      </main>
+    )
+  }
+
+  // Forgot password screen
+  if (!auth.isAuthenticated && screen === 'forgot-password') {
+    return (
+      <main className="app-shell">
+        <header className="app-header">
+          <div className="brand" onClick={() => navigate('landing')} style={{ cursor: 'pointer' }}>
+            <div className="brand-mark">AC</div>
+            <h1>Autoceny</h1>
+          </div>
+          <div className="header-actions">
+            <ThemeToggle />
+            <LanguageToggle />
+          </div>
+        </header>
+        <ForgotPasswordView
+          onSubmit={handleRequestPasswordReset}
+          onBackToLogin={() => navigate('login')}
+        />
+      </main>
+    )
+  }
+
+  // Reset password screen (accessed via email link with token in URL)
+  if (!auth.isAuthenticated && screen === 'reset-password') {
+    const params = new URLSearchParams(window.location.search)
+    const token = params.get('token') ?? ''
+    return (
+      <main className="app-shell">
+        <header className="app-header">
+          <div className="brand" onClick={() => navigate('landing')} style={{ cursor: 'pointer' }}>
+            <div className="brand-mark">AC</div>
+            <h1>Autoceny</h1>
+          </div>
+          <div className="header-actions">
+            <ThemeToggle />
+            <LanguageToggle />
+          </div>
+        </header>
+        <ResetPasswordView
+          accessToken={token}
+          onSubmit={handleResetPassword}
+          onGoToLogin={() => navigate('login')}
+        />
       </main>
     )
   }
@@ -495,6 +556,7 @@ function App() {
           <LoginView
             onLogin={handleShopLogin}
             onSwitchToRegister={() => navigate('shop-register')}
+            onForgotPassword={() => navigate('forgot-password')}
             titleKey="shopAuth.loginTitle"
             subtitleKey="shopAuth.loginSubtitle"
             brandMark="W"
@@ -508,6 +570,7 @@ function App() {
           <LoginView
             onLogin={handleLogin}
             onSwitchToRegister={() => navigate('register')}
+            onForgotPassword={() => navigate('forgot-password')}
           />
         )}
       </main>

@@ -2115,6 +2115,25 @@ label small {
   margin: 0.5rem 0;
 }
 
+.auth-forgot {
+  text-align: right;
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.auth-forgot .btn-link {
+  font-size: 13px;
+}
+
+.auth-success {
+  background: var(--success-100);
+  border: 1px solid var(--success-600);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  color: var(--success-600);
+  font-size: 14px;
+  margin-bottom: var(--space-4);
+}
+
 .auth-switch {
   text-align: center;
   font-size: 14px;
