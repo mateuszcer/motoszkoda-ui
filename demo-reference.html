@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autoceny Hero — Phone Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',sans-serif;background:#1B3533;color:#fff;overflow-x:hidden}
+
+.hero{
+  min-height:100vh;display:flex;align-items:center;
+  position:relative;overflow:hidden;
+  padding:0 48px;
+}
+.hero::before{
+  content:'';position:absolute;top:-30%;right:-15%;width:70%;height:160%;
+  background:radial-gradient(ellipse at center,rgba(110,207,171,.06) 0%,transparent 65%);
+  pointer-events:none;
+}
+
+.hero__inner{
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;
+  align-items:center;max-width:1140px;margin:0 auto;width:100%;
+  position:relative;z-index:1;
+}
+
+/* ── Left: Text ── */
+.hero__text{padding:20px 0}
+.hero__title{
+  font-family:'Jost',sans-serif;font-weight:600;
+  font-size:clamp(44px,4.8vw,66px);line-height:1.1;
+  letter-spacing:-0.01em;color:#6ECFAB;margin-bottom:24px;
+}
+.hero__sub{
+  font:400 16px/1.7 'DM Sans',sans-serif;
+  color:rgba(255,255,255,.45);max-width:380px;margin-bottom:36px;
+}
+.hero__cta{
+  display:inline-flex;align-items:center;height:48px;padding:0 28px;
+  border-radius:999px;border:none;background:#fff;color:#1B3533;
+  font:600 15px/1 'DM Sans',sans-serif;cursor:pointer;
+  box-shadow:0 2px 16px rgba(0,0,0,.1);transition:all .25s;
+}
+.hero__cta:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.15)}
+.hero__link{
+  display:inline-block;margin-left:28px;font:500 14px/1 'DM Sans',sans-serif;
+  color:rgba(255,255,255,.35);border-bottom:1px solid rgba(255,255,255,.15);
+  padding-bottom:2px;text-decoration:none;transition:all .2s;
+}
+.hero__link:hover{color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.35)}
+
+/* ── Right: Phone ── */
+.hero__visual{
+  display:flex;justify-content:center;align-items:center;
+  position:relative;padding:40px 80px;
+  overflow:visible;
+}
+
+/* 3D Phone Frame */
+.phone{
+  position:relative;width:280px;
+  overflow:visible;
+  /* Subtle 3D tilt */
+  transform:perspective(1200px) rotateY(-8deg) rotateX(2deg);
+  transform-style:preserve-3d;
+  transition:transform .6s ease;
+}
+.phone:hover{
+  transform:perspective(1200px) rotateY(-4deg) rotateX(1deg);
+}
+
+.phone__frame{
+  background:#1a1a1a;
+  border-radius:40px;
+  padding:12px;
+  position:relative;
+  overflow:hidden; /* only the frame clips, not the phone wrapper */
+  box-shadow:
+    /* Inner depth */
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    /* Right side light reflection */
+    4px 0 12px rgba(255,255,255,.03),
+    /* Main shadow */
+    20px 30px 60px rgba(0,0,0,.4),
+    8px 12px 24px rgba(0,0,0,.3);
+}
+
+/* Notch */
+.phone__notch{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:100px;height:28px;background:#1a1a1a;
+  border-radius:0 0 18px 18px;z-index:10;
+}
+
+/* Screen */
+.phone__screen{
+  background:#fff;border-radius:30px;overflow:hidden;
+  position:relative;
+}
+
+/* ── App UI inside phone ── */
+.app{font-family:'DM Sans',sans-serif}
+
+/* App header (green gradient like Qapital) */
+.app__header{
+  background:linear-gradient(145deg,#1B3533 0%,#2D524E 100%);
+  padding:40px 20px 20px;color:#fff;position:relative;
+}
+.app__header-top{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:16px;font-size:11px;color:rgba(255,255,255,.5);
+}
+.app__status-bar{display:flex;gap:4px;align-items:center}
+.app__status-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.5)}
+.app__balance-label{font-size:11px;color:rgba(255,255,255,.55);margin-bottom:2px}
+.app__balance{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.app__balance-sub{font-size:10px;color:rgba(255,255,255,.4)}
+
+/* App tabs */
+.app__tabs{
+  display:flex;gap:0;background:#fff;padding:10px 16px 0;
+}
+.app__tab{
+  flex:1;text-align:center;font-size:11px;font-weight:600;
+  padding:8px 0 10px;color:#868A86;
+  border-bottom:2px solid transparent;
+}
+.app__tab--active{color:#1B3533;border-bottom-color:#1B3533}
+
+/* App content */
+.app__content{background:#fff;padding:14px 16px 16px}
+
+/* Order card */
+.app__order{
+  background:#F5F5F3;border-radius:12px;padding:14px;margin-bottom:10px;
+  border-left:3px solid #6ECFAB;
+}
+.app__order-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.app__order-car{font-size:13px;font-weight:700;color:#252825}
+.app__order-badge{
+  display:inline-flex;height:18px;padding:0 7px;align-items:center;
+  border-radius:999px;font-size:9px;font-weight:600;
+  background:#E6F4ED;color:#2D7A56;
+}
+.app__order-desc{font-size:11px;color:#656965;margin-bottom:6px}
+.app__order-meta{font-size:10px;color:#A5A9A5}
+
+/* Quote inside order */
+.app__quote{
+  background:#fff;border-radius:10px;padding:12px;margin-top:10px;
+  box-shadow:0 1px 3px rgba(27,53,51,.04);
+}
+.app__quote-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.app__quote-name{font-size:11px;font-weight:600;color:#252825}
+.app__quote-dist{font-size:10px;color:#A5A9A5}
+.app__quote-price{font-size:18px;font-weight:700;color:#252825;margin-bottom:2px}
+.app__quote-price span{font-size:11px;font-weight:400;color:#868A86}
+.app__quote-comment{font-size:10px;color:#656965;margin-bottom:8px}
+.app__quote-actions{display:flex;gap:6px}
+.app__quote-btn{
+  height:26px;padding:0 10px;border-radius:999px;font-size:10px;font-weight:600;
+  display:inline-flex;align-items:center;border:none;cursor:default;
+}
+.app__quote-btn--pri{background:#1B3533;color:#fff}
+.app__quote-btn--sec{background:transparent;color:#656965;border:1.5px solid #DCDEDD}
+
+/* Second order (dimmed) */
+.app__order--dim{opacity:.5;border-left-color:#C2C5C2}
+
+/* Bottom nav */
+.app__nav{
+  display:flex;background:#fff;padding:10px 0 14px;
+  border-top:1px solid #EDEEED;
+}
+.app__nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:9px;font-weight:500;color:#A5A9A5;
+}
+.app__nav-item--active{color:#1B3533}
+.app__nav-icon{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5}
+
+/* ── Floating card (overlapping phone) ── */
+.float-card{
+  position:absolute;
+  left:0px;bottom:60px;
+  background:#fff;border-radius:14px;padding:14px 18px;
+  box-shadow:0 8px 32px rgba(0,0,0,.18),0 2px 8px rgba(0,0,0,.1);
+  width:210px;z-index:20;
+  transform:perspective(800px) rotateY(-5deg);
+  animation:floatup 5s ease-in-out infinite;
+}
+@keyframes floatup{0%,100%{transform:perspective(800px) rotateY(-5deg) translateY(0)}50%{transform:perspective(800px) rotateY(-5deg) translateY(-6px)}}
+.float-card__label{font-size:10px;color:#868A86;margin-bottom:4px}
+.float-card__row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.float-card__name{font-size:11px;font-weight:600;color:#252825}
+.float-card__val{font-size:11px;font-weight:700;color:#252825}
+.float-card__bar{height:4px;background:#EDEEED;border-radius:2px;margin-top:8px;overflow:hidden}
+.float-card__fill{height:100%;width:65%;background:#6ECFAB;border-radius:2px}
+.float-card__sub{font-size:9px;color:#A5A9A5;margin-top:4px}
+
+/* ── Floating badge (top right of phone) ── */
+.float-badge{
+  position:absolute;top:60px;right:0px;
+  background:#fff;border-radius:12px;padding:10px 14px;
+  box-shadow:0 6px 24px rgba(0,0,0,.15),0 2px 6px rgba(0,0,0,.08);
+  display:flex;align-items:center;gap:8px;z-index:20;
+  animation:floatup 6s ease-in-out infinite;
+  animation-delay:-2s;
+}
+.float-badge__icon{
+  width:28px;height:28px;border-radius:8px;background:#EAF9F2;
+  display:grid;place-items:center;flex-shrink:0;
+}
+.float-badge__icon svg{width:14px;height:14px;stroke:#4CB890;fill:none;stroke-width:2}
+.float-badge__text{font-size:10px;font-weight:600;color:#252825;line-height:1.3}
+.float-badge__sub{font-size:9px;font-weight:400;color:#868A86}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero__inner">
+
+    <!-- LEFT: Text -->
+    <div class="hero__text">
+      <h1 class="hero__title">Wycena naprawy.<br>Bez stresu.</h1>
+      <p class="hero__sub">Opisz usterkę raz — okoliczne warsztaty wyślą Ci wyceny do porównania.</p>
+      <div>
+        <button class="hero__cta">Stwórz zlecenie naprawy</button>
+        <a class="hero__link" href="#">Jesteś warsztatem?</a>
+      </div>
+    </div>
+
+    <!-- RIGHT: Phone -->
+    <div class="hero__visual">
+
+      <!-- Floating card: savings summary — OUTSIDE phone div -->
+      <div class="float-card">
+        <div class="float-card__label">Twoje zlecenie</div>
+        <div class="float-card__row">
+          <div class="float-card__name">Audi A3 · hamulce</div>
+        </div>
+        <div class="float-card__row">
+          <span style="font-size:10px;color:#868A86">3 wyceny otrzymane</span>
+          <span style="font-size:10px;font-weight:700;color:#2D7A56">od 520 zł</span>
+        </div>
+        <div class="float-card__bar"><div class="float-card__fill"></div></div>
+        <div class="float-card__sub">3 z 5 warsztatów odpowiedziało</div>
+      </div>
+
+      <!-- Floating badge: notification — OUTSIDE phone div -->
+      <div class="float-badge">
+        <div class="float-badge__icon">
+          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+        </div>
+        <div>
+          <div class="float-badge__text">Nowa wycena!</div>
+          <div class="float-badge__sub">Auto Serwis · 520 zł</div>
+        </div>
+      </div>
+
+      <div class="phone">
+
+        <!-- Phone frame -->
+        <div class="phone__frame">
+          <div class="phone__notch"></div>
+          <div class="phone__screen">
+            <div class="app">
+
+              <!-- Header -->
+              <div class="app__header">
+                <div class="app__header-top">
+                  <span>9:41</span>
+                  <div class="app__status-bar">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2"/><path d="M23 13v-2"/></svg>
+                  </div>
+                </div>
+                <div class="app__balance-label">Twoje zlecenia</div>
+                <div class="app__balance">3 aktywne</div>
+                <div class="app__balance-sub">7 wycen łącznie · 2 nowe</div>
+              </div>
+
+              <!-- Tabs -->
+              <div class="app__tabs">
+                <div class="app__tab app__tab--active">Otwarte (3)</div>
+                <div class="app__tab">Zamknięte (5)</div>
+                <div class="app__tab">Wszystkie</div>
+              </div>
+
+              <!-- Content -->
+              <div class="app__content">
+                <!-- Order 1: with quote -->
+                <div class="app__order">
+                  <div class="app__order-top">
+                    <div class="app__order-car">Audi A3 · hamulce</div>
+                    <div class="app__order-badge">3 wyceny</div>
+                  </div>
+                  <div class="app__order-desc">Hamulce piszczą przy hamowaniu</div>
+                  <div class="app__order-meta">Zasięg 15 km · Utworzono dziś</div>
+
+                  <!-- Best quote -->
+                  <div class="app__quote">
+                    <div class="app__quote-head">
+                      <div class="app__quote-name">Auto Serwis Kowalski</div>
+                      <div class="app__quote-dist">2.4 km</div>
+                    </div>
+                    <div class="app__quote-price">520–680 <span>PLN</span></div>
+                    <div class="app__quote-comment">Klocki + tarcze, 2-3 dni robocze</div>
+                    <div class="app__quote-actions">
+                      <button class="app__quote-btn app__quote-btn--pri">Zainteresowany</button>
+                      <button class="app__quote-btn app__quote-btn--sec">Ignoruj</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Order 2: dimmed -->
+                <div class="app__order app__order--dim">
+                  <div class="app__order-top">
+                    <div class="app__order-car">BMW 320d · klimatyzacja</div>
+                    <div class="app__order-badge" style="background:#FDF6E3;color:#8B6914">Oczekuje</div>
+                  </div>
+                  <div class="app__order-desc">Klima nie chłodzi, dziwny zapach</div>
+                  <div class="app__order-meta">Zasięg 10 km · Utworzono wczoraj</div>
+                </div>
+              </div>
+
+              <!-- Bottom nav -->
+              <div class="app__nav">
+                <div class="app__nav-item app__nav-item--active">
+                  <svg class="app__nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+                  Zlecenia
+                </div>
+                <div class="app__nav-item">
+                  <svg class="app__nav-icon" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                  Wyceny
+                </div>
+                <div class="app__nav-item">
+                  <svg class="app__nav-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
+                  Pytania
+                </div>
+                <div class="app__nav-item">
+                  <svg class="app__nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                  Ustawienia
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>

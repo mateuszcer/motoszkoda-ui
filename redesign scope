@@ -1,110 +1,496 @@
-Goal
+# Autoceny Landing Page — Definitive Redesign Guide
+## Version 2.0 — Corrected Font & Color
 
-Collect a valid search origin and search radius to match the Repair Request to Shops, with minimal friction and clear user understanding.
+---
 
-Definitions
+## 1. Design Direction
 
-Location: a geo point (lat/lng) + human-readable label (city or address).
+Qapital's landing page works because of three things: a geometric sans-serif headline font at light weight, a cool mint accent on dark teal, and enormous whitespace. Everything else supports these three pillars. This document provides the exact specifications to replicate this quality for Autoceny.
 
-Radius: numeric kilometers used for matching.
+The aesthetic target is **Scandinavian functionalism** — clean, geometric, precise, calm. Think IKEA packaging, Stockholm metro signage, Volvo dashboards. Not fashion. Not editorial. Not decorative. Functional beauty through simplicity.
 
-Screen behavior (Step 3: Location)
-1) Location input (required)
+---
 
-User must provide location via one of:
+## 2. Typography
 
-Use current location (device geolocation)
+### Font Stack
 
-Search input (autocomplete) that accepts:
+```css
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
-City (e.g., “Kraków”)
+:root {
+  --font-display: 'Josefin Sans', sans-serif;
+  --font-body: 'DM Sans', 'Helvetica Neue', sans-serif;
+}
+```
 
-Address (e.g., “Grunwaldzka 10, Gdańsk”)
+**Josefin Sans** is the headline font — a geometric sans-serif with Scandinavian roots, inspired by 1920s-30s functionalism. It is the closest free alternative to Funkis (the paid font Qapital uses). Both share the same design DNA: clean circular geometry, even stroke weight, calm architectural precision.
 
-UI requirements
+**DM Sans** is the body font — neutral, geometric, excellent readability at small sizes. It pairs naturally with Josefin Sans because both are geometric but DM Sans has a higher x-height optimized for body text.
 
-Show a single prominent field: City or address
+### Type Scale — Landing Page
 
-Show a clear secondary button: Use current location
+| Token | Font | Size | Weight | Line Height | Letter Spacing | Usage |
+|-------|------|------|--------|-------------|----------------|-------|
+| `hero-title` | Josefin Sans | clamp(48px, 5.5vw, 72px) | 300 | 1.08 | -0.01em | Hero headline only |
+| `section-title` | Josefin Sans | clamp(32px, 3.5vw, 48px) | 400 | 1.12 | -0.005em | Feature section headings |
+| `overline` | DM Sans | 12px | 600 | 1.4 | 0.1em | Section labels, uppercased |
+| `body-large` | DM Sans | 17px | 400 | 1.7 | 0 | Hero subtitle, section descriptions |
+| `body` | DM Sans | 16px | 400 | 1.65 | 0 | General body text |
+| `body-small` | DM Sans | 14px | 400 | 1.6 | 0 | Card descriptions, metadata |
+| `caption` | DM Sans | 13px | 400 | 1.5 | 0.01em | Timestamps, footnotes |
+| `btn-text` | DM Sans | 15px | 600 | 1 | 0.005em | Button labels |
+| `nav-link` | DM Sans | 14px | 500 | 1 | 0.005em | Navigation items |
+| `trust-value` | DM Sans | 22px | 700 | 1.2 | -0.01em | Trust bar numbers |
+| `trust-label` | DM Sans | 12px | 500 | 1.4 | 0.08em | Trust bar descriptions, uppercased |
+| `price` | DM Sans | 40px | 700 | 1.1 | -0.02em | Pricing numbers |
 
-Validation
+### Critical Typography Rules
 
-“Continue/Submit” must be disabled until location is resolved to a geo point.
+**Hero headline must be weight 300 (Light).** This is non-negotiable. The entire Qapital aesthetic depends on thin, geometric letterforms at large sizes. Weight 400 is acceptable for section titles. Weight 500+ is only for body text emphasis. Never use 600-700 on any headline.
 
-2) Map preview (appears after location is set)
+**Body text never uses Josefin Sans.** Josefin Sans has a low x-height that makes it harder to read at small sizes. DM Sans handles all text below 24px.
 
-Once location is resolved:
+**No italic anywhere on the landing page.** Italics break the geometric, architectural feel.
 
-Display a map with a pin at the resolved point.
+**Uppercase only for overline labels** ("DLA KIEROWCÓW", "PORÓWNAJ I WYBIERZ") and trust bar descriptions. Everything else — headings, buttons, body — is sentence case.
 
-Allow user to adjust location by:
+**Maximum line length for body text: 520px** (~55-60 characters). Constrain all descriptive paragraphs with max-width.
 
-dragging the pin, or
+---
 
-clicking “Adjust on map” which opens map interaction mode.
+## 3. Color System
 
-Copy
+### Palette
 
-If only city is entered: “Pin is set to the city center. Add street for more accuracy.”
+```css
+:root {
+  /* ── Accent Mint (the Qapital green) ── */
+  --mint-500: #6ECFAB;          /* Primary accent — hero headline, highlights */
+  --mint-400: #8DDBC0;          /* Lighter — hover states, subtle fills */
+  --mint-300: #B0E8D4;          /* Very light — tinted backgrounds */
+  --mint-200: #D4F3E8;          /* Whisper — badge backgrounds on light */
+  --mint-100: #EAF9F2;          /* Barely there — section tinting */
+  --mint-600: #4CB890;          /* Deeper — buttons on light backgrounds */
+  --mint-700: #36A07A;          /* Darkest mint — text links on white */
 
-3) Radius control (hidden until location is set)
+  /* ── Dark Teal (backgrounds) ── */
+  --teal-900: #0C1B19;          /* Deepest — footer */
+  --teal-800: #122623;          /* Deep — nav solid state */
+  --teal-700: #1B3533;          /* Base dark — hero, dark sections */
+  --teal-600: #213F3C;          /* Elevated — cards on dark bg */
+  --teal-500: #2D524E;          /* Medium — hover on dark elements */
 
-Before location is set:
+  /* ── Warm Neutrals ── */
+  --neutral-950: #191C1A;       /* Near-black text */
+  --neutral-900: #252825;       /* Primary headings */
+  --neutral-800: #363936;       /* Secondary headings */
+  --neutral-700: #4D504D;       /* Primary body text */
+  --neutral-600: #656965;       /* Secondary body text */
+  --neutral-500: #868A86;       /* Placeholder, muted */
+  --neutral-400: #A5A9A5;       /* Disabled text */
+  --neutral-300: #C2C5C2;       /* Borders */
+  --neutral-200: #DCDEDD;       /* Subtle borders, dividers */
+  --neutral-100: #EDEEED;       /* Input backgrounds */
+  --neutral-75:  #F2F3F2;       /* Alternate section bg */
+  --neutral-50:  #F5F5F3;       /* Page background */
+  --white:       #FFFFFF;        /* Card surfaces */
 
-Radius UI is hidden or disabled with a hint: “Choose location to set radius”.
+  /* ── Semantic ── */
+  --success-600: #2D7A56;
+  --success-100: #E6F4ED;
+  --warning-600: #8B6914;
+  --warning-100: #FDF6E3;
+  --error-600:   #B3261E;
+  --error-100:   #FDECEA;
+}
+```
 
-After location is set:
+### Color Usage Rules
 
-Show radius section:
+**Dark sections** (hero, trust bar, bottom CTA, footer): `--teal-700` background, `--mint-500` for headline text, `rgba(255,255,255,0.5)` for body text, white for primary CTAs.
 
-Search radius: 15 km (value visible)
+**Light sections** (features, why, pricing): alternate between `--neutral-50` and `--neutral-75` for background. `--neutral-900` for headings, `--neutral-600` for body text. `--teal-700` for primary buttons.
 
-slider (or +/- buttons) controlling radius
+**Card surfaces**: `--white` on `--neutral-50` background. No visible borders. Separation through subtle shadow only.
 
-map draws a circle around the pin representing the radius
+**One accent color only.** There is no gold, no second green, no blue. Everything is mint + teal + warm neutral. The workshop-side buttons that were previously gold/tan become `--teal-700` (same as driver-side). Differentiation between audiences happens through copy and layout, never through color.
 
-Radius constraints
+### What Changed from Previous Documents
 
-Min/max configurable.
+| Previous recommendation | New (correct) |
+|------------------------|---------------|
+| `#6AB89D` warm sage accent | `#6ECFAB` cool mint accent |
+| `#152922` brown-green dark bg | `#1B3533` teal dark bg |
+| `#1E3A2F` button primary | `#1B3533` button primary (matches dark bg) |
+| `#5BBAA0` sage highlights | `#4CB890` deeper mint for buttons |
+| DM Serif Display (serif) for headlines | Josefin Sans (geometric sans) for headlines |
 
-User can set with:
+---
 
-slider + numeric label (mandatory)
+## 4. Spacing & Layout
 
-optional: make numeric label editable
+### Section Spacing
 
-4) Submission
+```css
+:root {
+  --section-padding: clamp(80px, 10vw, 140px);
+  --content-max: 1160px;
+  --text-max: 520px;        /* Max-width for body text blocks */
+}
+```
 
-CTA label: consistent with your chosen term (either “Wyślij zlecenie” or “Wyślij zgłoszenie”).
+Every major section (hero, feature, why, pricing, CTA) has `var(--section-padding)` top and bottom. On a 1440px screen that's 140px — about 9% of the viewport. This is the single most important spatial decision. Do not reduce it.
 
-When submitting:
+### Content Grid
 
-show loading state
+```
+Max content width:     1160px, centered
+Feature section grid:  2 columns, 50/50, 80px gap
+Hero grid:            2 columns, 55/45, 80px gap
+Pricing cards:         2 columns, max 880px total, 24px gap
+```
 
-handle errors (geolocation denied, autocomplete failure)
+### Section Background Alternation
 
-States to implement
+```
+Hero:          --teal-700 (dark)
+Trust bar:     --teal-900 (darker)
+Feature 1:     --neutral-50 (light)
+Feature 2:     --neutral-75 (slightly darker light)
+Feature 3:     --neutral-50 (light)
+Why Autoceny:  --white
+Pricing:       --neutral-50 (light)
+Bottom CTA:    --teal-700 (dark)
+Footer:        --teal-900 (darker)
+```
 
-Empty: no location selected
+This creates a clear rhythm: dark → dark → light → light → light → white → light → dark → dark. The alternation between `--neutral-50` and `--neutral-75` is extremely subtle (~3% difference) — just enough to distinguish sections without hard breaks.
 
-show input + “Use current location”
+---
 
-hide radius + map
+## 5. Navigation Bar
 
-Resolving: user selected suggestion / geolocation in progress
+### Spec
 
-loading indicator in field/button
+```
+Position:       Fixed, top: 0
+Height:         68px
+Background:     Transparent over hero → --teal-800 on scroll
+Transition:     background 0.4s ease, box-shadow 0.4s ease
+Padding:        0 40px
+Content max:    var(--content-max), centered
+```
 
-Location set: pin + map visible, radius UI visible, circle drawn
+### Elements
 
-Location adjusted: user moved pin
+| Element | Spec |
+|---------|------|
+| Logo badge | 32×32px, `--teal-600` bg, `--mint-400` text "AC", border-radius 8px |
+| Wordmark | DM Sans, 18px, weight 600, white. NOT italic. NOT serif. |
+| Nav links | DM Sans 14px, weight 500, `rgba(255,255,255,0.55)`. Hover: `rgba(255,255,255,0.9)`. 36px gap between links. |
+| CTA primary | "Stwórz Zlecenie" — 38px height, pill (border-radius 999px), `--mint-500` bg, `--teal-900` text, DM Sans 14px weight 600 |
+| CTA secondary | "Dołącz jako Warsztat" — 38px height, pill, transparent bg, `1.5px rgba(255,255,255,0.2)` border, `rgba(255,255,255,0.7)` text |
 
-update label to “Custom location” (or keep city name + “adjusted”)
+### Nav links
+Three items only: **Jak to działa**, **Cennik**, **FAQ**
 
-Error:
+---
 
-Geolocation denied → “Allow location or type a city”
+## 6. Hero Section
 
-Autocomplete no results → “Try city + voivodeship” / “Check spelling”
+### Layout
 
-Map API down (if applicable) → fallback to city input + radius slider without map
+```
+Background:     --teal-700, full viewport height (min-height: 100vh)
+Grid:           55% text / 45% visual, 80px gap
+Text alignment: Left
+Content:        Vertically centered within section
+```
+
+### Atmosphere
+
+Add a very subtle radial gradient glow behind the visual area:
+```css
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 70%;
+  height: 140%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(110, 207, 171, 0.06) 0%,
+    transparent 70%
+  );
+}
+```
+This is at 6% opacity — barely perceptible. If it looks like a visible green cloud, it's too strong. Reduce until you can barely tell it's there.
+
+Optional: add a noise texture SVG overlay at 3% opacity for subtle grain.
+
+### Content
+
+**Headline:** "Wycena naprawy. Bez stresu." — Josefin Sans, weight 300, `--mint-500`, size clamp(48px, 5.5vw, 72px). Two lines, natural line break after period.
+
+**Subtitle:** "Opisz usterkę raz — okoliczne warsztaty wyślą Ci wyceny do porównania." — DM Sans, 17px, weight 400, `rgba(255,255,255,0.5)`, max-width 420px. 28px below headline.
+
+**Primary CTA:** "Stwórz Zlecenie Naprawy" — white bg, `--teal-700` text, 52px height, pill shape, DM Sans 15px weight 600. Subtle shadow: `0 2px 16px rgba(0,0,0,0.12)`. 40px below subtitle.
+
+**Secondary link:** "Jesteś warsztatem?" — 14px, DM Sans weight 500, `rgba(255,255,255,0.45)`, 1px bottom border `rgba(255,255,255,0.2)`. Positioned inline right of primary CTA with 32px gap.
+
+### Hero Visual (Right Side)
+
+A frosted-glass mockup card showing the order creation form. NOT abstract shapes. NOT concentric circles. A concrete, recognizable piece of UI.
+
+```
+Card:           380px wide
+Background:     rgba(255,255,255,0.06)
+Border:         1px solid rgba(255,255,255,0.08)
+Backdrop-filter: blur(12px)
+Border-radius:  20px
+Padding:        28px
+```
+
+Card contents:
+1. Three small dots (mint, decreasing opacity) + "Ustaw promień szukania" label
+2. Input field: car icon + "Audi A3 Sportback · 2019"
+3. Input field: wrench icon + "Hamulce piszczą przy hamowaniu"
+4. Slider track with mint fill + thumb + "15 km" value
+5. Small "Wyślij zlecenie" button in `--mint-500`
+
+Add 3 floating "workshop pin" icons around the card (40×40px frosted glass squares with house icons), positioned absolutely, with a slow 6s float animation (translateY ±8px).
+
+### Scroll Indicator
+
+Centered at bottom of hero, 32px from bottom edge. Double chevron-down icon, `rgba(255,255,255,0.25)`, 20px, gentle bounce animation (2s, 6px travel).
+
+---
+
+## 7. Trust Bar
+
+```
+Background:     --teal-900
+Padding:        48px 40px
+Grid:           4 equal columns, 40px gap, centered
+```
+
+Each trust item:
+- 40×40px icon container: `rgba(110, 207, 171, 0.1)` bg, border-radius 10px, mint outline icon (20px)
+- Value: DM Sans 22px, weight 700, white
+- Label: DM Sans 12px, weight 500, `rgba(255,255,255,0.4)`, uppercase, letter-spacing 0.08em
+
+Items:
+1. 🏠 **120+** / WARSZTATÓW W SIECI
+2. 💰 **~30%** / ŚREDNIE OSZCZĘDNOŚCI
+3. ⏱ **< 2h** / ŚREDNI CZAS WYCENY
+4. ⭐ **4.8/5** / OCENA UŻYTKOWNIKÓW
+
+(Replace emoji above with matching outline SVG icons — house, dollar, clock, star)
+
+---
+
+## 8. Feature Sections (Zigzag)
+
+Three feature sections, alternating text-left/visual-right and text-right/visual-left.
+
+### Section anatomy
+
+Each section has:
+
+**Overline:** DM Sans 12px, weight 600, `--mint-600` (#4CB890), uppercase, letter-spacing 0.1em. 16px below.
+
+**Headline:** Josefin Sans, weight 400 (Regular — one step heavier than hero), `--neutral-900`, size clamp(32px, 3.5vw, 48px). 20px below.
+
+**Description:** DM Sans 16px, weight 400, `--neutral-600`, line-height 1.7, max-width 440px. 32px below.
+
+**CTA button:** DM Sans 15px, weight 600, `--teal-700` bg, white text, 48px height, pill shape. Hover: `--teal-600` bg, translateY(-1px), shadow `0 4px 16px rgba(27,53,51,0.2)`.
+
+### Visual mockups (right column)
+
+White cards with no border, border-radius 20px, shadow `0 2px 24px rgba(27,53,51,0.06)`.
+
+### Feature 1: "Opisz usterkę raz"
+- Overline: DLA KIEROWCÓW
+- Visual: order form mockup card (car field, problem field, distance slider, submit button)
+- CTA: "Stwórz Zlecenie Naprawy"
+
+### Feature 2: "Otrzymaj wyceny i wybierz" (REVERSED — visual left, text right)
+- Overline: PORÓWNAJ I WYBIERZ
+- Visual: quote comparison card showing:
+  - Header: "Audi A3 · hamulce" + green "Otwarte" badge
+  - Quote 1: "Auto Serwis Kowalski", 2.4 km, **520–680 PLN**, "Zainteresowany" + "Ignoruj" buttons
+  - Quote 2: "Quick Fix Garage", 7.8 km, **550–700 PLN** (dimmed at 65% opacity — showing it's secondary)
+  - Quote 1 has a 3px left border in `--mint-500`
+- CTA: "Stwórz Zlecenie Naprawy"
+
+### Feature 3: "Analizuj i doprecyzuj"
+- Overline: DLA WARSZTATÓW
+- Visual: workshop view card showing:
+  - Header: "Audi A3 · hamulce" + amber "Nowe zlecenie" badge
+  - Order summary block (light bg)
+  - "Przyjmij do przeglądu" button
+  - Question input field
+- CTA: "Dołącz jako Warsztat"
+
+---
+
+## 9. "Dlaczego Autoceny?" Section
+
+```
+Background:     --white
+Padding:        var(--section-padding)
+```
+
+**Heading:** "Dlaczego Autoceny?" — Josefin Sans, weight 400, `--neutral-900`, size clamp(32px, 3.5vw, 48px), centered. 64px below before grid.
+
+**Two-column grid**, 80px gap.
+
+Each column has a title: DM Sans 13px, weight 600, `--mint-600`, uppercase, letter-spacing 0.08em. Underlined with a `1.5px --neutral-100` border-bottom, 16px padding-bottom. 32px margin-bottom.
+
+Each benefit item: icon (44×44px, `--mint-100` bg, `--mint-600` icon, border-radius 12px) + text block, 16px gap. 32px between items.
+
+**Drivers column:**
+- Oszczędzaj — Porównuj realne wyceny zamiast zgadywać ceny.
+- Bez obdzwaniania — Jedno zlecenie trafia do każdego warsztatu w promieniu.
+- Łatwe porównanie — Ceny, odległości i opinie obok siebie.
+
+**Workshops column:**
+- Klienci gotowi na naprawę — Każde zlecenie pochodzi od kierowcy gotowego naprawić auto.
+- Mniej przekazywania informacji — Zadawaj pytania i wyceniaj bezpośrednio w aplikacji.
+- Wygrywaj lokalnie — Konkuruj wartością w swojej okolicy.
+
+---
+
+## 10. Pricing Section
+
+```
+Background:     --neutral-50
+Max width:      880px (narrower than other sections)
+```
+
+**Heading:** "Cennik" — Josefin Sans, weight 400, centered.
+**Subtitle:** "Dla kierowców i warsztatów" — DM Sans 16px, `--neutral-600`, centered.
+
+**Audience tabs:** Two pill buttons centered, 8px gap. Active: `--teal-700` bg, white text. Inactive: transparent, `1.5px --neutral-200` border, `--neutral-600` text.
+
+**Two pricing cards**, side by side, 24px gap. Both white, border-radius 20px, 36px padding.
+
+Featured card (Premium) gets:
+- 3px `--mint-500` top border (accent bar)
+- Slightly elevated shadow: `0 4px 24px rgba(27,53,51,0.08)`
+
+All CTA buttons use `--teal-700` bg, white text (primary) or transparent with border (secondary). **No gold/tan for workshop buttons.**
+
+---
+
+## 11. Bottom CTA Section
+
+```
+Background:     --teal-700
+Padding:        var(--section-padding)
+Text-align:     center
+Max text width: 520px, centered
+```
+
+**Title:** "Napraw auto mądrzej" — Josefin Sans, weight 300, `--mint-500`.
+**Description:** DM Sans 16px, `rgba(255,255,255,0.5)`.
+**CTA:** "Stwórz Zlecenie Naprawy" — white bg, `--teal-700` text, 52px height, pill.
+
+Same subtle radial gradient atmosphere as hero.
+
+---
+
+## 12. Footer
+
+```
+Background:     --teal-900
+Padding:        48px 40px 32px
+Layout:         flex, space-between, vertically centered
+```
+
+Logo (badge + wordmark at 70% white), 4 links (13px, 40% white), copyright (13px, 25% white).
+
+---
+
+## 13. Buttons — Complete Spec
+
+### On dark backgrounds (hero, CTA section)
+
+| Variant | Height | BG | Text | Border | Radius |
+|---------|--------|----|------|--------|--------|
+| Primary | 52px | white | `--teal-700` | none | 999px |
+| Secondary | 38px | transparent | `rgba(255,255,255,0.7)` | 1.5px `rgba(255,255,255,0.2)` | 999px |
+| Ghost | auto | transparent | `rgba(255,255,255,0.45)` | 1px bottom only | none |
+
+### On light backgrounds (features, pricing)
+
+| Variant | Height | BG | Text | Border | Radius |
+|---------|--------|----|------|--------|--------|
+| Primary | 48px | `--teal-700` | white | none | 999px |
+| Secondary | 48px | transparent | `--teal-700` | 1.5px `--neutral-200` | 999px |
+
+### Hover behavior (all buttons)
+
+```css
+.btn:hover {
+  transform: translateY(-1px);
+  transition: all 0.25s ease;
+}
+
+.btn-primary-dark:hover {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+}
+
+.btn-primary-light:hover {
+  background: var(--teal-600);
+  box-shadow: 0 4px 16px rgba(27,53,51,0.2);
+}
+```
+
+---
+
+## 14. Scroll Animations
+
+All content elements use scroll-triggered reveal:
+
+```css
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+```
+
+Stagger within sections: overline at 0ms, headline at 100ms, description at 200ms, CTA at 300ms, visual at 150ms.
+
+Use IntersectionObserver with threshold 0.15 and rootMargin "0px 0px -40px 0px".
+
+---
+
+## 15. Implementation Checklist
+
+In priority order:
+
+1. Import Josefin Sans 300,400,500 + DM Sans 400,500,600,700
+2. Set hero headline to Josefin Sans weight 300, color `#6ECFAB`
+3. Set hero background to `#1B3533`
+4. Set section padding to `clamp(80px, 10vw, 140px)`
+5. Set section headings to Josefin Sans weight 400, color `#252825`
+6. Replace all green values with the mint palette above
+7. Remove all serif font references
+8. Remove all gold/tan colors — replace with `#1B3533`
+9. Set page background to `#F5F5F3`, card surfaces to `#FFFFFF`, no card borders
+10. Style nav with transparent→solid scroll transition
+11. Replace abstract hero visual with concrete form mockup
+12. Add trust bar between hero and first feature
+13. Add scroll reveal animations
+14. Style buttons as pills (border-radius 999px)
+15. Add subtle noise texture to dark sections

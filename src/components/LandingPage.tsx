@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SeoSchema } from './SeoSchema'
-import { useTheme } from '../hooks/useTheme'
 import './LandingPage.css'
 
 interface LandingPageProps {
@@ -9,70 +8,51 @@ interface LandingPageProps {
   onJoinAsShop: () => void
 }
 
-const STEP_KEYS = ['step1', 'step2', 'step3', 'step4', 'step5'] as const
-const DEMO_INTERVAL = 3200
-
 export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
   const { t, i18n } = useTranslation()
   const isPolish = i18n.language.startsWith('pl')
 
-  const [activeStep, setActiveStep] = useState(-1)
-  const [stickyVisible, setStickyVisible] = useState(false)
-  const [demoPhase, setDemoPhase] = useState(0)
+  const [navSolid, setNavSolid] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [pricingAudience, setPricingAudience] = useState<'driver' | 'shop'>('driver')
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
-  const [driverPlan, setDriverPlan] = useState<'free' | 'premium'>('free')
 
   const heroRef = useRef<HTMLElement>(null)
-  const stepElements = useRef<(HTMLElement | null)[]>([])
   const faqContentRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  const { theme, toggle: toggleTheme } = useTheme()
   const toggleLang = () => void i18n.changeLanguage(isPolish ? 'en' : 'pl')
 
-  // Sticky bar appears after scrolling past hero
+  // Nav solid on scroll past hero
   useEffect(() => {
     const hero = heroRef.current
     if (!hero) return
     const observer = new IntersectionObserver(
-      ([entry]) => setStickyVisible(!entry.isIntersecting),
-      { threshold: 0.05 },
+      ([entry]) => setNavSolid(!entry.isIntersecting),
+      { threshold: 0.7 },
     )
     observer.observe(hero)
     return () => observer.disconnect()
   }, [])
 
-  // Scroll spy for steps
+  // Reveal animation
   useEffect(() => {
+    const els = document.querySelectorAll('.lp-rv')
+    if (!els.length) return
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const idx = stepElements.current.indexOf(entry.target as HTMLElement)
-            if (idx !== -1) setActiveStep(idx)
-          }
+          if (entry.isIntersecting) entry.target.classList.add('lp-rv--vis')
         }
       },
-      { threshold: 0.3, rootMargin: '-5% 0px -5% 0px' },
+      { threshold: 0.12, rootMargin: '0px 0px -30px 0px' },
     )
-    for (const el of stepElements.current) {
-      if (el) observer.observe(el)
-    }
+    for (const el of els) observer.observe(el)
     return () => observer.disconnect()
   }, [])
 
-  // Demo cycling
-  useEffect(() => {
-    const id = window.setInterval(() => setDemoPhase((p) => (p + 1) % 3), DEMO_INTERVAL)
-    return () => window.clearInterval(id)
+  const scrollToSection = useCallback((id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }, [])
-
-  const setStepRef = useCallback(
-    (index: number) => (el: HTMLElement | null) => {
-      stepElements.current[index] = el
-    },
-    [],
-  )
 
   const setFaqRef = useCallback(
     (index: number) => (el: HTMLDivElement | null) => {
@@ -81,506 +61,307 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
     [],
   )
 
-  const scrollToSection = useCallback((id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-  }, [])
-
   const faqItems = Array.from({ length: 10 }, (_, i) => ({
     q: t(`landing.faq.q${i + 1}`),
     a: t(`landing.faq.a${i + 1}`),
   }))
 
-  const flowProgress = Math.max(0, ((activeStep + 1) / STEP_KEYS.length) * 100)
-
   return (
     <div className="lp">
       <SeoSchema />
 
-      {/* ── STICKY BAR ── */}
-      <div className={`lp-sticky ${stickyVisible ? 'lp-sticky--visible' : ''}`}>
-        <div className="lp-sticky__inner">
-          <div className="lp-sticky__brand">
+      {/* ── NAV ── */}
+      <nav className={`lp-nav ${navSolid ? 'lp-nav--solid' : ''}`}>
+        <div className="lp-nav__inner">
+          <div className="lp-nav__brand">
             <div className="brand-mark">AC</div>
-            <span className="lp-sticky__name">Autoceny</span>
+            <span className="lp-nav__brand-name">Autoceny</span>
           </div>
-          <div className="lp-sticky__actions">
-            <button className="lp-btn lp-btn--primary lp-btn--sm" onClick={onGetStarted}>
-              {t('landing.stickyBar.cta')}
-            </button>
-            <button className="lp-btn lp-btn--outline lp-btn--sm" onClick={onJoinAsShop}>
-              {t('landing.stickyBar.ctaShop')}
-            </button>
-            <button className="lp-theme-toggle" onClick={toggleTheme} aria-label={t(theme === 'dark' ? 'theme.switchToLight' : 'theme.switchToDark')}>
-              {theme === 'dark' ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-              )}
-            </button>
-            <button className="lp-lang" onClick={toggleLang} aria-label="Toggle language">
+
+          <ul className="lp-nav__links">
+            <li><button onClick={() => scrollToSection('lp-how')}>{t('landing.nav.howItWorks')}</button></li>
+            <li><button onClick={() => scrollToSection('lp-pricing')}>{t('landing.nav.pricing')}</button></li>
+            <li><button onClick={() => scrollToSection('lp-faq')}>{t('landing.nav.faq')}</button></li>
+          </ul>
+
+          <div className="lp-nav__actions">
+            <button className="lp-lang" onClick={toggleLang}>
               {isPolish ? 'EN' : 'PL'}
+            </button>
+            <button className="lp-nav__btn-sec" onClick={onJoinAsShop}>
+              {t('landing.nav.ctaShop')}
+            </button>
+            <button className="lp-nav__btn-pri" onClick={onGetStarted}>
+              {t('landing.nav.cta')}
             </button>
           </div>
         </div>
-      </div>
+      </nav>
 
       {/* ── HERO ── */}
       <section className="lp-hero" ref={heroRef}>
-        <div className="lp-hero__bg">
-          <div className="lp-hero__glow" />
-          <div className="lp-hero__grid" />
-        </div>
-
-        <div className="lp-hero__top-bar">
-          <div className="lp-hero__brand">
-            <div className="brand-mark">AC</div>
-            <span>Autoceny</span>
-          </div>
-          <div className="lp-hero__nav">
-            <button className="lp-theme-toggle" onClick={toggleTheme} aria-label={t(theme === 'dark' ? 'theme.switchToLight' : 'theme.switchToDark')}>
-              {theme === 'dark' ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-              )}
-            </button>
-            <button className="lp-lang lp-lang--hero" onClick={toggleLang}>
-              {isPolish ? 'EN' : 'PL'}
-            </button>
-          </div>
-        </div>
-
         <div className="lp-hero__content">
           <div className="lp-hero__text">
-            <h1 className="lp-hero__headline">{t('landing.hero.headline')}</h1>
+            <h1 className="lp-hero__headline">{t('landing.hero.headline').split('\n').map((line, i, arr) => (
+              <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
+            ))}</h1>
             <p className="lp-hero__sub">{t('landing.hero.subheadline')}</p>
-            <div className="lp-hero__ctas">
-              <button className="lp-btn lp-btn--primary lp-btn--lg" onClick={onGetStarted}>
+            <div>
+              <button className="lp-hero__cta-primary" onClick={onGetStarted}>
                 {t('landing.hero.cta')}
               </button>
-              <button
-                className="lp-btn lp-btn--ghost lp-btn--lg"
-                onClick={() => scrollToSection('lp-flow')}
-              >
-                {t('landing.hero.ctaShop')}
+              <button className="lp-hero__cta-link" onClick={onJoinAsShop}>
+                {t('landing.hero.ctaSecondary')}
               </button>
             </div>
           </div>
 
-          {/* Animated demo */}
-          <div className="lp-demo">
-            <div className="lp-demo__card">
-              <div className="lp-demo__header">
-                <div className="lp-demo__dots">
-                  {[0, 1, 2].map((i) => (
-                    <span
-                      key={i}
-                      className={`lp-demo__dot ${demoPhase === i ? 'lp-demo__dot--active' : ''}`}
-                    />
-                  ))}
-                </div>
-                <span className="lp-demo__label">
-                  {t(`landing.demo.step${demoPhase + 1}Label`)}
-                </span>
-              </div>
-              <div className="lp-demo__body">
-                {/* Phase 0: Car + Issue */}
-                <div className={`lp-demo__phase ${demoPhase === 0 ? 'lp-demo__phase--active' : ''}`} aria-label={t('landing.demo.step1Label')}>
-                  <div className="demo-row">
-                    <span className="demo-icon">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="8" width="18" height="10" rx="2"/><path d="M6 8V6a2 2 0 012-2h8a2 2 0 012 2v2"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/></svg>
-                    </span>
-                    <span className="demo-val">Audi A3 Sportback &middot; 2019</span>
-                  </div>
-                  <div className="demo-row">
-                    <span className="demo-icon">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-                    </span>
-                    <span className="demo-val">{t('landing.mockBrakes')}</span>
-                  </div>
-                  <div className="demo-tags">
-                    <span className="demo-tag">{t('tags.brakes')}</span>
-                    <span className="demo-tag">{t('tags.suspension')}</span>
-                  </div>
-                </div>
-
-                {/* Phase 1: Radius */}
-                <div className={`lp-demo__phase ${demoPhase === 1 ? 'lp-demo__phase--active' : ''}`} aria-label={t('landing.demo.step2Label')}>
-                  <div className="demo-radius">
-                    <div className="demo-radius__visual">
-                      <div className="demo-radius__pin" />
-                      <div className="demo-radius__ring demo-radius__ring--1" />
-                      <div className="demo-radius__ring demo-radius__ring--2" />
-                      <div className="demo-radius__ring demo-radius__ring--3" />
-                      <div className="demo-radius__shop demo-radius__shop--1">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21V9l9-7 9 7v12H3z"/></svg>
-                      </div>
-                      <div className="demo-radius__shop demo-radius__shop--2">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21V9l9-7 9 7v12H3z"/></svg>
-                      </div>
-                      <div className="demo-radius__shop demo-radius__shop--3">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21V9l9-7 9 7v12H3z"/></svg>
-                      </div>
-                    </div>
-                    <div className="demo-radius__info">
-                      <span className="demo-radius__km">15 km</span>
-                      <span className="demo-radius__label">{t('landing.mockRadius')}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Phase 2: Quotes */}
-                <div className={`lp-demo__phase ${demoPhase === 2 ? 'lp-demo__phase--active' : ''}`} aria-label={t('landing.demo.step3Label')}>
-                  <div className="demo-quotes">
-                    {[
-                      { name: 'Auto Serwis Kowalski', price: '520\u2013680 PLN', delay: '0s' },
-                      { name: 'Moto Expert', price: '480\u2013620 PLN', delay: '0.12s' },
-                      { name: 'Quick Fix Garage', price: '550\u2013700 PLN', delay: '0.24s' },
-                    ].map((q) => (
-                      <div
-                        key={q.name}
-                        className="demo-quote"
-                        style={{ animationDelay: q.delay }}
-                      >
-                        <span className="demo-quote__name">{q.name}</span>
-                        <span className="demo-quote__price">{q.price}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="lp-hero__visual">
+            <PhoneMockup />
           </div>
         </div>
 
         <button
           className="lp-hero__scroll"
-          onClick={() => scrollToSection('lp-flow')}
+          onClick={() => scrollToSection('lp-trust-bar')}
           aria-label="Scroll down"
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M5 8l5 5 5-5" />
-          </svg>
+          <svg viewBox="0 0 24 24"><path d="M7 13l5 5 5-5M7 6l5 5 5-5" /></svg>
         </button>
       </section>
 
-      {/* ── HOW IT WORKS ── */}
-      <section className="lp-flow" id="lp-flow">
-        <div className="lp-section-head">
-          <h2>{t('landing.flow.title')}</h2>
-          <p>{t('landing.flow.subtitle')}</p>
+      {/* ── TRUST BAR ── */}
+      <section className="lp-trust-bar" id="lp-trust-bar">
+        <div className="lp-trust-bar__inner">
+          <TrustStat delay="" icon={<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />} value="120+" label={t('landing.trustBar.workshops')} />
+          <TrustStat delay="lp-rv-d1" icon={<path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />} value="~30%" label={t('landing.trustBar.savings')} />
+          <TrustStat delay="lp-rv-d2" icon={<><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></>} value="< 2h" label={t('landing.trustBar.response')} />
+          <TrustStat delay="lp-rv-d3" icon={<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />} value="4.8/5" label={t('landing.trustBar.rating')} />
         </div>
+      </section>
 
-        <div className="lp-flow__labels">
-          <span className="lp-flow__col-label lp-flow__col-label--driver">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0112 0v1"/></svg>
-            {t('landing.flow.driverColumn')}
-          </span>
-          <span className="lp-flow__col-label lp-flow__col-label--shop">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 21V9l9-7 9 7v12"/><path d="M9 21v-6h6v6"/></svg>
-            {t('landing.flow.shopColumn')}
-          </span>
-        </div>
-
-        <div className="lp-flow__wrap">
-          {/* Step navigation (sticky) */}
-          <nav className="lp-step-nav" aria-label="Steps">
-            {STEP_KEYS.map((key, i) => (
-              <button
-                key={key}
-                className={`lp-step-nav__item ${activeStep === i ? 'lp-step-nav__item--active' : ''} ${activeStep > i ? 'lp-step-nav__item--done' : ''}`}
-                onClick={() =>
-                  stepElements.current[i]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                }
-              >
-                <span className="lp-step-nav__dot">{i + 1}</span>
-                <span className="lp-step-nav__label">{t(`landing.flow.${key}.title`)}</span>
-              </button>
-            ))}
-          </nav>
-
-          {/* Flow content with central line */}
-          <div className="lp-flow__content">
-            <div className="lp-flow__line" aria-hidden="true">
-              <div className="lp-flow__line-fill" style={{ height: `${flowProgress}%` }} />
-            </div>
-
-            {STEP_KEYS.map((key, i) => (
-              <div
-                key={key}
-                ref={setStepRef(i)}
-                className={`lp-step ${activeStep >= i ? 'lp-step--active' : ''}`}
-              >
-                <div className="lp-step__dot" aria-hidden="true">
-                  <span>{i + 1}</span>
-                </div>
-                <h3 className="lp-step__title">{t(`landing.flow.${key}.title`)}</h3>
-
-                <div className="lp-step__grid">
-                  {/* Driver */}
-                  <div className="lp-step__side lp-step__side--driver">
-                    <div className="lp-mock lp-mock--driver">
-                      <DriverMock step={i} t={t} />
-                    </div>
-                    <p className="lp-step__caption">{t(`landing.flow.${key}.driverText`)}</p>
-                  </div>
-                  {/* Shop */}
-                  <div className="lp-step__side lp-step__side--shop">
-                    <div className="lp-mock lp-mock--shop">
-                      <ShopMock step={i} t={t} />
-                    </div>
-                    <p className="lp-step__caption">{t(`landing.flow.${key}.shopText`)}</p>
-                  </div>
-                </div>
-
-              </div>
-            ))}
+      {/* ── FEATURE 1 ── */}
+      <section className="lp-feature lp-feature--a" id="lp-how">
+        <div className="lp-feature__inner">
+          <div className="lp-rv">
+            <p className="lp-feature__overline">{t('landing.feature1.overline')}</p>
+            <h2 className="lp-feature__headline">{t('landing.feature1.headline')}</h2>
+            <p className="lp-feature__body">{t('landing.feature1.body')}</p>
+            <button className="lp-feature__btn" onClick={onGetStarted}>
+              {t('landing.feature1.cta')}
+            </button>
+          </div>
+          <div className="lp-feature__visual lp-rv lp-rv-d1">
+            <FeatureMockup1 t={t} />
           </div>
         </div>
       </section>
 
-      {/* ── TRUST ── */}
-      <section className="lp-trust">
-        <h2>{t('landing.trust.title')}</h2>
-        <div className="lp-trust__grid">
-          <div className="lp-trust__col lp-trust__col--driver">
-            <h3>{t('landing.trust.driver.title')}</h3>
-            {(['benefit1', 'benefit2', 'benefit3'] as const).map((key) => (
-              <div className="lp-trust__item" key={key}>
-                <div className="lp-trust__icon">
-                  {key === 'benefit1' && (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-                  )}
-                  {key === 'benefit2' && (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/><line x1="1" y1="1" x2="23" y2="23" strokeWidth="2.5"/></svg>
-                  )}
-                  {key === 'benefit3' && (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                  )}
-                </div>
-                <div>
-                  <strong>{t(`landing.trust.driver.${key}`)}</strong>
-                  <p>{t(`landing.trust.driver.${key}Desc`)}</p>
-                </div>
-              </div>
-            ))}
+      {/* ── FEATURE 2 (reversed) ── */}
+      <section className="lp-feature lp-feature--b lp-feature--rev">
+        <div className="lp-feature__inner">
+          <div className="lp-rv">
+            <p className="lp-feature__overline">{t('landing.feature2.overline')}</p>
+            <h2 className="lp-feature__headline">{t('landing.feature2.headline')}</h2>
+            <p className="lp-feature__body">{t('landing.feature2.body')}</p>
+            <button className="lp-feature__btn" onClick={onGetStarted}>
+              {t('landing.feature2.cta')}
+            </button>
           </div>
-          <div className="lp-trust__col lp-trust__col--shop">
-            <h3>{t('landing.trust.shop.title')}</h3>
-            {(['benefit1', 'benefit2', 'benefit3'] as const).map((key) => (
-              <div className="lp-trust__item" key={key}>
-                <div className="lp-trust__icon">
-                  {key === 'benefit1' && (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/></svg>
-                  )}
-                  {key === 'benefit2' && (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                  )}
-                  {key === 'benefit3' && (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                  )}
-                </div>
-                <div>
-                  <strong>{t(`landing.trust.shop.${key}`)}</strong>
-                  <p>{t(`landing.trust.shop.${key}Desc`)}</p>
-                </div>
-              </div>
-            ))}
+          <div className="lp-feature__visual lp-rv lp-rv-d1">
+            <FeatureMockup2 t={t} />
           </div>
         </div>
+      </section>
 
-        {/* Partner logos placeholder */}
-        <div className="lp-trust__logos">
-          {Array.from({ length: 4 }, (_, i) => (
-            <div className="lp-logo-ph" key={i}>
-              <span>Logo</span>
+      {/* ── FEATURE 3 ── */}
+      <section className="lp-feature lp-feature--a">
+        <div className="lp-feature__inner">
+          <div className="lp-rv">
+            <p className="lp-feature__overline">{t('landing.feature3.overline')}</p>
+            <h2 className="lp-feature__headline">{t('landing.feature3.headline')}</h2>
+            <p className="lp-feature__body">{t('landing.feature3.body')}</p>
+            <button className="lp-feature__btn" onClick={onJoinAsShop}>
+              {t('landing.feature3.cta')}
+            </button>
+          </div>
+          <div className="lp-feature__visual lp-rv lp-rv-d1">
+            <FeatureMockup3 t={t} />
+          </div>
+        </div>
+      </section>
+
+      {/* ── WHY ── */}
+      <section className="lp-why">
+        <div className="lp-why__inner">
+          <h2 className="lp-why__title lp-rv">{t('landing.why.title')}</h2>
+          <div className="lp-why__grid">
+            <div>
+              <div className="lp-why__col-title">{t('landing.why.driverTitle')}</div>
+              <div className="lp-why__item lp-rv">
+                <div className="lp-why__icon"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg></div>
+                <div><div className="lp-why__item-title">{t('landing.why.driverBenefit1')}</div><div className="lp-why__item-desc">{t('landing.why.driverBenefit1Desc')}</div></div>
+              </div>
+              <div className="lp-why__item lp-rv lp-rv-d1">
+                <div className="lp-why__icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.12.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0122 16.92z" /></svg></div>
+                <div><div className="lp-why__item-title">{t('landing.why.driverBenefit2')}</div><div className="lp-why__item-desc">{t('landing.why.driverBenefit2Desc')}</div></div>
+              </div>
+              <div className="lp-why__item lp-rv lp-rv-d2">
+                <div className="lp-why__icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg></div>
+                <div><div className="lp-why__item-title">{t('landing.why.driverBenefit3')}</div><div className="lp-why__item-desc">{t('landing.why.driverBenefit3Desc')}</div></div>
+              </div>
             </div>
-          ))}
+            <div>
+              <div className="lp-why__col-title">{t('landing.why.shopTitle')}</div>
+              <div className="lp-why__item lp-rv">
+                <div className="lp-why__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M16 12l-4-4-4 4M12 16V8" /></svg></div>
+                <div><div className="lp-why__item-title">{t('landing.why.shopBenefit1')}</div><div className="lp-why__item-desc">{t('landing.why.shopBenefit1Desc')}</div></div>
+              </div>
+              <div className="lp-why__item lp-rv lp-rv-d1">
+                <div className="lp-why__icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" /></svg></div>
+                <div><div className="lp-why__item-title">{t('landing.why.shopBenefit2')}</div><div className="lp-why__item-desc">{t('landing.why.shopBenefit2Desc')}</div></div>
+              </div>
+              <div className="lp-why__item lp-rv lp-rv-d2">
+                <div className="lp-why__icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg></div>
+                <div><div className="lp-why__item-title">{t('landing.why.shopBenefit3')}</div><div className="lp-why__item-desc">{t('landing.why.shopBenefit3Desc')}</div></div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ── PRICING ── */}
-      <section className="lp-pricing">
-        <div className="lp-section-head">
-          <h2>{t('landing.pricing.title')}</h2>
-          <p>{t('landing.pricing.subtitle')}</p>
-        </div>
+      <section className="lp-pricing" id="lp-pricing">
+        <div className="lp-pricing__inner">
+          <h2 className="lp-pricing__title lp-rv">{t('landing.pricing.title')}</h2>
+          <p className="lp-pricing__subtitle lp-rv">{t('landing.pricing.subtitle')}</p>
 
-        <div className="lp-pricing__labels">
-          <span className="lp-flow__col-label lp-flow__col-label--driver">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0112 0v1"/></svg>
-            {t('landing.pricing.driverLabel')}
-          </span>
-          <span className="lp-flow__col-label lp-flow__col-label--shop">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 21V9l9-7 9 7v12"/><path d="M9 21v-6h6v6"/></svg>
-            {t('landing.pricing.shopLabel')}
-          </span>
-        </div>
+          <div className="lp-pricing__tabs lp-rv">
+            <button
+              className={`lp-pricing__tab ${pricingAudience === 'driver' ? 'lp-pricing__tab--active' : ''}`}
+              onClick={() => setPricingAudience('driver')}
+            >
+              <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+              {t('landing.pricing.driverLabel')}
+            </button>
+            <button
+              className={`lp-pricing__tab ${pricingAudience === 'shop' ? 'lp-pricing__tab--active' : ''}`}
+              onClick={() => setPricingAudience('shop')}
+            >
+              <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /></svg>
+              {t('landing.pricing.shopLabel')}
+            </button>
+          </div>
 
-        <div className="lp-pricing__grid">
-          {/* Driver Card */}
-          <div className={`lp-pricing__card lp-pricing__card--driver ${driverPlan === 'premium' ? 'lp-pricing__card--premium' : ''}`}>
-            <div className="lp-pricing__plan-toggle">
-              <button
-                className={`lp-pricing__plan-btn ${driverPlan === 'free' ? 'lp-pricing__plan-btn--active' : ''}`}
-                onClick={() => setDriverPlan('free')}
-              >
-                {t('landing.pricing.freePlan')}
-              </button>
-              <button
-                className={`lp-pricing__plan-btn lp-pricing__plan-btn--prem ${driverPlan === 'premium' ? 'lp-pricing__plan-btn--active' : ''}`}
-                onClick={() => setDriverPlan('premium')}
-              >
-                {t('landing.pricing.premiumPlan')}
-              </button>
-            </div>
-
-            <div className="lp-pricing__body">
-              <p className="lp-pricing__desc">
-                {driverPlan === 'free' ? t('landing.pricing.freeDesc') : t('landing.pricing.premiumDesc')}
-              </p>
-
-              <div className="lp-pricing__features">
-                <ul>
-                  <li>{t('landing.pricing.freeBullet1')}</li>
-                  <li>{t('landing.pricing.freeBullet2')}</li>
-                  <li>{t('landing.pricing.freeBullet3')}</li>
+          {pricingAudience === 'driver' ? (
+            <div className="lp-pricing__grid lp-rv">
+              {/* Free card */}
+              <div className="lp-pcard">
+                <div className="lp-pcard__plan">{t('landing.pricing.freePlan')}</div>
+                <div className="lp-pcard__price">0 zł <span>{t('landing.pricing.perMonth')}</span></div>
+                <div className="lp-pcard__desc">{t('landing.pricing.freeDesc')}</div>
+                <ul className="lp-pcard__features">
+                  <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.freeBullet1')}</li>
+                  <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.freeBullet2')}</li>
+                  <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.freeBullet3')}</li>
                 </ul>
-              </div>
-
-              <div className="lp-pricing__limits">
-                <div className="lp-pricing__limit-row">
-                  <span>{t('landing.pricing.limitOpen')}</span>
-                  <span className={`lp-pricing__limit-val ${driverPlan === 'premium' ? 'lp-pricing__limit-val--unlimited' : ''}`}>{driverPlan === 'free' ? '3' : t('landing.pricing.unlimited')}</span>
+                <div className="lp-pcard__limits">
+                  <div className="lp-pcard__limit"><span className="lp-pcard__limit-label">{t('landing.pricing.limitOpen')}</span><span className="lp-pcard__limit-val">3</span></div>
+                  <div className="lp-pcard__limit"><span className="lp-pcard__limit-label">{t('landing.pricing.limitDaily')}</span><span className="lp-pcard__limit-val">1</span></div>
+                  <div className="lp-pcard__limit"><span className="lp-pcard__limit-label">{t('landing.pricing.limitQuestions')}</span><span className="lp-pcard__limit-val">2</span></div>
                 </div>
-                <div className="lp-pricing__limit-row">
-                  <span>{t('landing.pricing.limitDaily')}</span>
-                  <span className={`lp-pricing__limit-val ${driverPlan === 'premium' ? 'lp-pricing__limit-val--unlimited' : ''}`}>{driverPlan === 'free' ? '1' : t('landing.pricing.unlimited')}</span>
-                </div>
-                <div className="lp-pricing__limit-row">
-                  <span>{t('landing.pricing.limitQuestions')}</span>
-                  <span className={`lp-pricing__limit-val ${driverPlan === 'premium' ? 'lp-pricing__limit-val--unlimited' : ''}`}>{driverPlan === 'free' ? '2' : t('landing.pricing.unlimited')}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="lp-pricing__footer">
-              <div className="lp-pricing__price">
-                <span className="lp-pricing__amount">{driverPlan === 'free' ? '0' : '15'} zł</span>
-                <span className="lp-pricing__per-month">{t('landing.pricing.perMonth')}</span>
-              </div>
-              {driverPlan === 'free' ? (
-                <button className="lp-btn lp-btn--primary lp-btn--lg" onClick={onGetStarted}>
+                <button className="lp-pcard__cta lp-pcard__cta--sec" onClick={onGetStarted}>
                   {t('landing.pricing.driverCta')}
                 </button>
-              ) : (
-                <button className="lp-btn lp-btn--primary lp-btn--lg lp-btn--disabled" disabled>
+                <div className="lp-pcard__foot">{t('landing.pricing.driverDisclaimer')}</div>
+              </div>
+
+              {/* Premium card */}
+              <div className="lp-pcard lp-pcard--feat">
+                <div className="lp-pcard__plan">{t('landing.pricing.premiumPlan')}</div>
+                <div className="lp-pcard__price">29 zł <span>{t('landing.pricing.perMonth')}</span></div>
+                <div className="lp-pcard__desc">{t('landing.pricing.premiumDesc')}</div>
+                <ul className="lp-pcard__features">
+                  <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.freeBullet1')}</li>
+                  <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.freeBullet2')}</li>
+                  <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.freeBullet3')}</li>
+                </ul>
+                <button className="lp-pcard__cta lp-pcard__cta--pri" onClick={onGetStarted}>
                   {t('landing.pricing.comingSoon')}
                 </button>
-              )}
-              <p className="lp-pricing__disclaimer">{t('landing.pricing.driverDisclaimer')}</p>
+              </div>
             </div>
-          </div>
-
-          {/* Shop Card */}
-          <div className="lp-pricing__card lp-pricing__card--shop">
-            <div className="lp-pricing__toggle">
-              <button
-                className={`lp-pricing__toggle-btn ${billingCycle === 'monthly' ? 'lp-pricing__toggle-btn--active' : ''}`}
-                onClick={() => setBillingCycle('monthly')}
-              >
-                {t('landing.pricing.monthly')}
-              </button>
-              <button
-                className={`lp-pricing__toggle-btn ${billingCycle === 'annual' ? 'lp-pricing__toggle-btn--active' : ''}`}
-                onClick={() => setBillingCycle('annual')}
-              >
-                {t('landing.pricing.annual')}
-                {billingCycle === 'annual' && (
-                  <span className="lp-pricing__save-pill">{t('landing.pricing.savePercent', { percent: Math.round((1 - 1200 / (120 * 12)) * 100) })}</span>
-                )}
-              </button>
-            </div>
-
-            <div className="lp-pricing__body">
-              <p className="lp-pricing__desc">{t('landing.pricing.shopDesc')}</p>
-
-              <div className="lp-pricing__features">
-                <ul>
-                  <li>{t('landing.pricing.shopBullet1')}</li>
-                  <li>{t('landing.pricing.shopBullet2')}</li>
-                  <li>{t('landing.pricing.shopBullet3')}</li>
+          ) : (
+            <div className="lp-pricing__grid lp-rv" style={{ gridTemplateColumns: '1fr' }}>
+              <div className="lp-pcard lp-pcard--feat" style={{ maxWidth: 420, margin: '0 auto' }}>
+                <div className="lp-pcard__plan">{t('landing.pricing.shopPlanName')}</div>
+                <div className="lp-pricing__billing">
+                  <button
+                    className={`lp-pricing__billing-btn ${billingCycle === 'monthly' ? 'lp-pricing__billing-btn--active' : ''}`}
+                    onClick={() => setBillingCycle('monthly')}
+                  >
+                    {t('landing.pricing.monthly')}
+                  </button>
+                  <button
+                    className={`lp-pricing__billing-btn ${billingCycle === 'annual' ? 'lp-pricing__billing-btn--active' : ''}`}
+                    onClick={() => setBillingCycle('annual')}
+                  >
+                    {t('landing.pricing.annual')}
+                    {billingCycle === 'annual' && (
+                      <span className="lp-pricing__save-pill">{t('landing.pricing.savePercent', { percent: Math.round((1 - 1200 / (120 * 12)) * 100) })}</span>
+                    )}
+                  </button>
+                </div>
+                <div className="lp-pcard__price">
+                  {billingCycle === 'annual' && <span className="lp-pcard__original-price">{120 * 12} zł</span>}
+                  {billingCycle === 'monthly' ? '120' : '1200'} zł <span>{billingCycle === 'monthly' ? t('landing.pricing.perMonth') : t('landing.pricing.perYear')}</span>
+                </div>
+                <div className="lp-pcard__desc">{t('landing.pricing.shopDesc')}</div>
+                <ul className="lp-pcard__features">
+                  <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.shopBullet1')}</li>
+                  <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.shopBullet2')}</li>
+                  <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.shopBullet3')}</li>
                 </ul>
+                <button className="lp-pcard__cta lp-pcard__cta--pri" onClick={onJoinAsShop}>
+                  {t('landing.pricing.shopCta')}
+                </button>
+                <div className="lp-pcard__foot">{t('landing.pricing.shopDisclaimer')}</div>
               </div>
             </div>
-
-            <div className="lp-pricing__footer">
-              <div className="lp-pricing__price">
-                {billingCycle === 'annual' && (
-                  <span className="lp-pricing__original-price">{120 * 12} zł</span>
-                )}
-                <span className="lp-pricing__amount">{billingCycle === 'monthly' ? '120' : '1200'} zł</span>
-                <span className="lp-pricing__per-month">{billingCycle === 'monthly' ? t('landing.pricing.perMonth') : t('landing.pricing.perYear')}</span>
-              </div>
-              <button className="lp-btn lp-btn--accent lp-btn--lg" onClick={onJoinAsShop}>
-                {t('landing.pricing.shopCta')}
-              </button>
-              <p className="lp-pricing__disclaimer">{t('landing.pricing.shopDisclaimer')}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── CONVERSION ── */}
-      <section className="lp-cta-section">
-        <div className="lp-cta__grid">
-          <div className="lp-cta__card lp-cta__card--driver">
-            <h3>{t('landing.conversion.driverTitle')}</h3>
-            <button className="lp-btn lp-btn--primary lp-btn--lg" onClick={onGetStarted}>
-              {t('landing.conversion.driverCta')}
-            </button>
-          </div>
-          <div className="lp-cta__card lp-cta__card--shop">
-            <h3>{t('landing.conversion.shopTitle')}</h3>
-            <button className="lp-btn lp-btn--accent lp-btn--lg" onClick={onJoinAsShop}>
-              {t('landing.conversion.shopCta')}
-            </button>
-          </div>
+          )}
         </div>
       </section>
 
       {/* ── FAQ ── */}
-      <section className="lp-faq">
-        <h2>{t('landing.faq.title')}</h2>
-        <div className="lp-faq__list">
-          {faqItems.map((item, i) => (
-            <div className={`lp-faq__item ${openFaq === i ? 'lp-faq__item--open' : ''}`} key={i}>
-              <button className="lp-faq__q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                <span>{item.q}</span>
-                <svg
-                  className="lp-faq__chevron"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M5 8l5 5 5-5" />
-                </svg>
-              </button>
-              <div
-                className="lp-faq__a"
-                style={{
-                  maxHeight: openFaq === i ? (faqContentRefs.current[i]?.scrollHeight ?? 200) : 0,
-                }}
-              >
-                <div ref={setFaqRef(i)}>
-                  <p>{item.a}</p>
+      <section className="lp-faq" id="lp-faq">
+        <div className="lp-faq__inner">
+          <h2 className="lp-faq__title lp-rv">{t('landing.faq.title')}</h2>
+          <div className="lp-faq__list lp-rv">
+            {faqItems.map((item, i) => (
+              <div className={`lp-faq__item ${openFaq === i ? 'lp-faq__item--open' : ''}`} key={i}>
+                <button className="lp-faq__q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                  <span>{item.q}</span>
+                  <svg className="lp-faq__chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 8l5 5 5-5" />
+                  </svg>
+                </button>
+                <div className="lp-faq__a" style={{ maxHeight: openFaq === i ? (faqContentRefs.current[i]?.scrollHeight ?? 200) : 0 }}>
+                  <div ref={setFaqRef(i)}><p>{item.a}</p></div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── BOTTOM CTA ── */}
+      <section className="lp-bottom-cta">
+        <div className="lp-bottom-cta__inner lp-rv">
+          <h2 className="lp-bottom-cta__headline">{t('landing.bottomCta.headline')}</h2>
+          <p className="lp-bottom-cta__body">{t('landing.bottomCta.body')}</p>
+          <button className="lp-bottom-cta__btn" onClick={onGetStarted}>
+            {t('landing.bottomCta.cta')}
+          </button>
         </div>
       </section>
 
@@ -589,197 +370,212 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
         <div className="lp-footer__inner">
           <div className="lp-footer__brand">
             <div className="brand-mark">AC</div>
-            <span>Autoceny</span>
+            <span className="lp-footer__brand-name">Autoceny</span>
           </div>
-          <p>{t('landing.footer.copy')}</p>
+          <ul className="lp-footer__links">
+            <li><button onClick={() => scrollToSection('lp-how')}>{t('landing.nav.howItWorks')}</button></li>
+            <li><button onClick={() => scrollToSection('lp-pricing')}>{t('landing.nav.pricing')}</button></li>
+            <li><button onClick={() => scrollToSection('lp-faq')}>{t('landing.nav.faq')}</button></li>
+          </ul>
+          <p className="lp-footer__copy">{t('landing.footer.copy')}</p>
         </div>
       </footer>
     </div>
   )
 }
 
-/* ─── Mock UI Cards ────────────────────────────────────────── */
+/* ─── Sub-components ─────────────────────────────────────── */
 
-function DriverMock({ step, t }: { step: number; t: (key: string) => string }) {
-  switch (step) {
-    case 0:
-      return (
-        <div className="mk mk-form">
-          <div className="mk__row">
-            <span className="mk__icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="8" width="18" height="10" rx="2"/><path d="M6 8V6a2 2 0 012-2h8a2 2 0 012 2v2"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/></svg>
-            </span>
-            <div className="mk__input">Audi A3 Sportback &middot; 2019</div>
-          </div>
-          <div className="mk__row">
-            <span className="mk__icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-            </span>
-            <div className="mk__textarea">{t('landing.mockBrakesIssue')}</div>
-          </div>
-          <div className="mk__slider">
-            <div className="mk__slider-track">
-              <div className="mk__slider-fill" />
-              <div className="mk__slider-thumb" />
-            </div>
-            <span className="mk__slider-label">15 km</span>
-          </div>
-          <div className="mk__btn mk__btn--primary">{t('landing.mockSubmit')}</div>
-        </div>
-      )
-    case 1:
-      return (
-        <div className="mk mk-list">
-          <div className="mk__shop-row">
-            <div>
-              <span className="mk__shop-name">Auto Serwis Kowalski</span>
-              <span className="mk__shop-dist">2.4 km</span>
-            </div>
-            <span className="mk__badge mk__badge--reviewing">{t('landing.mockReviewing')}</span>
-          </div>
-          <div className="mk__shop-row mk__shop-row--dim">
-            <div>
-              <span className="mk__shop-name">Moto Expert</span>
-              <span className="mk__shop-dist">5.1 km</span>
-            </div>
-            <span className="mk__badge mk__badge--delivered">{t('landing.mockDelivered')}</span>
-          </div>
-        </div>
-      )
-    case 2:
-      return (
-        <div className="mk mk-chat">
-          <div className="mk__bubble mk__bubble--shop">
-            <span>{t('landing.mockAskQuestion')}</span>
-          </div>
-          <div className="mk__chat-actions">
-            <div className="mk__btn mk__btn--primary mk__btn--sm">{t('landing.mockAnswer')}</div>
-            <div className="mk__btn mk__btn--ghost mk__btn--sm">{t('landing.mockIgnore')}</div>
-          </div>
-        </div>
-      )
-    case 3:
-      return (
-        <div className="mk mk-quotes">
-          <div className="mk__quote mk__quote--hl">
-            <div className="mk__quote-top">
-              <span className="mk__shop-name">Auto Serwis Kowalski</span>
-              <span className="mk__shop-dist">2.4 km</span>
-            </div>
-            <div className="mk__quote-price">520&ndash;680 PLN</div>
-            <div className="mk__quote-actions">
-              <div className="mk__btn mk__btn--primary mk__btn--sm">{t('landing.mockInterested')}</div>
-              <div className="mk__btn mk__btn--ghost mk__btn--sm">{t('landing.mockIgnore')}</div>
-            </div>
-          </div>
-          <div className="mk__quote">
-            <div className="mk__quote-top">
-              <span className="mk__shop-name">Quick Fix Garage</span>
-              <span className="mk__shop-dist">7.8 km</span>
-            </div>
-            <div className="mk__quote-price">550&ndash;700 PLN</div>
-          </div>
-        </div>
-      )
-    case 4:
-      return (
-        <div className="mk mk-chosen">
-          <div className="mk__chosen-card">
-            <div className="mk__quote-top">
-              <span className="mk__shop-name">Auto Serwis Kowalski</span>
-              <span className="mk__badge mk__badge--interested">{t('landing.mockInterested')}</span>
-            </div>
-            <div className="mk__quote-price">520&ndash;680 PLN</div>
-            <div className="mk__phone">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-              +48 555 123 456
-            </div>
-          </div>
-        </div>
-      )
-    default:
-      return null
-  }
+function TrustStat({ delay, icon, value, label }: { delay: string; icon: React.ReactNode; value: string; label: string }) {
+  return (
+    <div className={`lp-trust-bar__stat lp-rv ${delay}`}>
+      <div className="lp-trust-bar__icon"><svg viewBox="0 0 24 24">{icon}</svg></div>
+      <div className="lp-trust-bar__number">{value}</div>
+      <div className="lp-trust-bar__label">{label}</div>
+    </div>
+  )
 }
 
-function ShopMock({ step, t }: { step: number; t: (key: string) => string }) {
-  switch (step) {
-    case 0:
-      return (
-        <div className="mk mk-inbox">
-          <div className="mk__inbox-header">
-            <span>{t('landing.mockInbox')}</span>
-            <span className="mk__badge mk__badge--count">1</span>
-          </div>
-          <div className="mk__inbox-item">
-            <div className="mk__inbox-bell">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-            </div>
-            <div className="mk__inbox-info">
-              <span className="mk__inbox-title">{t('landing.mockNewRequest')}</span>
-              <span className="mk__inbox-sub">Audi A3 &middot; {t('tags.brakes')}</span>
-              <span className="mk__inbox-dist">2.4 km</span>
+function PhoneMockup() {
+  return (
+    <>
+      {/* Floating card: savings summary */}
+      <div className="lp-float-card">
+        <div className="lp-float-card__label">Twoje zlecenie</div>
+        <div className="lp-float-card__row">
+          <div className="lp-float-card__name">Audi A3 &middot; hamulce</div>
+        </div>
+        <div className="lp-float-card__row">
+          <span style={{ fontSize: 10, color: '#868A86' }}>3 wyceny otrzymane</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#2D7A56' }}>od 520 zł</span>
+        </div>
+        <div className="lp-float-card__bar"><div className="lp-float-card__fill" /></div>
+        <div className="lp-float-card__sub">3 z 5 warsztatów odpowiedziało</div>
+      </div>
+
+      {/* Floating badge: notification */}
+      <div className="lp-float-badge">
+        <div className="lp-float-badge__icon">
+          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg>
+        </div>
+        <div>
+          <div className="lp-float-badge__text">Nowa wycena!</div>
+          <div className="lp-float-badge__sub">Auto Serwis &middot; 520 zł</div>
+        </div>
+      </div>
+
+      {/* 3D Phone */}
+      <div className="lp-phone">
+        <div className="lp-phone__frame">
+          <div className="lp-phone__notch" />
+          <div className="lp-phone__screen">
+            <div className="lp-app">
+              {/* Header */}
+              <div className="lp-app__header">
+                <div className="lp-app__header-top">
+                  <span>9:41</span>
+                  <div className="lp-app__status-bar">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" strokeWidth="2"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01" /></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" strokeWidth="2"><rect x="1" y="6" width="18" height="12" rx="2" /><path d="M23 13v-2" /></svg>
+                  </div>
+                </div>
+                <div className="lp-app__balance-label">Twoje zlecenia</div>
+                <div className="lp-app__balance">3 aktywne</div>
+                <div className="lp-app__balance-sub">7 wycen łącznie &middot; 2 nowe</div>
+              </div>
+
+              {/* Tabs */}
+              <div className="lp-app__tabs">
+                <div className="lp-app__tab lp-app__tab--active">Otwarte (3)</div>
+                <div className="lp-app__tab">Zamknięte (5)</div>
+                <div className="lp-app__tab">Wszystkie</div>
+              </div>
+
+              {/* Content */}
+              <div className="lp-app__content">
+                {/* Order 1: with quote */}
+                <div className="lp-app__order">
+                  <div className="lp-app__order-top">
+                    <div className="lp-app__order-car">Audi A3 &middot; hamulce</div>
+                    <div className="lp-app__order-badge">3 wyceny</div>
+                  </div>
+                  <div className="lp-app__order-desc">Hamulce piszczą przy hamowaniu</div>
+                  <div className="lp-app__order-meta">Zasięg 15 km &middot; Utworzono dziś</div>
+
+                  <div className="lp-app__quote">
+                    <div className="lp-app__quote-head">
+                      <div className="lp-app__quote-name">Auto Serwis Kowalski</div>
+                      <div className="lp-app__quote-dist">2.4 km</div>
+                    </div>
+                    <div className="lp-app__quote-price">520–680 <span>PLN</span></div>
+                    <div className="lp-app__quote-comment">Klocki + tarcze, 2-3 dni robocze</div>
+                    <div className="lp-app__quote-actions">
+                      <button className="lp-app__quote-btn lp-app__quote-btn--pri">Zainteresowany</button>
+                      <button className="lp-app__quote-btn lp-app__quote-btn--sec">Ignoruj</button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Order 2: dimmed */}
+                <div className="lp-app__order lp-app__order--dim">
+                  <div className="lp-app__order-top">
+                    <div className="lp-app__order-car">BMW 320d &middot; klimatyzacja</div>
+                    <div className="lp-app__order-badge" style={{ background: '#FDF6E3', color: '#8B6914' }}>Oczekuje</div>
+                  </div>
+                  <div className="lp-app__order-desc">Klima nie chłodzi, dziwny zapach</div>
+                  <div className="lp-app__order-meta">Zasięg 10 km &middot; Utworzono wczoraj</div>
+                </div>
+              </div>
+
+              {/* Bottom nav */}
+              <div className="lp-app__nav">
+                <div className="lp-app__nav-item lp-app__nav-item--active">
+                  <svg className="lp-app__nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /></svg>
+                  Zlecenia
+                </div>
+                <div className="lp-app__nav-item">
+                  <svg className="lp-app__nav-icon" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>
+                  Wyceny
+                </div>
+                <div className="lp-app__nav-item">
+                  <svg className="lp-app__nav-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" /></svg>
+                  Pytania
+                </div>
+                <div className="lp-app__nav-item">
+                  <svg className="lp-app__nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
+                  Ustawienia
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      )
-    case 1:
-      return (
-        <div className="mk mk-ack">
-          <div className="mk__ack-header">Audi A3 &middot; {t('tags.brakes')}</div>
-          <div className="mk__ack-desc">{t('landing.mockBrakesIssue')}</div>
-          <div className="mk__btn mk__btn--accent mk__btn--action">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-            {t('landing.mockAcknowledge')}
-          </div>
+      </div>
+    </>
+  )
+}
+
+function FeatureMockup1({ t }: { t: (key: string) => string }) {
+  return (
+    <div className="lp-fcard">
+      <div className="lp-fcard__form">
+        <div className="lp-ff">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18" /></svg>
+          Audi A3 Sportback &middot; 2019
         </div>
-      )
-    case 2:
-      return (
-        <div className="mk mk-ask">
-          <div className="mk__ack-header">Audi A3 &middot; {t('tags.brakes')}</div>
-          <div className="mk__ask-input">{t('landing.mockTypeQuestion')}</div>
-          <div className="mk__btn mk__btn--accent mk__btn--action">{t('landing.mockSendQuestion')}</div>
+        <div className="lp-ff">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" /></svg>
+          {t('landing.mockBrakesIssue')}
         </div>
-      )
-    case 3:
-      return (
-        <div className="mk mk-send-quote">
-          <div className="mk__ack-header">Audi A3 &middot; {t('tags.brakes')}</div>
-          <div className="mk__sq-fields">
-            <div className="mk__sq-field">
-              <span className="mk__sq-label">{t('landing.mockMinPrice')}</span>
-              <span className="mk__sq-value">520 PLN</span>
-            </div>
-            <span className="mk__sq-dash">&ndash;</span>
-            <div className="mk__sq-field">
-              <span className="mk__sq-label">{t('landing.mockMaxPrice')}</span>
-              <span className="mk__sq-value">680 PLN</span>
-            </div>
-          </div>
-          <div className="mk__btn mk__btn--accent mk__btn--action">{t('landing.mockSendQuote')}</div>
+        <div className="lp-fslider">
+          <div className="lp-fslider__track"><div className="lp-fslider__fill" /><div className="lp-fslider__thumb" /></div>
+          <div className="lp-fslider__val">15 km</div>
         </div>
-      )
-    case 4:
-      return (
-        <div className="mk mk-share">
-          <div className="mk__share-header">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5"/></svg>
-            {t('landing.mockQuoteSent')}
-          </div>
-          <div className="mk__toggle-row">
-            <span>{t('landing.mockSharePhone')}</span>
-            <div className="mk__toggle mk__toggle--on">
-              <div className="mk__toggle-thumb" />
-            </div>
-          </div>
-          <div className="mk__phone mk__phone--muted">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-            +48 555 987 654
-          </div>
+        <div className="lp-ff-btn">{t('landing.mockSubmit')}</div>
+      </div>
+    </div>
+  )
+}
+
+function FeatureMockup2({ t }: { t: (key: string) => string }) {
+  return (
+    <div className="lp-fcard" style={{ padding: 18 }}>
+      <div className="lp-fcard__head">
+        <div className="lp-fcard__title">Audi A3 &middot; {t('tags.brakes')}</div>
+        <span className="lp-fcard__badge lp-fcard__badge--green">{t('status.open')}</span>
+      </div>
+      <div className="lp-fquote">
+        <div className="lp-fq-name">Auto Serwis Kowalski</div>
+        <div className="lp-fq-meta">2.4 km</div>
+        <div className="lp-fq-price">520–680 <span>PLN</span></div>
+        <div className="lp-fq-acts">
+          <button className="lp-fq-btn lp-fq-btn--pri">{t('landing.mockInterested')}</button>
+          <button className="lp-fq-btn lp-fq-btn--sec">{t('detail.ignore')}</button>
         </div>
-      )
-    default:
-      return null
-  }
+      </div>
+      <div className="lp-fquote lp-fquote--dim">
+        <div className="lp-fq-name">Quick Fix Garage</div>
+        <div className="lp-fq-meta">7.8 km</div>
+        <div className="lp-fq-price">550–700 <span>PLN</span></div>
+      </div>
+    </div>
+  )
+}
+
+function FeatureMockup3({ t }: { t: (key: string) => string }) {
+  return (
+    <div className="lp-fcard" style={{ padding: 18 }}>
+      <div className="lp-fcard__head">
+        <div className="lp-fcard__title">Audi A3 &middot; {t('tags.brakes')}</div>
+        <span className="lp-fcard__badge lp-fcard__badge--amber">{t('landing.mockNewRequest')}</span>
+      </div>
+      <div className="lp-fw-order">
+        <div className="lp-fw-order__desc">{t('landing.mockBrakesIssue')}</div>
+        <div className="lp-fw-order__dist">2.4 km</div>
+      </div>
+      <div className="lp-fw-accept">{t('shopInbox.acknowledge')}</div>
+      <div className="lp-fw-input">
+        <div className="lp-fw-input__field">{t('shopDetail.questionPlaceholder')}</div>
+      </div>
+    </div>
+  )
 }

@@ -367,72 +367,64 @@
   },
 
   "landing": {
+    "nav": {
+      "howItWorks": "How it works",
+      "pricing": "Pricing",
+      "faq": "FAQ",
+      "cta": "Create request",
+      "ctaShop": "For shops"
+    },
     "hero": {
-      "headline": "Get repair quotes from nearby shops — without calling around.",
-      "subheadline": "Create a Repair Request in 1 minute. Compare Quotes. Save money.",
-      "cta": "Create Repair Request",
-      "ctaShop": "For Shops"
+      "headline": "Repair\u00a0quotes.\nNo\u00a0stress.",
+      "subheadline": "Describe the issue once — nearby shops will send you quotes to compare.",
+      "cta": "Create repair request",
+      "ctaSecondary": "Are you a shop?"
     },
-    "demo": {
-      "step1Label": "Describe your car & issue",
-      "step2Label": "Set search radius",
-      "step3Label": "Receive quotes"
+    "trustBar": {
+      "workshops": "workshops in the network",
+      "savings": "average savings",
+      "response": "time to first quote",
+      "rating": "driver rating"
     },
-    "stickyBar": {
-      "cta": "Create Repair Request",
-      "ctaShop": "Join as a Shop"
+    "feature1": {
+      "overline": "Step 1",
+      "headline": "Describe the issue, set your radius",
+      "body": "Enter your car details and describe the problem. Shops within your radius receive the request automatically — no calling around.",
+      "cta": "Create a request"
     },
-    "flow": {
-      "title": "How It Works",
-      "subtitle": "Follow the journey from request to repair",
-      "driverColumn": "Driver",
-      "shopColumn": "Shop",
-      "step1": {
-        "title": "Create Repair Request",
-        "driverText": "Enter car details, describe the issue, set radius in km.",
-        "shopText": "Requests arrive automatically if you're within the radius."
-      },
-      "step2": {
-        "title": "Shop Reviews",
-        "driverText": "See which shops are actively reviewing your request.",
-        "shopText": "One tap to signal you're preparing a Quote."
-      },
-      "step3": {
-        "title": "Clarify Details",
-        "driverText": "Answer questions to improve quote accuracy.",
-        "shopText": "Request missing info before quoting."
-      },
-      "step4": {
-        "title": "Receive Quotes",
-        "driverText": "Compare prices, distance, and notes.",
-        "shopText": "Send a fixed price or a range with a short comment."
-      },
-      "step5": {
-        "title": "Choose & Connect",
-        "driverText": "Shortlist the best option and contact the shop.",
-        "shopText": "Share contact after quoting (optional)."
-      }
+    "feature2": {
+      "overline": "Step 2",
+      "headline": "Compare quotes side by side",
+      "body": "Shops send quotes with comments. Compare prices, distances, and reviews in a single view.",
+      "cta": "See how it works"
     },
-    "trust": {
+    "feature3": {
+      "overline": "Step 3",
+      "headline": "Manage requests from your dashboard",
+      "body": "As a shop, browse incoming requests, ask questions, and send quotes — all in one app.",
+      "cta": "Join as a shop"
+    },
+    "why": {
       "title": "Why Autoceny?",
-      "driver": {
-        "title": "For Drivers",
-        "benefit1": "Save money",
-        "benefit1Desc": "Compare real quotes instead of guessing prices.",
-        "benefit2": "No calling around",
-        "benefit2Desc": "One request reaches every shop in your radius.",
-        "benefit3": "Clear comparison",
-        "benefit3Desc": "Side-by-side prices, distances, and reviews."
-      },
-      "shop": {
-        "title": "For Shops",
-        "benefit1": "High-intent leads",
-        "benefit1Desc": "Every request comes from a driver ready to repair.",
-        "benefit2": "Less back-and-forth",
-        "benefit2Desc": "Ask questions and quote directly in the app.",
-        "benefit3": "Win locally",
-        "benefit3Desc": "Compete on value in your neighborhood."
-      }
+      "driverTitle": "For drivers",
+      "shopTitle": "For shops",
+      "driverBenefit1": "Save money",
+      "driverBenefit1Desc": "Compare real quotes instead of guessing prices.",
+      "driverBenefit2": "No calling around",
+      "driverBenefit2Desc": "One request reaches every shop in your radius.",
+      "driverBenefit3": "Clear comparison",
+      "driverBenefit3Desc": "Side-by-side prices, distances, and reviews.",
+      "shopBenefit1": "High-intent leads",
+      "shopBenefit1Desc": "Every request comes from a driver ready to repair.",
+      "shopBenefit2": "Less back-and-forth",
+      "shopBenefit2Desc": "Ask questions and quote directly in the app.",
+      "shopBenefit3": "Win locally",
+      "shopBenefit3Desc": "Compete on value in your neighborhood."
+    },
+    "bottomCta": {
+      "headline": "Fix your car smarter",
+      "body": "Join drivers who save time and money with Autoceny.",
+      "cta": "Create repair request"
     },
     "pricing": {
       "title": "Pricing",
@@ -477,12 +469,6 @@
       "unlimited": "Unlimited",
       "comingSoon": "Coming soon"
     },
-    "conversion": {
-      "driverTitle": "Ready to find the best deal?",
-      "driverCta": "Create Repair Request",
-      "shopTitle": "Want to reach new customers?",
-      "shopCta": "Join as a Shop"
-    },
     "faq": {
       "title": "Frequently Asked Questions",
       "q1": "How is the search radius calculated?",
@@ -509,27 +495,13 @@
     "footer": {
       "copy": "\u00a9 2026 Autoceny. All rights reserved."
     },
-    "appScreenshot": "App screenshot placeholder",
     "mockSubmit": "Submit Request",
     "mockBrakes": "Brakes squeal when stopping",
     "mockRadius": "search radius",
+    "mockBrakesIssue": "Brakes squeal when stopping...",
     "mockInbox": "Inbox",
     "mockNewRequest": "New Request",
-    "mockReviewing": "Reviewing",
-    "mockDelivered": "Delivered",
-    "mockAcknowledge": "Acknowledge",
-    "mockBrakesIssue": "Brakes squeal when stopping...",
-    "mockAskQuestion": "Can you share a photo of the brakes?",
-    "mockAnswer": "Answer",
-    "mockIgnore": "Ignore",
-    "mockTypeQuestion": "Type your question...",
-    "mockSendQuestion": "Ask Question",
-    "mockInterested": "Interested",
-    "mockSendQuote": "Send Quote",
-    "mockMinPrice": "Min price",
-    "mockMaxPrice": "Max price",
-    "mockQuoteSent": "Quote Sent",
-    "mockSharePhone": "Share Phone Number"
+    "mockInterested": "Interested"
   },
 
   "shopRegister": {
