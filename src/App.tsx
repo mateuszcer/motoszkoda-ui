@@ -477,7 +477,7 @@ function App() {
       <main className="app-shell">
         <header className="app-header">
           <div className="brand" onClick={() => navigate('landing')} style={{ cursor: 'pointer' }}>
-            <div className={`brand-mark${isShopAuth ? ' brand-mark-shop' : ''}`}>{isShopAuth ? 'W' : 'AC'}</div>
+            <div className="brand-mark">{isShopAuth ? 'W' : 'AC'}</div>
             <h1>Autoceny</h1>
           </div>
           <div className="header-actions">
@@ -572,7 +572,7 @@ function App() {
         <main className="app-shell">
           <header className="app-header">
             <div className="brand" onClick={() => navigate('shop-inbox')} style={{ cursor: 'pointer' }}>
-              <div className="brand-mark brand-mark-shop">W</div>
+              <div className="brand-mark">W</div>
               <h1>Autoceny</h1>
             </div>
             <div className="header-actions">

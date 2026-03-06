@@ -267,7 +267,7 @@ export function LocationStep({
             value={radiusKm}
             onChange={(event) => onRadiusChange(Number.parseInt(event.target.value, 10))}
           />
-          <small style={{ color: 'var(--gray-500)' }}>
+          <small style={{ color: 'var(--neutral-500)' }}>
             {t('form.radiusHelp', { radius: radiusKm })}
           </small>
           {locationErrors.radiusKm ? (

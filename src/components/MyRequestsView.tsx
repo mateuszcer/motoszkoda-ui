@@ -29,7 +29,7 @@ export function MyRequestsView({ requests, onBackHome, onOpenRequest }: MyReques
         <button className="btn btn-ghost" onClick={onBackHome}>
           {t('common.back')}
         </button>
-        <h2 style={{ fontSize: '17px', fontWeight: 600, margin: 0 }}>{t('myRequests.title')}</h2>
+        <h2 className="section-title">{t('myRequests.title')}</h2>
         <div />
       </div>
 

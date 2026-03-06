@@ -13,7 +13,7 @@ export function CheckEmailView({ email, onGoToLogin, isShop }: CheckEmailViewPro
     <section className="auth-screen">
       <div className="auth-card" style={{ textAlign: 'center' }}>
         <div className="auth-brand">
-          <div className={`brand-mark${isShop ? ' brand-mark-shop' : ''}`}>{isShop ? 'W' : 'AC'}</div>
+          <div className="brand-mark">{isShop ? 'W' : 'AC'}</div>
           <h2>{t('checkEmail.title')}</h2>
           <p>
             {t('checkEmail.message', { email })}

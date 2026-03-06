@@ -298,7 +298,7 @@ export function CreateRepairRequestFlow({
             </label>
 
             <label>
-              {t('form.variant')} <small style={{ color: 'var(--gray-400)' }}>({t('form.optional')})</small>
+              {t('form.variant')} <small style={{ color: 'var(--neutral-400)' }}>({t('form.optional')})</small>
               <input
                 value={variant}
                 onChange={(event) => {

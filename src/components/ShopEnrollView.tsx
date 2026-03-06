@@ -131,7 +131,7 @@ export function ShopEnrollView({
     <section className="auth-screen">
       <div className="auth-card enroll-card">
         <div className="auth-brand">
-          <div className="brand-mark brand-mark-shop">W</div>
+          <div className="brand-mark">W</div>
           <h2>{t('shopEnroll.title')}</h2>
         </div>
 

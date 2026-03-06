@@ -146,7 +146,7 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
     <section className="screen shop-register-screen">
       <form className="shop-register-form" onSubmit={(e) => void handleSubmit(e)}>
         <div className="auth-brand">
-          <div className="brand-mark brand-mark-shop">W</div>
+          <div className="brand-mark">W</div>
           <h2>{t('shopRegister.title')}</h2>
           <p>{t('shopRegister.subtitle')}</p>
         </div>
