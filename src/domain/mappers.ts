@@ -87,7 +87,7 @@ export function mapRepairRequest(
     createdAt: raw.createdAt,
     updatedAt: raw.updatedAt,
     car: {
-      vin: raw.vin ?? '',
+      vin: raw.vin ?? undefined,
       make: raw.make,
       model: raw.model,
       variant: raw.variant ?? '',

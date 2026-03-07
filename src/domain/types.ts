@@ -32,7 +32,7 @@ export interface Attachment {
 }
 
 export interface CarDetails {
-  vin: string
+  vin?: string
   make: string
   model: string
   variant: string

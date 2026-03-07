@@ -109,7 +109,7 @@ export function CreateRepairRequestFlow({
     const normalizedVin = normalizeVin(vin)
     const yearNumber = Number.parseInt(year, 10)
 
-    if (!isValidVin(normalizedVin)) {
+    if (normalizedVin && !isValidVin(normalizedVin)) {
       nextErrors.vin = 'validation.vinInvalid'
     }
 
@@ -197,7 +197,7 @@ export function CreateRepairRequestFlow({
 
     const payload: CreateRepairRequestPayload = {
       car: {
-        vin: normalizeVin(vin),
+        vin: normalizeVin(vin) || undefined,
         make: make.trim(),
         model: model.trim(),
         variant: variant.trim(),
