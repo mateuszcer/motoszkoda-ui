@@ -9,6 +9,7 @@ type PriceMode = 'single' | 'range'
 interface LineItemDraft {
   key: number
   description: string
+  priceMode: PriceMode
   priceMin: string
   priceMax: string
 }
@@ -39,7 +40,7 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
   const addLineItem = () => {
     setLineItems((prev) => [
       ...prev,
-      { key: nextLineItemKey++, description: '', priceMin: '', priceMax: '' },
+      { key: nextLineItemKey++, description: '', priceMode: 'single', priceMin: '', priceMax: '' },
     ])
   }
 
@@ -49,7 +50,14 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
 
   const updateLineItem = (key: number, field: keyof Omit<LineItemDraft, 'key'>, value: string) => {
     setLineItems((prev) =>
-      prev.map((item) => (item.key === key ? { ...item, [field]: value } : item)),
+      prev.map((item) => {
+        if (item.key !== key) return item
+        const updated = { ...item, [field]: value }
+        if (field === 'priceMode' && value === 'single') {
+          updated.priceMax = ''
+        }
+        return updated
+      }),
     )
   }
 
@@ -60,7 +68,7 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
     } else {
       setUseLineItems(true)
       if (lineItems.length === 0) {
-        setLineItems([{ key: nextLineItemKey++, description: '', priceMin: '', priceMax: '' }])
+        setLineItems([{ key: nextLineItemKey++, description: '', priceMode: 'single', priceMin: '', priceMax: '' }])
       }
     }
   }
@@ -71,7 +79,7 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
     let totalMax = 0
     for (const item of lineItems) {
       const min = parseFloat(item.priceMin) || 0
-      const max = parseFloat(item.priceMax) || min
+      const max = item.priceMode === 'range' ? (parseFloat(item.priceMax) || min) : min
       totalMin += min
       totalMax += max
     }
@@ -126,8 +134,11 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
       if (useLineItems) {
         const items: LineItemPayload[] = lineItems.map((item, i) => {
           const min = Math.round(parseFloat(item.priceMin) * 100)
-          const maxVal = parseFloat(item.priceMax)
-          const max = !isNaN(maxVal) && maxVal > 0 ? Math.round(maxVal * 100) : undefined
+          let max: number | undefined
+          if (item.priceMode === 'range') {
+            const maxVal = parseFloat(item.priceMax)
+            max = !isNaN(maxVal) && maxVal > 0 ? Math.round(maxVal * 100) : undefined
+          }
           return {
             position: i,
             description: item.description.trim(),
@@ -194,7 +205,7 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
         ) : null}
 
         <div className="form-grid">
-          {/* Price mode toggle */}
+          {/* Mode A: Simple total price (no line items) */}
           {!useLineItems ? (
             <>
               <div className="quote-price-mode">
@@ -214,7 +225,6 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
                 </button>
               </div>
 
-              {/* Single price input */}
               {priceMode === 'single' ? (
                 <label>
                   {t('shopQuoteForm.price')}
@@ -232,7 +242,6 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
                 </label>
               ) : null}
 
-              {/* Range price inputs */}
               {priceMode === 'range' ? (
                 <div className="price-inputs-row">
                   <label>
@@ -304,9 +313,25 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
                       </button>
                     ) : null}
                   </div>
+                  <div className="quote-price-mode quote-price-mode-inline">
+                    <button
+                      type="button"
+                      className={`chip chip-sm ${item.priceMode === 'single' ? 'chip-active' : ''}`}
+                      onClick={() => updateLineItem(item.key, 'priceMode', 'single')}
+                    >
+                      {t('shopQuoteForm.singlePrice')}
+                    </button>
+                    <button
+                      type="button"
+                      className={`chip chip-sm ${item.priceMode === 'range' ? 'chip-active' : ''}`}
+                      onClick={() => updateLineItem(item.key, 'priceMode', 'range')}
+                    >
+                      {t('shopQuoteForm.priceRange')}
+                    </button>
+                  </div>
                   <div className="line-item-prices">
                     <label>
-                      {priceMode === 'range' ? t('shopQuoteForm.lineItemPriceMin') : t('shopQuoteForm.lineItemPrice')}
+                      {item.priceMode === 'range' ? t('shopQuoteForm.lineItemPriceMin') : t('shopQuoteForm.lineItemPrice')}
                       <div className="input-with-suffix">
                         <input
                           type="number"
@@ -319,7 +344,7 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
                         <span className="input-suffix">PLN</span>
                       </div>
                     </label>
-                    {priceMode === 'range' ? (
+                    {item.priceMode === 'range' ? (
                       <label>
                         {t('shopQuoteForm.lineItemPriceMax')}
                         <div className="input-with-suffix">

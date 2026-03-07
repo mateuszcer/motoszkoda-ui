@@ -2762,6 +2762,15 @@ label small {
   color: #FFFFFF;
 }
 
+.quote-price-mode-inline {
+  margin-bottom: var(--space-1);
+}
+
+.quote-price-mode-inline .chip.chip-sm {
+  font-size: 12px;
+  padding: 2px var(--space-2);
+}
+
 /* Price inputs row (range mode) */
 .price-inputs-row {
   display: flex;

@@ -107,6 +107,7 @@ function App() {
     setEnrollmentStatus(null)
     setRequests([])
     setBanners([])
+    lastNotificationTime.current = undefined
     navigate(wasAdmin ? 'admin-login' : 'landing', { replace: true })
   }, [auth.user?.role, navigate])
 
