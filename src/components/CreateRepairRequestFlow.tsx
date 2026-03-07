@@ -266,7 +266,7 @@ export function CreateRepairRequestFlow({
         {step === 1 ? (
           <div className="form-grid">
             <label>
-              {t('form.vin')}
+              {t('form.vin')} <small style={{ color: 'var(--neutral-400)' }}>({t('form.optional')})</small>
               <input
                 className="vin-input"
                 value={vin}
