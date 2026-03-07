@@ -141,7 +141,9 @@
     "less": "Less",
     "more": "More",
     "ignored": "Ignored",
-    "callShop": "Call",
+    "showPhone": "Show number",
+    "copyPhone": "Click to copy",
+    "phoneCopied": "Copied!",
     "receivedAt": "Received {{date}}",
     "unansweredBanner": "A shop asked you a question — reply to get a quote.",
     "pendingQuestion": "Needs reply"

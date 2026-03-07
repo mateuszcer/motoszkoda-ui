@@ -88,6 +88,8 @@ export function RepairRequestDetail({
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({})
   const [lightboxImg, setLightboxImg] = useState<{ src: string; alt: string } | null>(null)
   const [quoteDetailShop, setQuoteDetailShop] = useState<ShopQuoteCard | null>(null)
+  const [revealedPhones, setRevealedPhones] = useState<Record<string, boolean>>({})
+  const [copiedPhone, setCopiedPhone] = useState<string | null>(null)
 
   useEffect(() => {
     const atts = request.issue.attachments.filter((a) => a.kind === 'image' && !a.previewUrl)
@@ -462,12 +464,40 @@ export function RepairRequestDetail({
                             <div className="quote-actions-interested">
                               <span className="pill pill-interested">{t('detail.filterInterested')}</span>
                               {shop.phone ? (
-                                <a href={`tel:${shop.phone}`} className="btn btn-primary btn-call">
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-                                  </svg>
-                                  {t('detail.callShop')}
-                                </a>
+                                revealedPhones[shop.shopId] ? (
+                                  <button
+                                    className="btn btn-primary btn-call"
+                                    onClick={() => {
+                                      void navigator.clipboard.writeText(shop.phone!).then(() => {
+                                        setCopiedPhone(shop.shopId)
+                                        setTimeout(() => setCopiedPhone(null), 2000)
+                                      })
+                                    }}
+                                    title={t('detail.copyPhone')}
+                                  >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                      {copiedPhone === shop.shopId ? (
+                                        <path d="M20 6L9 17l-5-5" />
+                                      ) : (
+                                        <>
+                                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                        </>
+                                      )}
+                                    </svg>
+                                    {copiedPhone === shop.shopId ? t('detail.phoneCopied') : shop.phone}
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="btn btn-primary btn-call"
+                                    onClick={() => setRevealedPhones((prev) => ({ ...prev, [shop.shopId]: true }))}
+                                  >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                                    </svg>
+                                    {t('detail.showPhone')}
+                                  </button>
+                                )
                               ) : null}
                             </div>
                           ) : null}
