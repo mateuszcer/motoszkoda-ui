@@ -194,7 +194,11 @@
     "acknowledged": "W przygotowaniu",
     "question_sent": "Pytanie",
     "quote_sent": "Wycena",
-    "declined": "Odrzucone"
+    "declined": "Odrzucone",
+    "REQUEST_DELIVERED_TO_SHOP": "Oczekuje",
+    "SHOP_ACKNOWLEDGED_REQUEST": "W przygotowaniu",
+    "SHOP_ASKED_QUESTION": "Pytanie",
+    "SHOP_SENT_QUOTE": "Wycena"
   },
 
   "tags": {
@@ -321,7 +325,11 @@
     "PENDING": "Nowe",
     "ACKNOWLEDGED": "W toku",
     "QUOTED": "Wycenione",
-    "DECLINED": "Odrzucone"
+    "DECLINED": "Odrzucone",
+    "REQUEST_DELIVERED_TO_SHOP": "Nowe",
+    "SHOP_ACKNOWLEDGED_REQUEST": "W toku",
+    "SHOP_ASKED_QUESTION": "Pytanie",
+    "SHOP_SENT_QUOTE": "Wycenione"
   },
 
   "shopDetail": {

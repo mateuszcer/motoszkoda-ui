@@ -434,7 +434,7 @@ function App() {
     return () => {
       window.clearInterval(intervalId)
     }
-  }, [auth.isAuthenticated, auth.user, pushBanner, selectedRequestId, upsertRequest])
+  }, [auth.isAuthenticated, auth.user, pushBanner, selectedRequestId, upsertRequest, t])
 
   // Auth loading state
   if (authLoading) {

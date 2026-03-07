@@ -37,11 +37,16 @@ export function mapShopRequestStatus(
 ): QuoteState {
   switch (status) {
     case 'PENDING':
+    case 'REQUEST_DELIVERED_TO_SHOP':
       return 'delivered'
     case 'ACKNOWLEDGED':
-      if (lastMessageType === 'QUESTION') return 'question_sent'
+    case 'SHOP_ACKNOWLEDGED_REQUEST':
+      if (lastMessageType === 'QUESTION' || lastMessageType === 'SHOP_ASKED_QUESTION') return 'question_sent'
       return 'acknowledged'
+    case 'SHOP_ASKED_QUESTION':
+      return 'question_sent'
     case 'QUOTED':
+    case 'SHOP_SENT_QUOTE':
       return 'quote_sent'
     case 'DECLINED':
       return 'declined'

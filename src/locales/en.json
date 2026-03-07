@@ -190,7 +190,11 @@
     "acknowledged": "Reviewing",
     "question_sent": "Question",
     "quote_sent": "Quote",
-    "declined": "Declined"
+    "declined": "Declined",
+    "REQUEST_DELIVERED_TO_SHOP": "Waiting",
+    "SHOP_ACKNOWLEDGED_REQUEST": "Reviewing",
+    "SHOP_ASKED_QUESTION": "Question",
+    "SHOP_SENT_QUOTE": "Quote"
   },
 
   "tags": {
@@ -317,7 +321,11 @@
     "PENDING": "New",
     "ACKNOWLEDGED": "In Progress",
     "QUOTED": "Quoted",
-    "DECLINED": "Declined"
+    "DECLINED": "Declined",
+    "REQUEST_DELIVERED_TO_SHOP": "New",
+    "SHOP_ACKNOWLEDGED_REQUEST": "In Progress",
+    "SHOP_ASKED_QUESTION": "Question",
+    "SHOP_SENT_QUOTE": "Quoted"
   },
 
   "shopDetail": {
