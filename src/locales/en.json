@@ -401,7 +401,7 @@
       "pricing": "Pricing",
       "faq": "FAQ",
       "cta": "Create request",
-      "ctaShop": "For shops"
+      "ctaShop": "Join as a workshop"
     },
     "hero": {
       "headline": "Repair\u00a0quotes.\nNo\u00a0stress.",
@@ -449,6 +449,12 @@
       "shopBenefit2Desc": "Ask questions and quote directly in the app.",
       "shopBenefit3": "Win locally",
       "shopBenefit3Desc": "Compete on value in your neighborhood."
+    },
+    "shopCallout": {
+      "overline": "FOR WORKSHOPS",
+      "headline": "Win customers in your area",
+      "subtitle": "Receive repair requests from local drivers. No commission on quotes.",
+      "cta": "Join as a workshop"
     },
     "bottomCta": {
       "headline": "Fix your car smarter",
@@ -536,6 +542,12 @@
   "shopRegister": {
     "title": "Register your shop",
     "subtitle": "Join Autoceny and start receiving repair requests",
+    "stepAccount": "Account",
+    "stepShop": "Shop",
+    "stepCompany": "Company",
+    "subtitleStep1": "Step 1 of 3 — Login details",
+    "subtitleStep2": "Step 2 of 3 — Shop information",
+    "subtitleStep3": "Step 3 of 3 — Company details",
     "sectionAccount": "Account",
     "sectionShopProfile": "Shop Profile",
     "sectionContact": "Contact",

@@ -132,22 +132,22 @@
   display: flex; gap: 10px; align-items: center;
 }
 
-/* Nav: ONE secondary outline, ONE primary */
+/* Nav: secondary solid teal (workshops), primary mint (drivers) */
 .lp-nav__btn-sec {
   height: 36px; padding: 0 18px; border-radius: 999px;
-  background: transparent; border: 1.5px solid var(--n200);
-  color: var(--n500); font: 500 13px/1 var(--lp-font-b);
+  background: var(--teal-500); border: none;
+  color: var(--white); font: 500 13px/1 var(--lp-font-b);
   cursor: pointer; transition: all .2s;
 }
-.lp-nav__btn-sec:hover { border-color: var(--n400); color: var(--teal-900); }
+.lp-nav__btn-sec:hover { background: var(--teal-600); }
 
 .lp-nav__btn-pri {
   height: 36px; padding: 0 18px; border-radius: 999px; border: none;
-  background: var(--teal-700); color: var(--white);
+  background: var(--mint); color: var(--teal-900);
   font: 600 13px/1 var(--lp-font-b);
   cursor: pointer; transition: all .2s;
 }
-.lp-nav__btn-pri:hover { background: var(--teal-600); }
+.lp-nav__btn-pri:hover { background: var(--mint-light); }
 
 /* ══════════ HERO ══════════ */
 .lp-hero {
@@ -560,6 +560,38 @@
 
 .lp-why__item-title { font: 700 15px/1.4 var(--lp-font-b); color: var(--n900); margin: 0 0 3px; }
 .lp-why__item-desc { font: 500 13px/1.6 var(--lp-font-b); color: var(--n600); margin: 0; }
+
+/* ══════════ WORKSHOP CALLOUT ══════════ */
+.lp-shop-callout { padding: 64px 40px; background: var(--teal-700); text-align: center; }
+.lp-shop-callout__inner { max-width: 600px; margin: 0 auto; }
+.lp-shop-callout__overline {
+  font: 600 11px/1.3 var(--lp-font-b); color: var(--mint);
+  text-transform: uppercase; letter-spacing: .12em; margin: 0 0 14px;
+}
+.lp-shop-callout__headline {
+  font-family: var(--lp-font-h); font-weight: 500;
+  font-size: clamp(28px, 3vw, 36px); line-height: 1.2;
+  color: var(--white); margin: 0 0 12px;
+}
+.lp-shop-callout__subtitle {
+  font: 500 15px/1.7 var(--lp-font-b); color: rgba(255,255,255,.45);
+  margin: 0 0 28px;
+}
+.lp-shop-callout__cta {
+  height: 48px; padding: 0 32px; border-radius: 999px; border: none;
+  background: var(--white); color: var(--teal-700);
+  font: 600 15px/1 var(--lp-font-b);
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  cursor: pointer; transition: all .25s;
+}
+.lp-shop-callout__cta:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,.14); }
+
+@media (max-width: 900px) {
+  .lp-shop-callout { padding: 64px 24px; }
+}
+@media (max-width: 480px) {
+  .lp-shop-callout { padding: 48px 16px; }
+}
 
 /* ══════════ PRICING ══════════ */
 .lp-pricing { padding: var(--section-pad) 40px; background: var(--n50); }

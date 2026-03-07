@@ -405,7 +405,7 @@
       "pricing": "Cennik",
       "faq": "FAQ",
       "cta": "Stwórz zlecenie",
-      "ctaShop": "Dla warsztatów"
+      "ctaShop": "Dołącz jako warsztat"
     },
     "hero": {
       "headline": "Wycena\u00a0naprawy.\nBez\u00a0stresu.",
@@ -453,6 +453,12 @@
       "shopBenefit2Desc": "Zadawaj pytania i wyceniaj bezpośrednio w aplikacji.",
       "shopBenefit3": "Wygrywaj lokalnie",
       "shopBenefit3Desc": "Konkuruj wartością w swojej okolicy."
+    },
+    "shopCallout": {
+      "overline": "DLA WARSZTATÓW",
+      "headline": "Zdobywaj klientów w swojej okolicy",
+      "subtitle": "Otrzymuj zlecenia od kierowców szukających naprawy. Bez prowizji od wyceny.",
+      "cta": "Dołącz jako warsztat"
     },
     "bottomCta": {
       "headline": "Napraw auto mądrzej",
@@ -540,6 +546,12 @@
   "shopRegister": {
     "title": "Zarejestruj swój warsztat",
     "subtitle": "Dołącz do Autoceny i zacznij otrzymywać zlecenia napraw",
+    "stepAccount": "Konto",
+    "stepShop": "Warsztat",
+    "stepCompany": "Firma",
+    "subtitleStep1": "Krok 1 z 3 — Dane logowania",
+    "subtitleStep2": "Krok 2 z 3 — Informacje o warsztacie",
+    "subtitleStep3": "Krok 3 z 3 — Dane firmy",
     "sectionAccount": "Konto",
     "sectionShopProfile": "Profil warsztatu",
     "sectionContact": "Kontakt",

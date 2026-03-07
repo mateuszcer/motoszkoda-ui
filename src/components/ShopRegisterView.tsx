@@ -1,5 +1,5 @@
 import { Turnstile } from '@marsidev/react-turnstile'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ShopRegistrationRequest } from '../domain/apiTypes'
 import { useAddressAutocomplete } from '../hooks/useAddressAutocomplete'
@@ -9,6 +9,8 @@ import { PhoneInput } from './PhoneInput'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
+type WizardStep = 1 | 2 | 3
+
 interface ShopRegisterViewProps {
   onRegister: (payload: ShopRegistrationRequest) => Promise<void>
   onSwitchToLogin: () => void
@@ -16,6 +18,7 @@ interface ShopRegisterViewProps {
 
 export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterViewProps) {
   const { t } = useTranslation()
+  const [step, setStep] = useState<WizardStep>(1)
 
   // Account
   const [email, setEmail] = useState('')
@@ -64,50 +67,72 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  const validate = (): boolean => {
-    const errs: Record<string, string> = {}
+  const stepLabels = useMemo(
+    () => [t('shopRegister.stepAccount'), t('shopRegister.stepShop'), t('shopRegister.stepCompany')],
+    [t],
+  )
 
-    // Account
+  const stepSubtitle = useMemo(() => {
+    switch (step) {
+      case 1: return t('shopRegister.subtitleStep1')
+      case 2: return t('shopRegister.subtitleStep2')
+      case 3: return t('shopRegister.subtitleStep3')
+    }
+  }, [step, t])
+
+  const validateStep1 = (): boolean => {
+    const errs: Record<string, string> = {}
     if (!email.trim()) errs.email = t('shopRegister.emailRequired')
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errs.email = t('shopRegister.emailInvalid')
     if (password.length < 6) errs.password = t('shopRegister.passwordMinLength')
     if (password !== confirmPassword) errs.confirmPassword = t('shopRegister.passwordMismatch')
+    setErrors(errs)
+    return Object.keys(errs).length === 0
+  }
 
-    // Shop Profile
+  const validateStep2 = (): boolean => {
+    const errs: Record<string, string> = {}
     if (!shopName.trim()) errs.shopName = t('shopRegister.shopNameRequired')
     if (!autocomplete.query.trim()) errs.address = t('shopRegister.addressRequired')
     else if (!autocomplete.selected) errs.address = t('shopRegister.selectAddress')
-
-    // Contact
     if (!contactPhone.trim()) errs.contactPhone = t('shopRegister.phoneRequired')
     else if (!isValidE164Phone(contactPhone.trim())) errs.contactPhone = t('shopRegister.phoneInvalid')
+    setErrors(errs)
+    return Object.keys(errs).length === 0
+  }
 
-    // Billing
+  const validateStep3 = (): boolean => {
+    const errs: Record<string, string> = {}
     if (!legalName.trim()) errs.legalName = t('shopRegister.legalNameRequired')
     if (!nip.trim()) errs.nip = t('shopRegister.nipRequired')
     else if (!isValidNip(nip.trim())) errs.nip = t('shopRegister.nipInvalid')
-
     if (!sameAsShop) {
       if (!billingStreet.trim()) errs.billingStreet = t('shopRegister.billingStreetRequired')
       if (!billingCity.trim()) errs.billingCity = t('shopRegister.billingCityRequired')
       if (!billingPostalCode.trim()) errs.billingPostalCode = t('shopRegister.billingPostalCodeRequired')
       else if (!isValidPolishPostalCode(billingPostalCode.trim())) errs.billingPostalCode = t('shopRegister.billingPostalCodeInvalid')
     }
-
-    // Terms
     if (!termsAccepted) errs.terms = t('shopRegister.termsRequired')
-
-    // Captcha
     if (TURNSTILE_SITE_KEY && !captchaToken) errs.captcha = t('auth.captchaRequired')
-
     setErrors(errs)
     return Object.keys(errs).length === 0
+  }
+
+  const handleNext = () => {
+    if (step === 1 && validateStep1()) setStep(2)
+    else if (step === 2 && validateStep2()) setStep(3)
+  }
+
+  const handleBack = () => {
+    setErrors({})
+    if (step === 2) setStep(1)
+    else if (step === 3) setStep(2)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitError(null)
-    if (!validate()) return
+    if (!validateStep3()) return
 
     const addressText = autocomplete.query.trim()
 
@@ -143,270 +168,288 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
   }
 
   return (
-    <section className="screen shop-register-screen">
-      <form className="shop-register-form" onSubmit={(e) => void handleSubmit(e)}>
-        <div className="auth-brand">
-          <div className="brand-mark">W</div>
+    <section className="shop-register-screen">
+      {/* Stepper */}
+      <nav className="stepper shop-register-stepper" aria-label="Registration progress">
+        {stepLabels.map((label, index) => {
+          const stepNum = (index + 1) as WizardStep
+          const isActive = step === stepNum
+          const isDone = step > stepNum
+          return (
+            <div key={label} style={{ display: 'contents' }}>
+              {index > 0 ? <div className={`stepper-line${isDone ? ' done' : ''}`} /> : null}
+              <div className={`stepper-step${isActive ? ' active' : ''}${isDone ? ' done' : ''}`}>
+                <span className="stepper-dot">{isDone ? '\u2713' : stepNum}</span>
+                <span className="stepper-label">{label}</span>
+              </div>
+            </div>
+          )
+        })}
+      </nav>
+
+      {/* Card */}
+      <div className="shop-register-card">
+        <div className="shop-register-header">
           <h2>{t('shopRegister.title')}</h2>
-          <p>{t('shopRegister.subtitle')}</p>
+          <p>{stepSubtitle}</p>
         </div>
 
         {submitError ? <div className="auth-error">{submitError}</div> : null}
 
-        {/* Section 1: Account */}
-        <fieldset className="register-section">
-          <h3>{t('shopRegister.sectionAccount')}</h3>
-          <div className="form-grid">
-            <label>
-              {t('auth.email')}
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t('auth.emailPlaceholder')}
-                autoComplete="email"
-              />
-              {errors.email ? <small className="field-error">{errors.email}</small> : null}
-            </label>
-
-            <label>
-              {t('auth.password')}
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={t('auth.passwordPlaceholder')}
-                autoComplete="new-password"
-              />
-              {errors.password ? <small className="field-error">{errors.password}</small> : null}
-            </label>
-
-            <label>
-              {t('auth.confirmPassword')}
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder={t('auth.confirmPasswordPlaceholder')}
-                autoComplete="new-password"
-              />
-              {errors.confirmPassword ? <small className="field-error">{errors.confirmPassword}</small> : null}
-            </label>
-          </div>
-        </fieldset>
-
-        {/* Section 2: Shop Profile */}
-        <fieldset className="register-section">
-          <h3>{t('shopRegister.sectionShopProfile')}</h3>
-          <div className="form-grid">
-            <label>
-              {t('shopRegister.shopName')}
-              <input
-                type="text"
-                value={shopName}
-                onChange={(e) => setShopName(e.target.value)}
-                placeholder={t('shopRegister.shopNamePlaceholder')}
-              />
-              {errors.shopName ? <small className="field-error">{errors.shopName}</small> : null}
-            </label>
-
-            <label>
-              {t('shopRegister.description')} <span className="optional-hint">({t('form.optional')})</span>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder={t('shopRegister.descriptionPlaceholder')}
-                rows={3}
-              />
-            </label>
-
-            <div className="address-autocomplete" ref={dropdownRef}>
+        <form onSubmit={step === 3 ? (e) => void handleSubmit(e) : (e) => { e.preventDefault(); handleNext() }}>
+          {/* Step 1: Account */}
+          {step === 1 ? (
+            <div className="form-grid">
               <label>
-                {t('shopRegister.address')}
-                <div className="address-input-wrap">
-                  <input
-                    type="text"
-                    value={autocomplete.query}
-                    onChange={(e) => {
-                      autocomplete.setQuery(e.target.value)
-                      setShowDropdown(true)
-                      if (autocomplete.selected) {
-                        autocomplete.clear()
-                        autocomplete.setQuery(e.target.value)
-                      }
-                    }}
-                    onFocus={() => {
-                      if (autocomplete.suggestions.length > 0) setShowDropdown(true)
-                    }}
-                    placeholder={t('shopRegister.addressPlaceholder')}
-                    autoComplete="off"
-                  />
-                  {autocomplete.loading ? <span className="address-spinner" /> : null}
-                </div>
-                {errors.address ? <small className="field-error">{errors.address}</small> : null}
+                {t('auth.email')}
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t('auth.emailPlaceholder')}
+                  autoComplete="email"
+                />
+                {errors.email ? <small className="field-error">{errors.email}</small> : null}
               </label>
 
-              {showDropdown && autocomplete.suggestions.length > 0 ? (
-                <ul className="address-suggestions">
-                  {autocomplete.suggestions.map((s, i) => (
-                    <li key={i}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          autocomplete.pick(s)
-                          setShowDropdown(false)
-                        }}
-                      >
-                        {s.displayName}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+              <label>
+                {t('auth.password')}
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder={t('auth.passwordPlaceholder')}
+                  autoComplete="new-password"
+                />
+                {errors.password ? <small className="field-error">{errors.password}</small> : null}
+              </label>
+
+              <label>
+                {t('auth.confirmPassword')}
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder={t('auth.confirmPasswordPlaceholder')}
+                  autoComplete="new-password"
+                />
+                {errors.confirmPassword ? <small className="field-error">{errors.confirmPassword}</small> : null}
+              </label>
+            </div>
+          ) : null}
+
+          {/* Step 2: Shop */}
+          {step === 2 ? (
+            <div className="form-grid">
+              <label>
+                {t('shopRegister.shopName')}
+                <input
+                  type="text"
+                  value={shopName}
+                  onChange={(e) => setShopName(e.target.value)}
+                  placeholder={t('shopRegister.shopNamePlaceholder')}
+                />
+                {errors.shopName ? <small className="field-error">{errors.shopName}</small> : null}
+              </label>
+
+              <label>
+                {t('shopRegister.description')} <span className="optional-hint">({t('form.optional')})</span>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder={t('shopRegister.descriptionPlaceholder')}
+                  rows={3}
+                />
+              </label>
+
+              <div className="address-autocomplete" ref={dropdownRef}>
+                <label>
+                  {t('shopRegister.address')}
+                  <div className="address-input-wrap">
+                    <input
+                      type="text"
+                      value={autocomplete.query}
+                      onChange={(e) => {
+                        autocomplete.setQuery(e.target.value)
+                        setShowDropdown(true)
+                        if (autocomplete.selected) {
+                          autocomplete.clear()
+                          autocomplete.setQuery(e.target.value)
+                        }
+                      }}
+                      onFocus={() => {
+                        if (autocomplete.suggestions.length > 0) setShowDropdown(true)
+                      }}
+                      placeholder={t('shopRegister.addressPlaceholder')}
+                      autoComplete="off"
+                    />
+                    {autocomplete.loading ? <span className="address-spinner" /> : null}
+                  </div>
+                  {errors.address ? <small className="field-error">{errors.address}</small> : null}
+                </label>
+
+                {showDropdown && autocomplete.suggestions.length > 0 ? (
+                  <ul className="address-suggestions">
+                    {autocomplete.suggestions.map((s, i) => (
+                      <li key={i}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            autocomplete.pick(s)
+                            setShowDropdown(false)
+                          }}
+                        >
+                          {s.displayName}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+
+                {autocomplete.selected ? (
+                  <p className="address-coords">
+                    {autocomplete.selected.lat.toFixed(5)}, {autocomplete.selected.lon.toFixed(5)}
+                  </p>
+                ) : null}
+              </div>
+
+              <label>
+                {t('shopRegister.contactPhone')}
+                <PhoneInput
+                  value={contactPhone}
+                  onChange={setContactPhone}
+                  placeholder={t('shopRegister.contactPhonePlaceholder')}
+                />
+                {errors.contactPhone ? <small className="field-error">{errors.contactPhone}</small> : null}
+              </label>
+
+              <label>
+                {t('shopRegister.contactEmail')} <span className="optional-hint">({t('form.optional')})</span>
+                <input
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  placeholder={t('shopRegister.contactEmailPlaceholder')}
+                />
+              </label>
+            </div>
+          ) : null}
+
+          {/* Step 3: Company */}
+          {step === 3 ? (
+            <div className="form-grid">
+              <label>
+                {t('shopRegister.legalName')}
+                <input
+                  type="text"
+                  value={legalName}
+                  onChange={(e) => setLegalName(e.target.value)}
+                  placeholder={t('shopRegister.legalNamePlaceholder')}
+                />
+                {errors.legalName ? <small className="field-error">{errors.legalName}</small> : null}
+              </label>
+
+              <label>
+                {t('shopRegister.nip')}
+                <input
+                  type="text"
+                  value={nip}
+                  onChange={(e) => setNip(e.target.value)}
+                  placeholder={t('shopRegister.nipPlaceholder')}
+                  inputMode="numeric"
+                />
+                {errors.nip ? <small className="field-error">{errors.nip}</small> : null}
+              </label>
+
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={sameAsShop}
+                  onChange={(e) => setSameAsShop(e.target.checked)}
+                />
+                {t('shopRegister.sameAsShopAddress')}
+              </label>
+
+              {!sameAsShop ? (
+                <>
+                  <label>
+                    {t('shopRegister.billingStreet')}
+                    <input
+                      type="text"
+                      value={billingStreet}
+                      onChange={(e) => setBillingStreet(e.target.value)}
+                      placeholder={t('shopRegister.billingStreetPlaceholder')}
+                    />
+                    {errors.billingStreet ? <small className="field-error">{errors.billingStreet}</small> : null}
+                  </label>
+
+                  <label>
+                    {t('shopRegister.billingCity')}
+                    <input
+                      type="text"
+                      value={billingCity}
+                      onChange={(e) => setBillingCity(e.target.value)}
+                      placeholder={t('shopRegister.billingCityPlaceholder')}
+                    />
+                    {errors.billingCity ? <small className="field-error">{errors.billingCity}</small> : null}
+                  </label>
+
+                  <label>
+                    {t('shopRegister.billingPostalCode')}
+                    <input
+                      type="text"
+                      value={billingPostalCode}
+                      onChange={(e) => setBillingPostalCode(e.target.value)}
+                      placeholder={t('shopRegister.billingPostalCodePlaceholder')}
+                      inputMode="numeric"
+                    />
+                    {errors.billingPostalCode ? <small className="field-error">{errors.billingPostalCode}</small> : null}
+                  </label>
+                </>
               ) : null}
 
-              {autocomplete.selected ? (
-                <p className="address-coords">
-                  {autocomplete.selected.lat.toFixed(5)}, {autocomplete.selected.lon.toFixed(5)}
-                </p>
+              <label>
+                {t('shopRegister.invoiceEmail')} <span className="optional-hint">({t('form.optional')})</span>
+                <input
+                  type="email"
+                  value={invoiceEmail}
+                  onChange={(e) => setInvoiceEmail(e.target.value)}
+                  placeholder={t('shopRegister.invoiceEmailPlaceholder')}
+                />
+              </label>
+
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                />
+                {t('shopRegister.termsLabel')}
+              </label>
+              {errors.terms ? <small className="field-error">{errors.terms}</small> : null}
+
+              {TURNSTILE_SITE_KEY ? (
+                <div className="turnstile-wrap">
+                  <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setCaptchaToken} />
+                </div>
               ) : null}
             </div>
-          </div>
-        </fieldset>
+          ) : null}
 
-        {/* Section 3: Contact */}
-        <fieldset className="register-section">
-          <h3>{t('shopRegister.sectionContact')}</h3>
-          <div className="form-grid">
-            <label>
-              {t('shopRegister.contactPhone')}
-              <PhoneInput
-                value={contactPhone}
-                onChange={setContactPhone}
-                placeholder={t('shopRegister.contactPhonePlaceholder')}
-              />
-              {errors.contactPhone ? <small className="field-error">{errors.contactPhone}</small> : null}
-            </label>
-
-            <label>
-              {t('shopRegister.contactEmail')} <span className="optional-hint">({t('form.optional')})</span>
-              <input
-                type="email"
-                value={contactEmail}
-                onChange={(e) => setContactEmail(e.target.value)}
-                placeholder={t('shopRegister.contactEmailPlaceholder')}
-              />
-            </label>
-          </div>
-        </fieldset>
-
-        {/* Section 4: Billing / VAT */}
-        <fieldset className="register-section">
-          <h3>{t('shopRegister.sectionBilling')}</h3>
-          <div className="form-grid">
-            <label>
-              {t('shopRegister.legalName')}
-              <input
-                type="text"
-                value={legalName}
-                onChange={(e) => setLegalName(e.target.value)}
-                placeholder={t('shopRegister.legalNamePlaceholder')}
-              />
-              {errors.legalName ? <small className="field-error">{errors.legalName}</small> : null}
-            </label>
-
-            <label>
-              {t('shopRegister.nip')}
-              <input
-                type="text"
-                value={nip}
-                onChange={(e) => setNip(e.target.value)}
-                placeholder={t('shopRegister.nipPlaceholder')}
-                inputMode="numeric"
-              />
-              {errors.nip ? <small className="field-error">{errors.nip}</small> : null}
-            </label>
-
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={sameAsShop}
-                onChange={(e) => setSameAsShop(e.target.checked)}
-              />
-              {t('shopRegister.sameAsShopAddress')}
-            </label>
-
-            {!sameAsShop ? (
-              <>
-                <label>
-                  {t('shopRegister.billingStreet')}
-                  <input
-                    type="text"
-                    value={billingStreet}
-                    onChange={(e) => setBillingStreet(e.target.value)}
-                    placeholder={t('shopRegister.billingStreetPlaceholder')}
-                  />
-                  {errors.billingStreet ? <small className="field-error">{errors.billingStreet}</small> : null}
-                </label>
-
-                <label>
-                  {t('shopRegister.billingCity')}
-                  <input
-                    type="text"
-                    value={billingCity}
-                    onChange={(e) => setBillingCity(e.target.value)}
-                    placeholder={t('shopRegister.billingCityPlaceholder')}
-                  />
-                  {errors.billingCity ? <small className="field-error">{errors.billingCity}</small> : null}
-                </label>
-
-                <label>
-                  {t('shopRegister.billingPostalCode')}
-                  <input
-                    type="text"
-                    value={billingPostalCode}
-                    onChange={(e) => setBillingPostalCode(e.target.value)}
-                    placeholder={t('shopRegister.billingPostalCodePlaceholder')}
-                    inputMode="numeric"
-                  />
-                  {errors.billingPostalCode ? <small className="field-error">{errors.billingPostalCode}</small> : null}
-                </label>
-              </>
+          {/* Navigation */}
+          <div className="shop-register-actions">
+            {step > 1 ? (
+              <button type="button" className="shop-register-back" onClick={handleBack}>
+                {t('common.back')}
+              </button>
             ) : null}
-
-            <label>
-              {t('shopRegister.invoiceEmail')} <span className="optional-hint">({t('form.optional')})</span>
-              <input
-                type="email"
-                value={invoiceEmail}
-                onChange={(e) => setInvoiceEmail(e.target.value)}
-                placeholder={t('shopRegister.invoiceEmailPlaceholder')}
-              />
-            </label>
+            <button className="shop-register-submit" type="submit" disabled={submitting}>
+              {step === 3
+                ? (submitting ? t('shopRegister.registering') : t('shopRegister.register'))
+                : t('common.next')}
+            </button>
           </div>
-        </fieldset>
-
-        {/* Section 5: Terms */}
-        <fieldset className="register-section">
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
-            />
-            {t('shopRegister.termsLabel')}
-          </label>
-          {errors.terms ? <small className="field-error">{errors.terms}</small> : null}
-        </fieldset>
-
-        {TURNSTILE_SITE_KEY ? (
-          <div className="turnstile-wrap">
-            <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setCaptchaToken} />
-          </div>
-        ) : null}
-
-        <button className="btn btn-primary btn-lg auth-submit" type="submit" disabled={submitting}>
-          {submitting ? t('shopRegister.registering') : t('shopRegister.register')}
-        </button>
+        </form>
 
         <p className="auth-switch">
           {t('auth.hasAccount')}{' '}
@@ -414,7 +457,7 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
             {t('auth.loginLink')}
           </button>
         </p>
-      </form>
+      </div>
     </section>
   )
 }

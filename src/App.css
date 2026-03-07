@@ -3175,36 +3175,111 @@ label small {
 }
 
 /* ============================================================
-   SHOP REGISTRATION FORM
+   SHOP REGISTRATION WIZARD (3-step)
    ============================================================ */
 .shop-register-screen {
-  padding: var(--space-6) var(--space-4) var(--space-8);
-  max-width: 560px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: var(--space-8) var(--space-4) var(--space-12);
+  background: var(--neutral-50);
 }
 
-.shop-register-form {
+.shop-register-stepper {
+  justify-content: center;
+  margin-bottom: var(--space-6);
+}
+
+.shop-register-card {
   width: 100%;
+  max-width: 480px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevated);
+  padding: var(--space-8);
+  animation: fadeUp var(--duration-slow) var(--ease-out);
 }
 
-.shop-register-form .auth-brand {
+.shop-register-header {
   text-align: center;
   margin-bottom: var(--space-6);
 }
 
-.register-section {
-  border: none;
-  padding: 0;
-  margin: 0 0 var(--space-5);
+.shop-register-header h2 {
+  margin: 0 0 var(--space-1);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--neutral-950);
 }
 
-.register-section h3 {
+.shop-register-header p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--neutral-500);
+}
+
+.shop-register-card .form-grid {
+  margin-bottom: var(--space-5);
+}
+
+.shop-register-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.shop-register-back {
+  background: none;
+  border: none;
+  padding: var(--space-2);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-600);
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.shop-register-back:hover {
+  color: var(--neutral-900);
+}
+
+.shop-register-submit {
+  width: 100%;
+  height: 48px;
+  background: var(--teal-700);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
   font-size: 16px;
   font-weight: 600;
-  color: var(--neutral-900);
-  margin: 0 0 var(--space-3);
-  padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--neutral-200);
+  cursor: pointer;
+  transition: background var(--duration-fast) ease;
+}
+
+.shop-register-submit:hover {
+  background: var(--teal-600);
+}
+
+.shop-register-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.shop-register-card .auth-switch {
+  margin-top: var(--space-5);
+}
+
+@media (max-width: 520px) {
+  .shop-register-screen {
+    padding: var(--space-4) var(--space-3) var(--space-8);
+  }
+
+  .shop-register-card {
+    box-shadow: none;
+    padding: var(--space-6) var(--space-4);
+  }
 }
 
 .optional-hint {

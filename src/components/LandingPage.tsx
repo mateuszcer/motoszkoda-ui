@@ -230,6 +230,18 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
         </div>
       </section>
 
+      {/* ── WORKSHOP CALLOUT ── */}
+      <section className="lp-shop-callout">
+        <div className="lp-shop-callout__inner lp-rv">
+          <p className="lp-shop-callout__overline">{t('landing.shopCallout.overline')}</p>
+          <h2 className="lp-shop-callout__headline">{t('landing.shopCallout.headline')}</h2>
+          <p className="lp-shop-callout__subtitle">{t('landing.shopCallout.subtitle')}</p>
+          <button className="lp-shop-callout__cta" onClick={onJoinAsShop}>
+            {t('landing.shopCallout.cta')}
+          </button>
+        </div>
+      </section>
+
       {/* ── PRICING ── */}
       <section className="lp-pricing" id="lp-pricing">
         <div className="lp-pricing__inner">
