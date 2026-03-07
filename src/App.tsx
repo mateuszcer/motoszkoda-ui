@@ -169,15 +169,18 @@ function App() {
   const isAdmin = auth.user?.role === 'ADMIN'
 
   // Load requests when authenticated (skip for admin)
+  // For shops, re-fetch when enrollmentStatus becomes ACTIVE (e.g. after payment)
   useEffect(() => {
     if (auth.isAuthenticated && !isAdmin) {
       if (isShop) {
-        void shop.loadShopQueue()
+        if (enrollmentStatus === 'ACTIVE') {
+          void shop.loadShopQueue()
+        }
       } else {
         void loadRequests()
       }
     }
-  }, [auth.isAuthenticated, isAdmin, isShop, loadRequests, shop.loadShopQueue])
+  }, [auth.isAuthenticated, isAdmin, isShop, enrollmentStatus, loadRequests, shop.loadShopQueue])
 
   const handleLogin = async (email: string, password: string, captchaToken?: string) => {
     const result = await authApi.login(email, password, captchaToken)
@@ -370,8 +373,14 @@ function App() {
               : n.type === 'SHOP_ACKNOWLEDGED_REQUEST' ? 'shop_acknowledged'
               : n.type === 'SHOP_ASKED_QUESTION' ? 'new_question'
               : 'request_submitted',
-            title: n.type.replace(/_/g, ' '),
-            message: (payload.message as string) ?? '',
+            title: n.type === 'SHOP_SENT_QUOTE' ? t('notification.shopSentQuoteTitle')
+              : n.type === 'SHOP_ACKNOWLEDGED_REQUEST' ? t('notification.shopAcknowledgedTitle')
+              : n.type === 'SHOP_ASKED_QUESTION' ? t('notification.shopAskedQuestionTitle')
+              : t('notification.requestSubmittedTitle'),
+            message: n.type === 'SHOP_SENT_QUOTE' ? t('notification.shopSentQuoteMessage')
+              : n.type === 'SHOP_ACKNOWLEDGED_REQUEST' ? t('notification.shopAcknowledgedMessage')
+              : n.type === 'SHOP_ASKED_QUESTION' ? t('notification.shopAskedQuestionMessage')
+              : t('notification.requestSubmittedMessage'),
             createdAt: n.createdAt,
           })
 

@@ -13,7 +13,13 @@
 
   "notification": {
     "requestSubmittedTitle": "Zlecenie wysłane",
-    "requestSubmittedMessage": "Powiadamiamy pobliskie warsztaty."
+    "requestSubmittedMessage": "Powiadamiamy pobliskie warsztaty.",
+    "shopSentQuoteTitle": "Nowa wycena",
+    "shopSentQuoteMessage": "Warsztat przesłał wycenę.",
+    "shopAcknowledgedTitle": "Warsztat potwierdził",
+    "shopAcknowledgedMessage": "Warsztat potwierdził przyjęcie zlecenia.",
+    "shopAskedQuestionTitle": "Nowe pytanie",
+    "shopAskedQuestionMessage": "Warsztat zadał pytanie."
   },
 
   "common": {

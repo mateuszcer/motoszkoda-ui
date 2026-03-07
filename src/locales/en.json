@@ -13,7 +13,13 @@
 
   "notification": {
     "requestSubmittedTitle": "Repair Request submitted",
-    "requestSubmittedMessage": "We are notifying nearby shops now."
+    "requestSubmittedMessage": "We are notifying nearby shops now.",
+    "shopSentQuoteTitle": "New quote received",
+    "shopSentQuoteMessage": "A shop has sent you a quote.",
+    "shopAcknowledgedTitle": "Shop acknowledged",
+    "shopAcknowledgedMessage": "A shop has acknowledged your request.",
+    "shopAskedQuestionTitle": "New question",
+    "shopAskedQuestionMessage": "A shop has asked you a question."
   },
 
   "common": {
