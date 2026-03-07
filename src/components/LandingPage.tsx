@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { EnrollmentPlanCatalog, UserPlanCatalog } from '../domain/apiTypes'
+import { formatMinorCurrency } from '../utils/format'
 import { SeoSchema } from './SeoSchema'
 import './LandingPage.css'
 
 interface LandingPageProps {
   onGetStarted: () => void
   onJoinAsShop: () => void
+  billingCatalog: UserPlanCatalog | null
+  enrollmentCatalog: EnrollmentPlanCatalog | null
 }
 
-export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
+export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enrollmentCatalog }: LandingPageProps) {
   const { t, i18n } = useTranslation()
   const isPolish = i18n.language.startsWith('pl')
 
@@ -21,6 +25,22 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
   const faqContentRefs = useRef<(HTMLDivElement | null)[]>([])
 
   const toggleLang = () => void i18n.changeLanguage(isPolish ? 'en' : 'pl')
+
+  // Catalog-derived pricing with fallbacks
+  const lang = i18n.language
+  const freePlan = billingCatalog?.plans.find((p) => p.code === 'FREE') ?? null
+  const proPlan = billingCatalog?.plans.find((p) => p.code === 'PRO') ?? null
+  const billingCurrency = billingCatalog?.currency ?? 'PLN'
+  const proMonthlyMinor = proPlan?.prices.find((p) => p.billingInterval === 'MONTHLY')?.price ?? 2900
+  const proMonthlyLabel = formatMinorCurrency(proMonthlyMinor, billingCurrency, lang)
+
+  const enrollCurrency = enrollmentCatalog?.currency ?? 'PLN'
+  const shopMonthlyMinor = enrollmentCatalog?.prices.find((p) => p.billingInterval === 'MONTHLY')?.price ?? 12000
+  const shopAnnualMinor = enrollmentCatalog?.prices.find((p) => p.billingInterval === 'ANNUAL')?.price ?? 120000
+  const shopMonthlyLabel = formatMinorCurrency(shopMonthlyMinor, enrollCurrency, lang)
+  const shopAnnualLabel = formatMinorCurrency(shopAnnualMinor, enrollCurrency, lang)
+  const shopOriginalAnnualLabel = formatMinorCurrency(shopMonthlyMinor * 12, enrollCurrency, lang)
+  const shopSavePercent = Math.round((1 - shopAnnualMinor / (shopMonthlyMinor * 12)) * 100)
 
   // Nav solid on scroll past hero
   useEffect(() => {
@@ -278,9 +298,9 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
                   <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.freeBullet3')}</li>
                 </ul>
                 <div className="lp-pcard__limits">
-                  <div className="lp-pcard__limit"><span className="lp-pcard__limit-label">{t('landing.pricing.limitOpen')}</span><span className="lp-pcard__limit-val">3</span></div>
-                  <div className="lp-pcard__limit"><span className="lp-pcard__limit-label">{t('landing.pricing.limitDaily')}</span><span className="lp-pcard__limit-val">1</span></div>
-                  <div className="lp-pcard__limit"><span className="lp-pcard__limit-label">{t('landing.pricing.limitQuestions')}</span><span className="lp-pcard__limit-val">2</span></div>
+                  <div className="lp-pcard__limit"><span className="lp-pcard__limit-label">{t('landing.pricing.limitOpen')}</span><span className="lp-pcard__limit-val">{freePlan?.entitlements.maxOpenRepairRequests ?? 3}</span></div>
+                  <div className="lp-pcard__limit"><span className="lp-pcard__limit-label">{t('landing.pricing.limitDaily')}</span><span className="lp-pcard__limit-val">{freePlan?.entitlements.maxRepairRequestsPerDay ?? 1}</span></div>
+                  <div className="lp-pcard__limit"><span className="lp-pcard__limit-label">{t('landing.pricing.limitQuestions')}</span><span className="lp-pcard__limit-val">{freePlan?.entitlements.maxQuestionsPerRepairRequest ?? 2}</span></div>
                 </div>
                 <button className="lp-pcard__cta lp-pcard__cta--sec" onClick={onGetStarted}>
                   {t('landing.pricing.driverCta')}
@@ -291,7 +311,7 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
               {/* Premium card */}
               <div className="lp-pcard lp-pcard--feat">
                 <div className="lp-pcard__plan">{t('landing.pricing.premiumPlan')}</div>
-                <div className="lp-pcard__price">29 zł <span>{t('landing.pricing.perMonth')}</span></div>
+                <div className="lp-pcard__price">{proMonthlyLabel} <span>{t('landing.pricing.perMonth')}</span></div>
                 <div className="lp-pcard__desc">{t('landing.pricing.premiumDesc')}</div>
                 <ul className="lp-pcard__features">
                   <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.freeBullet1')}</li>
@@ -319,14 +339,14 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
                     onClick={() => setBillingCycle('annual')}
                   >
                     {t('landing.pricing.annual')}
-                    {billingCycle === 'annual' && (
-                      <span className="lp-pricing__save-pill">{t('landing.pricing.savePercent', { percent: Math.round((1 - 1200 / (120 * 12)) * 100) })}</span>
+                    {billingCycle === 'annual' && shopSavePercent > 0 && (
+                      <span className="lp-pricing__save-pill">{t('landing.pricing.savePercent', { percent: shopSavePercent })}</span>
                     )}
                   </button>
                 </div>
                 <div className="lp-pcard__price">
-                  {billingCycle === 'annual' && <span className="lp-pcard__original-price">{120 * 12} zł</span>}
-                  {billingCycle === 'monthly' ? '120' : '1200'} zł <span>{billingCycle === 'monthly' ? t('landing.pricing.perMonth') : t('landing.pricing.perYear')}</span>
+                  {billingCycle === 'annual' && <span className="lp-pcard__original-price">{shopOriginalAnnualLabel}</span>}
+                  {billingCycle === 'monthly' ? shopMonthlyLabel : shopAnnualLabel} <span>{billingCycle === 'monthly' ? t('landing.pricing.perMonth') : t('landing.pricing.perYear')}</span>
                 </div>
                 <div className="lp-pcard__desc">{t('landing.pricing.shopDesc')}</div>
                 <ul className="lp-pcard__features">

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { BillingInterval, SubscriptionResponse } from '../domain/apiTypes'
+import type { BillingInterval, EnrollmentPlanCatalog, SubscriptionResponse } from '../domain/apiTypes'
 import type { EnrollmentStatus } from '../domain/types'
+import { formatMinorCurrency } from '../utils/format'
 import { StripePaymentForm } from './StripePaymentForm'
 
 type PaymentStep = 'idle' | 'ready' | 'success' | 'polling' | 'timeout'
@@ -15,6 +16,7 @@ interface ShopEnrollViewProps {
   onPayment: (billingInterval: BillingInterval) => Promise<SubscriptionResponse>
   onStatusRefresh: () => Promise<void>
   onLogout: () => void
+  enrollmentCatalog: EnrollmentPlanCatalog | null
 }
 
 export function ShopEnrollView({
@@ -23,8 +25,9 @@ export function ShopEnrollView({
   onPayment,
   onStatusRefresh,
   onLogout,
+  enrollmentCatalog,
 }: ShopEnrollViewProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('MONTHLY')
   const [voucherOpen, setVoucherOpen] = useState(false)
   const [voucherCode, setVoucherCode] = useState('')
@@ -39,6 +42,15 @@ export function ShopEnrollView({
 
   const isSuspended = enrollmentStatus === 'SUSPENDED'
   const isActive = enrollmentStatus === 'ACTIVE'
+
+  const lang = i18n.language
+  const currency = enrollmentCatalog?.currency ?? 'PLN'
+  const monthlyMinor = enrollmentCatalog?.prices.find((p) => p.billingInterval === 'MONTHLY')?.price ?? 12000
+  const annualMinor = enrollmentCatalog?.prices.find((p) => p.billingInterval === 'ANNUAL')?.price ?? 120000
+  const priceMonthlyLabel = `${formatMinorCurrency(monthlyMinor, currency, lang)} / ${t('shopEnroll.monthly').toLowerCase()}`
+  const priceAnnualLabel = `${formatMinorCurrency(annualMinor, currency, lang)} / ${t('shopEnroll.annual').toLowerCase()}`
+  const priceOriginalAnnualLabel = formatMinorCurrency(monthlyMinor * 12, currency, lang)
+  const savePercent = Math.round((1 - annualMinor / (monthlyMinor * 12)) * 100)
 
   // Cleanup polling on unmount
   useEffect(() => {
@@ -186,19 +198,19 @@ export function ShopEnrollView({
                         >
                           {t('shopEnroll.annual')}
                           {' '}
-                          <span className="enroll-save-pill">{t('shopEnroll.savePercent', { percent: 17 })}</span>
+                          <span className="enroll-save-pill">{t('shopEnroll.savePercent', { percent: savePercent })}</span>
                         </button>
                       </div>
 
                       <div className="enroll-price">
                         {billingInterval === 'ANNUAL' ? (
                           <>
-                            <span className="enroll-price-original">{t('shopEnroll.priceOriginalAnnual')}</span>
+                            <span className="enroll-price-original">{priceOriginalAnnualLabel}</span>
                             {' '}
-                            <strong>{t('shopEnroll.priceAnnual')}</strong>
+                            <strong>{priceAnnualLabel}</strong>
                           </>
                         ) : (
-                          <strong>{t('shopEnroll.priceMonthly')}</strong>
+                          <strong>{priceMonthlyLabel}</strong>
                         )}
                       </div>
                     </>

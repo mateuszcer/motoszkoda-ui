@@ -1,5 +1,6 @@
 import type {
   BillingInterval,
+  EnrollmentPlanCatalog,
   EnrollmentStatusResponse,
   SubscriptionResponse,
   ShopRegistrationRequest,
@@ -8,6 +9,10 @@ import type {
 import { api } from './apiClient'
 
 export const enrollmentApi = {
+  async getCatalog(): Promise<EnrollmentPlanCatalog> {
+    return api.get<EnrollmentPlanCatalog>('/api/enrollment/plans', { auth: false })
+  },
+
   async register(payload: ShopRegistrationRequest): Promise<ShopRegistrationResponse> {
     return api.post<ShopRegistrationResponse>('/api/enrollment/register', {
       auth: false,

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import type { BillingInterval, SubscriptionResponse } from '../domain/apiTypes'
+import type { BillingInterval, EnrollmentPlanCatalog, SubscriptionResponse } from '../domain/apiTypes'
 import type { EnrollmentStatus } from '../domain/types'
 import { ShopEnrollView } from './ShopEnrollView'
 
@@ -10,6 +10,7 @@ interface EnrollmentGateProps {
   onPayment: (billingInterval: BillingInterval) => Promise<SubscriptionResponse>
   onStatusRefresh: () => Promise<void>
   onLogout: () => void
+  enrollmentCatalog: EnrollmentPlanCatalog | null
   children: React.ReactNode
 }
 
@@ -20,6 +21,7 @@ export function EnrollmentGate({
   onPayment,
   onStatusRefresh,
   onLogout,
+  enrollmentCatalog,
   children,
 }: EnrollmentGateProps) {
   const { t } = useTranslation()
@@ -47,6 +49,7 @@ export function EnrollmentGate({
         onPayment={onPayment}
         onStatusRefresh={onStatusRefresh}
         onLogout={onLogout}
+        enrollmentCatalog={enrollmentCatalog}
       />
     </main>
   )

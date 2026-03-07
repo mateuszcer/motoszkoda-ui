@@ -36,6 +36,7 @@ import type {
 } from './domain/types'
 import { useRouting } from './hooks/useRouting'
 import { usePlan } from './hooks/usePlan'
+import { usePlanCatalog } from './hooks/usePlanCatalog'
 import { useShopPortal } from './hooks/useShopPortal'
 import { setOnUnauthorized } from './services/apiClient'
 import { authApi } from './services/authApi'
@@ -138,7 +139,8 @@ function App() {
   // Shop portal hook
   const isShop = auth.user?.role === 'SHOP_USER'
   const isDriver = auth.isAuthenticated && !isShop && auth.user?.role !== 'ADMIN'
-  const plan = usePlan(auth.isAuthenticated, isDriver)
+  const catalog = usePlanCatalog()
+  const plan = usePlan(auth.isAuthenticated, isDriver, catalog.getEntitlements('FREE'))
   const [limitModal, setLimitModal] = useState<'open_orders' | 'daily_orders' | 'questions' | null>(null)
   const [upgradeLoading, setUpgradeLoading] = useState(false)
   const shop = useShopPortal(auth.user?.id ?? null)
@@ -449,6 +451,8 @@ function App() {
       <LandingPage
         onGetStarted={() => navigate('login')}
         onJoinAsShop={() => navigate('shop-login')}
+        billingCatalog={catalog.billingCatalog}
+        enrollmentCatalog={catalog.enrollmentCatalog}
       />
     )
   }
@@ -677,6 +681,7 @@ function App() {
         onPayment={handleEnrollmentPayment}
         onStatusRefresh={handleEnrollmentStatusRefresh}
         onLogout={doLogout}
+        enrollmentCatalog={catalog.enrollmentCatalog}
       >
         <main className="app-shell">
           <header className="app-header">
@@ -872,6 +877,7 @@ function App() {
           }}
           planInfo={plan.planInfo}
           onNavigatePlan={() => navigate('plan')}
+          freeEntitlements={plan.freeEntitlements}
         />
       ) : null}
 
@@ -924,6 +930,10 @@ function App() {
           onManageSubscription={() => void handleManageSubscription()}
           onBack={() => navigate('home')}
           upgradeLoading={upgradeLoading}
+          freeEntitlements={plan.freeEntitlements}
+          proPriceMonthly={catalog.getPlanPrice('PRO', 'MONTHLY')}
+          proPriceAnnual={catalog.getPlanPrice('PRO', 'ANNUAL')}
+          currency={catalog.currency}
         />
       ) : null}
 
@@ -947,6 +957,9 @@ function App() {
           }}
           onDismiss={() => setLimitModal(null)}
           loading={upgradeLoading}
+          freeEntitlements={plan.freeEntitlements}
+          proPriceMonthly={catalog.getPlanPrice('PRO', 'MONTHLY')}
+          currency={catalog.currency}
         />
       ) : null}
     </main>

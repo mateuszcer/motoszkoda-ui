@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { BillingInterval, UserPlanInfo } from '../domain/apiTypes'
+import type { BillingInterval, Entitlements, UserPlanInfo } from '../domain/apiTypes'
 import type { RepairRequest } from '../domain/types'
-import { FREE_LIMITS } from '../hooks/usePlan'
+import { formatMinorCurrency } from '../utils/format'
 
 interface PlanViewProps {
   planInfo: UserPlanInfo | null
@@ -11,10 +11,14 @@ interface PlanViewProps {
   onManageSubscription: () => void
   onBack: () => void
   upgradeLoading: boolean
+  freeEntitlements: Entitlements
+  proPriceMonthly: number | null
+  proPriceAnnual: number | null
+  currency: string
 }
 
-export function PlanView({ planInfo, requests, onUpgrade, onManageSubscription, onBack, upgradeLoading }: PlanViewProps) {
-  const { t } = useTranslation()
+export function PlanView({ planInfo, requests, onUpgrade, onManageSubscription, onBack, upgradeLoading, freeEntitlements, proPriceMonthly, proPriceAnnual, currency }: PlanViewProps) {
+  const { t, i18n } = useTranslation()
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('MONTHLY')
 
   const isFree = planInfo?.planCode === 'FREE'
@@ -25,6 +29,10 @@ export function PlanView({ planInfo, requests, onUpgrade, onManageSubscription, 
   const openCount = requests.filter((r) => r.status === 'open').length
   const today = new Date().toISOString().slice(0, 10)
   const dailyCount = requests.filter((r) => r.createdAt.slice(0, 10) === today).length
+
+  const activePrice = billingInterval === 'ANNUAL' ? (proPriceAnnual ?? 24900) : (proPriceMonthly ?? 2900)
+  const priceLabel = formatMinorCurrency(activePrice, currency, i18n.language)
+  const intervalLabel = billingInterval === 'ANNUAL' ? t('plan.annual') : t('plan.monthly')
 
   return (
     <section className="screen plan-screen">
@@ -63,15 +71,15 @@ export function PlanView({ planInfo, requests, onUpgrade, onManageSubscription, 
         <div className="plan-stats">
           <div className="plan-stat-row">
             <span>{t('plan.openOrders')}</span>
-            <span>{isFree ? t('plan.usageOf', { used: openCount, max: FREE_LIMITS.maxOpen }) : t('plan.unlimited')}</span>
+            <span>{isFree ? t('plan.usageOf', { used: openCount, max: freeEntitlements.maxOpenRepairRequests }) : t('plan.unlimited')}</span>
           </div>
           <div className="plan-stat-row">
             <span>{t('plan.dailyOrders')}</span>
-            <span>{isFree ? t('plan.usageOf', { used: dailyCount, max: FREE_LIMITS.maxDaily }) : t('plan.unlimited')}</span>
+            <span>{isFree ? t('plan.usageOf', { used: dailyCount, max: freeEntitlements.maxRepairRequestsPerDay }) : t('plan.unlimited')}</span>
           </div>
           <div className="plan-stat-row">
             <span>{t('plan.questionsPerOrder')}</span>
-            <span>{isFree ? FREE_LIMITS.maxQuestionsPerOrder : t('plan.unlimited')}</span>
+            <span>{isFree ? freeEntitlements.maxQuestionsPerRepairRequest : t('plan.unlimited')}</span>
           </div>
         </div>
       </div>
@@ -94,7 +102,7 @@ export function PlanView({ planInfo, requests, onUpgrade, onManageSubscription, 
             <li>{t('plan.upgradeBenefit3')}</li>
           </ul>
           <div className="plan-upgrade-price">
-            {t('plan.upgradePrice')} <span>{t('plan.upgradePriceInterval')}</span>
+            {priceLabel} <span>/ {intervalLabel}</span>
           </div>
           <div className="plan-billing-toggle">
             <button

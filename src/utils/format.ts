@@ -56,6 +56,16 @@ export const formatQuoteRange = (quote: QuoteOffer, locale: string): string => {
   return `${min} – ${formatCurrencyPln(quote.maxPricePln, locale)}`
 }
 
+export const formatMinorCurrency = (minorUnits: number, currency: string, locale: string): string => {
+  const resolved = localeMap[locale] ?? locale
+  return new Intl.NumberFormat(resolved, {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(minorUnits / 100)
+}
+
 export const formatLineItemRange = (item: LineItem, locale: string): string => {
   const min = item.totalPriceMinPln ?? ((item.workPriceMinPln ?? 0) + (item.partsPriceMinPln ?? 0))
   const max = item.totalPriceMaxPln ?? ((item.workPriceMaxPln ?? 0) + (item.partsPriceMaxPln ?? 0))

@@ -403,3 +403,38 @@ export interface VoucherResponse {
   id: string
   code: string
 }
+
+// ── Plan Catalog (public) ──────────────────────────────────────────
+
+export interface Entitlements {
+  maxRepairRequestsPerDay: number
+  maxOpenRepairRequests: number
+  maxQuestionsPerRepairRequest: number
+}
+
+export interface PlanPrice {
+  billingInterval: BillingInterval
+  price: number // minor units (grosze), e.g. 2900 = 29 PLN
+}
+
+export interface UserPlanOption {
+  code: PlanCode
+  nameKey: string
+  prices: PlanPrice[]
+  entitlements: Entitlements
+}
+
+export interface UserPlanCatalog {
+  currency: string
+  plans: UserPlanOption[]
+}
+
+export interface EnrollmentPlanPrice {
+  billingInterval: BillingInterval
+  price: number
+}
+
+export interface EnrollmentPlanCatalog {
+  currency: string
+  prices: EnrollmentPlanPrice[]
+}
