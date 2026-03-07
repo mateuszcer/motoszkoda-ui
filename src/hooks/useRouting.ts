@@ -20,6 +20,9 @@ const PATH_TO_SCREEN: Record<string, AppScreen> = {
   '/shop/send-quote': 'shop-send-quote',
   '/shop/profile': 'shop-profile',
   '/shop/enroll': 'shop-enroll',
+  '/plan': 'plan',
+  '/plan/success': 'plan-success',
+  '/plan/cancel': 'plan-cancel',
   '/admin': 'admin-login',
   '/admin/vouchers': 'admin-vouchers',
 }

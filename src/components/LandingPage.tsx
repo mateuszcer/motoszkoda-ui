@@ -299,7 +299,7 @@ export function LandingPage({ onGetStarted, onJoinAsShop }: LandingPageProps) {
                   <li className="lp-pcard__feat"><svg className="lp-pcard__check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>{t('landing.pricing.freeBullet3')}</li>
                 </ul>
                 <button className="lp-pcard__cta lp-pcard__cta--pri" onClick={onGetStarted}>
-                  {t('landing.pricing.comingSoon')}
+                  {t('landing.pricing.driverCtaPremium')}
                 </button>
               </div>
             </div>

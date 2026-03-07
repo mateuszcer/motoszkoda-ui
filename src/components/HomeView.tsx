@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { UserPlanInfo } from '../domain/apiTypes'
 import type { RepairRequest } from '../domain/types'
+import { FREE_LIMITS } from '../hooks/usePlan'
 import { formatDateTime } from '../utils/format'
 
 interface HomeViewProps {
@@ -8,16 +10,20 @@ interface HomeViewProps {
   onCreateRequest: () => void
   onMyRequests: () => void
   onOpenRequest?: (requestId: string) => void
+  planInfo?: UserPlanInfo | null
+  onNavigatePlan?: () => void
 }
 
 type HomeTab = 'open' | 'closed' | 'all'
 
-export function HomeView({ requests, onCreateRequest, onMyRequests, onOpenRequest }: HomeViewProps) {
+export function HomeView({ requests, onCreateRequest, onMyRequests, onOpenRequest, planInfo, onNavigatePlan }: HomeViewProps) {
   const { t, i18n } = useTranslation()
   const [activeTab, setActiveTab] = useState<HomeTab>('open')
 
   const openRequests = requests.filter((r) => r.status === 'open')
   const closedRequests = requests.filter((r) => r.status === 'closed')
+  const isFree = planInfo?.planCode === 'FREE'
+  const atOpenLimit = isFree && openRequests.length >= FREE_LIMITS.maxOpen
 
   const filteredRequests =
     activeTab === 'open' ? openRequests
@@ -58,6 +64,16 @@ export function HomeView({ requests, onCreateRequest, onMyRequests, onOpenReques
           </button>
         ))}
       </div>
+
+      {isFree ? (
+        <p className="usage-indicator">
+          {t('plan.usageIndicator', { used: openRequests.length, max: FREE_LIMITS.maxOpen })}
+          {' · '}
+          <a className="usage-indicator-link" onClick={onNavigatePlan}>
+            {atOpenLimit ? t('plan.increaseLimit') : t('plan.freePlan')}
+          </a>
+        </p>
+      ) : null}
 
       {filteredRequests.length > 0 ? (
         <div className="cards-stack">

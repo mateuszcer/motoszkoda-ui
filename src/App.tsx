@@ -9,6 +9,10 @@ import { CreateRepairRequestFlow } from './components/CreateRepairRequestFlow'
 import { EnrollmentGate } from './components/EnrollmentGate'
 import { HomeView } from './components/HomeView'
 import { LandingPage } from './components/LandingPage'
+import { PlanView } from './components/PlanView'
+import { PlanSuccessView } from './components/PlanSuccessView'
+import { PlanCancelView } from './components/PlanCancelView'
+import { UpgradeLimitModal } from './components/UpgradeLimitModal'
 import { LoginView } from './components/LoginView'
 import { MyRequestsView } from './components/MyRequestsView'
 import { RegisterView } from './components/RegisterView'
@@ -21,7 +25,7 @@ import { ShopRegisterView } from './components/ShopRegisterView'
 import { ShopRequestDetailView } from './components/ShopRequestDetailView'
 import { ShopSendQuoteView } from './components/ShopSendQuoteView'
 import { ThemeToggle } from './components/ThemeToggle'
-import type { BillingInterval, ShopRegistrationRequest } from './domain/apiTypes'
+import type { BillingInterval, ShopRegistrationRequest, UserPlanInfo } from './domain/apiTypes'
 import type { AuthState } from './domain/auth-types'
 import type {
   Attachment,
@@ -31,9 +35,11 @@ import type {
   RepairRequest,
 } from './domain/types'
 import { useRouting } from './hooks/useRouting'
+import { usePlan } from './hooks/usePlan'
 import { useShopPortal } from './hooks/useShopPortal'
 import { setOnUnauthorized } from './services/apiClient'
 import { authApi } from './services/authApi'
+import { billingApi } from './services/billingApi'
 import { enrollmentApi } from './services/enrollmentApi'
 import * as localPrefs from './services/localPreferences'
 import { fetchNotifications } from './services/notificationsApi'
@@ -131,6 +137,10 @@ function App() {
 
   // Shop portal hook
   const isShop = auth.user?.role === 'SHOP_USER'
+  const isDriver = auth.isAuthenticated && !isShop && auth.user?.role !== 'ADMIN'
+  const plan = usePlan(auth.isAuthenticated, isDriver)
+  const [limitModal, setLimitModal] = useState<'open_orders' | 'daily_orders' | 'questions' | null>(null)
+  const [upgradeLoading, setUpgradeLoading] = useState(false)
   const shop = useShopPortal(auth.user?.id ?? null)
   const [shopSelectedRequestId, setShopSelectedRequestId] = useState<string | null>(null)
 
@@ -321,6 +331,13 @@ function App() {
     attachments: Attachment[],
     files?: Map<string, File>,
   ) => {
+    // Check question limit for free users
+    const req = requests.find((r) => r.id === requestId)
+    if (req && plan.isAtQuestionLimit(req, shopId)) {
+      setLimitModal('questions')
+      return
+    }
+
     await repairRequestApi.sendThreadMessage({
       requestId,
       shopId,
@@ -586,6 +603,26 @@ function App() {
     )
   }
 
+  // Driver plan actions
+  const handleUpgrade = async (billingInterval: BillingInterval = 'MONTHLY') => {
+    setUpgradeLoading(true)
+    try {
+      const { checkoutUrl } = await billingApi.upgrade(billingInterval)
+      window.location.href = checkoutUrl
+    } catch {
+      setUpgradeLoading(false)
+    }
+  }
+
+  const handleManageSubscription = async () => {
+    try {
+      const { portalUrl } = await billingApi.portal()
+      window.location.href = portalUrl
+    } catch {
+      // silently ignore
+    }
+  }
+
   // Enrollment actions for shop users
   const handleVoucherRedeem = async (code: string) => {
     const result = await enrollmentApi.redeemVoucher(code)
@@ -787,6 +824,9 @@ function App() {
               {t('app.home')}
             </button>
           ) : null}
+          <button className="btn btn-ghost" onClick={() => navigate('plan')}>
+            {t('plan.nav')}
+          </button>
           <button
             className="btn btn-ghost"
             onClick={() => void handleLogout()}
@@ -814,6 +854,14 @@ function App() {
         <HomeView
           requests={requests}
           onCreateRequest={() => {
+            if (plan.isAtOpenLimit(requests)) {
+              setLimitModal('open_orders')
+              return
+            }
+            if (plan.isAtDailyLimit(requests)) {
+              setLimitModal('daily_orders')
+              return
+            }
             navigate('create-request')
           }}
           onMyRequests={() => {
@@ -822,6 +870,8 @@ function App() {
           onOpenRequest={(requestId) => {
             void openRequestDetail(requestId)
           }}
+          planInfo={plan.planInfo}
+          onNavigatePlan={() => navigate('plan')}
         />
       ) : null}
 
@@ -864,6 +914,40 @@ function App() {
 
       {!loading && !error && screen === 'request-detail' && !selectedRequest ? (
         <article className="empty-state">{t('app.notFound')}</article>
+      ) : null}
+
+      {screen === 'plan' ? (
+        <PlanView
+          planInfo={plan.planInfo}
+          requests={requests}
+          onUpgrade={(bi) => void handleUpgrade(bi)}
+          onManageSubscription={() => void handleManageSubscription()}
+          onBack={() => navigate('home')}
+          upgradeLoading={upgradeLoading}
+        />
+      ) : null}
+
+      {screen === 'plan-success' ? (
+        <PlanSuccessView
+          onRefreshPlan={plan.refreshPlan as () => Promise<UserPlanInfo | null | undefined>}
+          onContinue={() => navigate('home')}
+        />
+      ) : null}
+
+      {screen === 'plan-cancel' ? (
+        <PlanCancelView onBack={() => navigate('home')} />
+      ) : null}
+
+      {limitModal ? (
+        <UpgradeLimitModal
+          limitType={limitModal}
+          onUpgrade={() => {
+            setLimitModal(null)
+            void handleUpgrade()
+          }}
+          onDismiss={() => setLimitModal(null)}
+          loading={upgradeLoading}
+        />
       ) : null}
     </main>
   )

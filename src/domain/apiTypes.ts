@@ -364,6 +364,26 @@ export interface SubscriptionResponse {
   clientSecret: string
 }
 
+// ── Driver Billing ──────────────────────────────────────────────────
+
+export type PlanCode = 'FREE' | 'PRO'
+export type PlanStatus = 'ACTIVE' | 'PENDING_PAYMENT' | 'PAST_DUE' | 'CANCEL_SCHEDULED' | 'CANCELLED'
+
+export interface UserPlanInfo {
+  planCode: PlanCode
+  status: PlanStatus
+  billingInterval?: BillingInterval
+  cancelAt?: string
+}
+
+export interface UpgradeResponse {
+  checkoutUrl: string
+}
+
+export interface PortalResponse {
+  portalUrl: string
+}
+
 // ── Common Error ─────────────────────────────────────────────────────
 
 export interface ApiErrorResponse {

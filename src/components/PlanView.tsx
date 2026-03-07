@@ -1,0 +1,125 @@
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { BillingInterval, UserPlanInfo } from '../domain/apiTypes'
+import type { RepairRequest } from '../domain/types'
+import { FREE_LIMITS } from '../hooks/usePlan'
+
+interface PlanViewProps {
+  planInfo: UserPlanInfo | null
+  requests: RepairRequest[]
+  onUpgrade: (billingInterval: BillingInterval) => void
+  onManageSubscription: () => void
+  onBack: () => void
+  upgradeLoading: boolean
+}
+
+export function PlanView({ planInfo, requests, onUpgrade, onManageSubscription, onBack, upgradeLoading }: PlanViewProps) {
+  const { t } = useTranslation()
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>('MONTHLY')
+
+  const isFree = planInfo?.planCode === 'FREE'
+  const isPro = planInfo?.planCode === 'PRO'
+  const isCancelScheduled = planInfo?.status === 'CANCEL_SCHEDULED'
+  const isPastDue = planInfo?.status === 'PAST_DUE'
+
+  const openCount = requests.filter((r) => r.status === 'open').length
+  const today = new Date().toISOString().slice(0, 10)
+  const dailyCount = requests.filter((r) => r.createdAt.slice(0, 10) === today).length
+
+  return (
+    <section className="screen plan-screen">
+      <button className="btn btn-ghost back-btn" onClick={onBack}>
+        {t('common.back')}
+      </button>
+      <h2>{t('plan.title')}</h2>
+
+      {/* Warning banners */}
+      {isCancelScheduled && planInfo?.cancelAt ? (
+        <div className="plan-warning-banner">
+          <p>{t('plan.cancelAtNotice', { date: planInfo.cancelAt })}</p>
+          <button className="btn btn-primary btn-sm" onClick={onManageSubscription}>
+            {t('plan.restoreSubscription')}
+          </button>
+        </div>
+      ) : null}
+
+      {isPastDue ? (
+        <div className="plan-warning-banner plan-warning-banner--error">
+          <p>{t('plan.pastDueNotice')}</p>
+          <button className="btn btn-primary btn-sm" onClick={onManageSubscription}>
+            {t('plan.updatePayment')}
+          </button>
+        </div>
+      ) : null}
+
+      {/* Current plan card */}
+      <div className="plan-card">
+        <div className="plan-card-header">
+          <div>
+            <h3>{isFree ? t('plan.freePlan') : t('plan.proPlan')}</h3>
+            <span className="pill pill-open">{t('plan.statusActive')}</span>
+          </div>
+        </div>
+        <div className="plan-stats">
+          <div className="plan-stat-row">
+            <span>{t('plan.openOrders')}</span>
+            <span>{isFree ? t('plan.usageOf', { used: openCount, max: FREE_LIMITS.maxOpen }) : t('plan.unlimited')}</span>
+          </div>
+          <div className="plan-stat-row">
+            <span>{t('plan.dailyOrders')}</span>
+            <span>{isFree ? t('plan.usageOf', { used: dailyCount, max: FREE_LIMITS.maxDaily }) : t('plan.unlimited')}</span>
+          </div>
+          <div className="plan-stat-row">
+            <span>{t('plan.questionsPerOrder')}</span>
+            <span>{isFree ? FREE_LIMITS.maxQuestionsPerOrder : t('plan.unlimited')}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* PRO management */}
+      {isPro && !isCancelScheduled && !isPastDue ? (
+        <button className="btn btn-ghost" onClick={onManageSubscription} style={{ marginTop: 16 }}>
+          {t('plan.manageSubscription')}
+        </button>
+      ) : null}
+
+      {/* Upgrade card for FREE users */}
+      {isFree ? (
+        <div className="plan-upgrade-card">
+          <h3>{t('plan.upgradeTitle')}</h3>
+          <p>{t('plan.upgradeDesc')}</p>
+          <ul className="plan-upgrade-benefits">
+            <li>{t('plan.upgradeBenefit1')}</li>
+            <li>{t('plan.upgradeBenefit2')}</li>
+            <li>{t('plan.upgradeBenefit3')}</li>
+          </ul>
+          <div className="plan-upgrade-price">
+            {t('plan.upgradePrice')} <span>{t('plan.upgradePriceInterval')}</span>
+          </div>
+          <div className="plan-billing-toggle">
+            <button
+              className={`enroll-billing-btn ${billingInterval === 'MONTHLY' ? 'enroll-billing-btn--active' : ''}`}
+              onClick={() => setBillingInterval('MONTHLY')}
+            >
+              {t('plan.monthly')}
+            </button>
+            <button
+              className={`enroll-billing-btn ${billingInterval === 'ANNUAL' ? 'enroll-billing-btn--active' : ''}`}
+              onClick={() => setBillingInterval('ANNUAL')}
+            >
+              {t('plan.annual')}
+            </button>
+          </div>
+          <button
+            className="btn btn-primary btn-lg"
+            onClick={() => onUpgrade(billingInterval)}
+            disabled={upgradeLoading}
+            style={{ marginTop: 16, width: '100%' }}
+          >
+            {upgradeLoading ? '...' : t('plan.upgradeCta')}
+          </button>
+        </div>
+      ) : null}
+    </section>
+  )
+}

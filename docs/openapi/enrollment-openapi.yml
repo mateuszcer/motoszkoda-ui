@@ -5,6 +5,20 @@ info:
   version: 3.0.0
 
 paths:
+  /api/enrollment/plans:
+    get:
+      summary: Get enrollment pricing
+      description: Public endpoint returning shop enrollment pricing. No authentication required.
+      operationId: getEnrollmentPlanCatalog
+      tags: [Enrollment - Pricing]
+      responses:
+        '200':
+          description: Enrollment pricing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentPlanCatalog'
+
   /api/enrollment/register:
     post:
       operationId: registerShop
@@ -126,7 +140,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /api/enrollment/webhook/stripe:
+  /api/webhook/stripe:
     post:
       operationId: stripeWebhook
       summary: Stripe webhook endpoint
@@ -424,6 +438,30 @@ components:
     EnrollmentStatus:
       type: string
       enum: [PENDING_PAYMENT, ACTIVE, SUSPENDED]
+
+    EnrollmentPlanCatalog:
+      type: object
+      required: [currency, prices]
+      properties:
+        currency:
+          type: string
+          example: PLN
+        prices:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnrollmentPlanPrice'
+
+    EnrollmentPlanPrice:
+      type: object
+      required: [billingInterval, price]
+      properties:
+        billingInterval:
+          type: string
+          enum: [MONTHLY, ANNUAL]
+        price:
+          type: integer
+          description: Price in minor currency units (grosze for PLN)
+          example: 12000
 
     ErrorResponse:
       type: object

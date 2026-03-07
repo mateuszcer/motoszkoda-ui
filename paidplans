@@ -1,0 +1,110 @@
+Where to show upgrade prompts
+1. When the user hits a limit (most important)
+When a driver tries to create a 4th open order (free limit is 3), or a 2nd order in one day, or a 3rd question on an order — don't just show an error. Show a modal:
+Title:        "Osiągnięto limit darmowego planu"
+Subtitle:     "Twój plan pozwala na 3 otwarte zlecenia. 
+               Odblokuj nielimitowane zlecenia z planem PRO."
+Price:         "29 zł / miesiąc"
+Primary CTA:   "Przejdź na PRO" → POST /api/billing/plan/upgrade
+Secondary:     "Nie teraz" → close modal
+This is your highest-converting upgrade moment — the user wants to do something right now and can't. Make it frictionless: one click → Stripe checkout → done.
+2. Dashboard banner (subtle, persistent)
+On the driver dashboard, below the "Panel Kierowcy" featured card, show a thin upgrade banner for free users only:
+Background:   --mint-50 (#F3FCF8)
+Border:       1px --mint-200
+Border-radius: 12px
+Padding:      16px 20px
+Layout:       flex, space-between, vertically centered
+
+Left side:    "Plan darmowy — 3 otwarte zlecenia, 1 dziennie" (14px, --neutral-700)
+Right side:   "Przejdź na PRO" pill button (small, --teal-700 bg)
+Dismissable with an X, but comes back next session. Not aggressive — just a quiet reminder.
+3. Usage indicators on the dashboard
+Near the tabs or above the order list, show current usage:
+"Otwarte zlecenia: 2 z 3"    ← subtle progress, --neutral-500 text
+When they're at 3/3, change color to --warning-600 with text "Limit osiągnięty — przejdź na PRO". This creates natural awareness without interrupting.
+4. Settings / Plan page (/plan)
+Dedicated page accessible from user menu / settings. Shows:
+Current plan card:
+  "Darmowy plan" or "Plan PRO"
+  Status badge (Aktywny / Anulowany do [date])
+  Usage stats: open orders used, daily limit, questions per order
+  
+  If FREE:
+    Upgrade card alongside with PRO benefits + price + "Przejdź na PRO" button
+    
+  If PRO:
+    "Zarządzaj subskrypcją" button → POST /api/billing/plan/portal → redirect to Stripe portal
+    (this handles cancellation, payment method update, invoice history)
+    
+  If CANCEL_SCHEDULED:
+    Banner: "Twój plan PRO jest aktywny do [cancelAt date]. Po tej dacie wrócisz do planu darmowego."
+    CTA: "Przywróć subskrypcję" → portal
+    
+  If PAST_DUE:
+    Warning banner: "Płatność nie powiodła się. Zaktualizuj metodę płatności aby zachować plan PRO."
+    CTA: "Zaktualizuj płatność" → portal
+5. Post-checkout pages
+/plan/success:
+Icon:         Green checkmark (--mint-500)
+Title:        "Witaj w PRO!"
+Subtitle:     "Twój plan został aktywowany. Korzystaj bez ograniczeń."
+CTA:          "Przejdź do zleceń" → dashboard
+
+Note: Poll GET /api/billing/plan every 2 seconds until planCode === "PRO". 
+Show a subtle spinner with "Aktywujemy Twój plan..." until confirmed.
+Timeout after 30 seconds with: "Trwa przetwarzanie. Odśwież za chwilę."
+/plan/cancel:
+Title:        "Płatność anulowana"
+Subtitle:     "Nic nie zostało pobrane. Możesz wrócić do upgrade w dowolnym momencie."
+CTA:          "Wróć do panelu" → dashboard
+
+Where NOT to show upgrade prompts
+
+Never during the first order creation flow. Let them experience the product first.
+Never on the login/register screen.
+Never as a popup on page load. Only trigger on user action (hitting a limit) or as a passive element (banner, settings page).
+
+
+Pricing page updates (landing /cennik)
+Your existing pricing section on the landing page already shows Free vs Premium. Update the Premium card price to match the API: show "29 zł / miesiąc" as the monthly option. The "Zacznij za darmo" button goes to registration. The "Wybierz Premium" button should go to registration first (if not logged in) then redirect to /plan where they can upgrade.
+
+
+
+PRO Plan — Backend API Summary for Frontend                                                                                            
+                                                                                                                                         
+  Endpoints                                                                                                                              
+                                                                                                                                         
+  See billing-openapi.yml for full schemas.                                                                                              
+                                                                                                                                         
+  GET /api/billing/plan — Returns current plan info for the logged-in user.
+  - Response: { planCode: "FREE"|"PRO", status: "ACTIVE"|"PENDING_PAYMENT"|"PAST_DUE"|"CANCEL_SCHEDULED"|"CANCELLED", billingInterval?:
+  "MONTHLY"|"ANNUAL", cancelAt?: "ISO timestamp" }
+  - billingInterval and cancelAt are only present when relevant (Jackson omits nulls)
+
+  POST /api/billing/plan/upgrade — Initiates PRO upgrade.
+  - Body: { "billingInterval": "MONTHLY" | "ANNUAL" }
+  - Returns { checkoutUrl: "https://checkout.stripe.com/..." }
+  - Redirect the user to checkoutUrl. Stripe handles the rest.
+  - After payment, Stripe redirects to {APP_URL}/plan/success?session_id=...
+  - If user cancels, Stripe redirects to {APP_URL}/plan/cancel
+
+  POST /api/billing/plan/portal — Gets Stripe Customer Portal URL (manage subscription, cancel, update payment method).
+  - No request body
+  - Returns { portalUrl: "https://billing.stripe.com/..." }
+  - Only works for users who have/had a Stripe subscription (returns 404 otherwise)
+  - Portal returns to {APP_URL}/plan
+
+  Key behaviors
+
+  - All endpoints require ROLE_USER auth. 409 if already PRO or upgrade in progress. 404 if no subscription record.
+  - After successful checkout, plan won't flip to PRO instantly — there's a brief webhook delay (seconds). Poll GET /plan or show a
+  "processing" state until planCode becomes PRO.
+  - CANCEL_SCHEDULED means user cancelled but still has access until cancelAt. They can re-subscribe via portal.
+  - PAST_DUE means payment failed — user gets FREE entitlements immediately.
+
+  Routes you'll need
+
+  - /plan — plan overview (call GET /api/billing/plan)
+  - /plan/success — post-checkout landing page
+  - /plan/cancel — checkout-cancelled landing page

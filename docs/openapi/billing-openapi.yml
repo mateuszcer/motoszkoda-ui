@@ -1,0 +1,274 @@
+openapi: 3.0.3
+info:
+  title: MotoSzkoda Billing API
+  description: User plan management - PRO upgrades, plan info, and Stripe integration
+  version: 1.0.0
+
+paths:
+  /api/billing/plans:
+    get:
+      summary: Get plan catalog
+      description: Public endpoint returning all available user plans with pricing and entitlements. No authentication required.
+      operationId: getPlanCatalog
+      tags: [Billing]
+      responses:
+        '200':
+          description: Plan catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPlanCatalog'
+
+  /api/billing/plan:
+    get:
+      summary: Get current plan info
+      operationId: getPlan
+      tags: [Billing]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current plan information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPlanInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/billing/plan/upgrade:
+    post:
+      summary: Initiate PRO upgrade
+      description: Creates a Stripe Checkout Session and returns the checkout URL. Email is resolved server-side.
+      operationId: upgrade
+      tags: [Billing]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpgradeRequest'
+      responses:
+        '200':
+          description: Checkout session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpgradeResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Upgrade not allowed (already PRO, pending payment, or upgrade in progress)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/billing/plan/portal:
+    post:
+      summary: Get Stripe Customer Portal URL
+      description: Creates a Stripe Customer Portal session. No request body — return URL is server-configured.
+      operationId: portal
+      tags: [Billing]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Portal session URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortalResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/webhook/stripe:
+    post:
+      summary: Stripe webhook endpoint
+      description: |
+        Receives Stripe webhook events for user plan billing.
+        No authentication required — verified via Stripe signature.
+        Events handled: checkout.session.completed, invoice.paid,
+        invoice.payment_failed, customer.subscription.updated,
+        customer.subscription.deleted.
+      operationId: handleStripeWebhook
+      tags: [Billing Webhooks]
+      parameters:
+        - name: Stripe-Signature
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Event processed or duplicate skipped
+        '400':
+          description: Invalid payload or signature
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserPlanCatalog:
+      type: object
+      required: [currency, plans]
+      properties:
+        currency:
+          type: string
+          example: PLN
+        plans:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserPlanOption'
+
+    UserPlanOption:
+      type: object
+      required: [code, nameKey, prices, entitlements]
+      properties:
+        code:
+          type: string
+          enum: [FREE, PRO]
+        nameKey:
+          type: string
+          example: plan.pro.name
+        prices:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanPrice'
+        entitlements:
+          $ref: '#/components/schemas/Entitlements'
+
+    PlanPrice:
+      type: object
+      required: [billingInterval, price]
+      properties:
+        billingInterval:
+          type: string
+          enum: [MONTHLY, ANNUAL]
+        price:
+          type: integer
+          description: Price in minor currency units (grosze for PLN)
+          example: 2000
+
+    Entitlements:
+      type: object
+      required: [maxRepairRequestsPerDay, maxOpenRepairRequests, maxQuestionsPerRepairRequest]
+      properties:
+        maxRepairRequestsPerDay:
+          type: integer
+          example: 15
+        maxOpenRepairRequests:
+          type: integer
+          example: 5
+        maxQuestionsPerRepairRequest:
+          type: integer
+          example: 20
+
+    UserPlanInfo:
+      type: object
+      required: [planCode, status]
+      properties:
+        planCode:
+          type: string
+          enum: [FREE, PRO]
+        status:
+          type: string
+          enum: [ACTIVE, PENDING_PAYMENT, PAST_DUE, CANCEL_SCHEDULED, CANCELLED]
+        billingInterval:
+          type: string
+          enum: [MONTHLY, ANNUAL]
+          description: Present only for PRO plans
+        cancelAt:
+          type: string
+          format: date-time
+          description: Present only when status is CANCEL_SCHEDULED
+
+    UpgradeRequest:
+      type: object
+      required: [billingInterval]
+      properties:
+        billingInterval:
+          type: string
+          enum: [MONTHLY, ANNUAL]
+
+    UpgradeResponse:
+      type: object
+      required: [checkoutUrl]
+      properties:
+        checkoutUrl:
+          type: string
+          description: Stripe Checkout page URL to redirect the user to
+
+    PortalResponse:
+      type: object
+      required: [portalUrl]
+      properties:
+        portalUrl:
+          type: string
+          description: Stripe Customer Portal URL
+
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+        correlationId:
+          type: string
+          format: uuid
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Access denied (requires ROLE_USER)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
