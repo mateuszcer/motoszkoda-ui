@@ -44,7 +44,7 @@ export function PlanView({ planInfo, requests, onUpgrade, onManageSubscription, 
       {/* Warning banners */}
       {isCancelScheduled && planInfo?.cancelAt ? (
         <div className="plan-warning-banner">
-          <p>{t('plan.cancelAtNotice', { date: planInfo.cancelAt })}</p>
+          <p>{t('plan.cancelAtNotice', { date: new Date(planInfo.cancelAt).toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' }) })}</p>
           <button className="btn btn-primary btn-sm" onClick={onManageSubscription}>
             {t('plan.restoreSubscription')}
           </button>
