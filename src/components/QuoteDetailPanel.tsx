@@ -11,9 +11,7 @@ export function QuoteDetailPanel({ shop, onClose }: QuoteDetailPanelProps) {
   const { t, i18n } = useTranslation()
   const locale = i18n.language
   const quote = shop.quote
-  const lineItems = quote?.lineItems?.length
-    ? [...quote.lineItems].sort((a, b) => a.position - b.position)
-    : null
+  const lineItems = quote?.lineItems?.length ? [...quote.lineItems].sort((a, b) => a.position - b.position) : null
 
   return (
     <aside className="thread-panel-backdrop" role="presentation" onClick={onClose}>
@@ -31,8 +29,18 @@ export function QuoteDetailPanel({ shop, onClose }: QuoteDetailPanelProps) {
             <small>{t('detail.kmAway', { distance: shop.distanceKm.toFixed(1) })}</small>
           </div>
           <button className="btn btn-ghost" onClick={onClose}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </header>
@@ -46,18 +54,28 @@ export function QuoteDetailPanel({ shop, onClose }: QuoteDetailPanelProps) {
                     <span>{li.description}</span>
                     <span>{formatLineItemRange(li, locale)}</span>
                   </div>
-                  {(li.workPriceMinPln != null || li.partsPriceMinPln != null) ? (
+                  {li.workPriceMinPln != null || li.partsPriceMinPln != null ? (
                     <div className="quote-line-item-subs">
                       {li.workPriceMinPln != null ? (
                         <div className="quote-line-item-sub">
                           <span>{t('quoteDetail.labor')}</span>
-                          <span>{formatCurrencyPln(li.workPriceMinPln, locale)}{li.workPriceMaxPln != null && li.workPriceMaxPln !== li.workPriceMinPln ? ` – ${formatCurrencyPln(li.workPriceMaxPln, locale)}` : ''}</span>
+                          <span>
+                            {formatCurrencyPln(li.workPriceMinPln, locale)}
+                            {li.workPriceMaxPln != null && li.workPriceMaxPln !== li.workPriceMinPln
+                              ? ` – ${formatCurrencyPln(li.workPriceMaxPln, locale)}`
+                              : ''}
+                          </span>
                         </div>
                       ) : null}
                       {li.partsPriceMinPln != null ? (
                         <div className="quote-line-item-sub">
                           <span>{t('quoteDetail.parts')}</span>
-                          <span>{formatCurrencyPln(li.partsPriceMinPln, locale)}{li.partsPriceMaxPln != null && li.partsPriceMaxPln !== li.partsPriceMinPln ? ` – ${formatCurrencyPln(li.partsPriceMaxPln, locale)}` : ''}</span>
+                          <span>
+                            {formatCurrencyPln(li.partsPriceMinPln, locale)}
+                            {li.partsPriceMaxPln != null && li.partsPriceMaxPln !== li.partsPriceMinPln
+                              ? ` – ${formatCurrencyPln(li.partsPriceMaxPln, locale)}`
+                              : ''}
+                          </span>
                         </div>
                       ) : null}
                     </div>
@@ -72,9 +90,7 @@ export function QuoteDetailPanel({ shop, onClose }: QuoteDetailPanelProps) {
           {quote?.comment ? <p className="quote-detail-comment">{quote.comment}</p> : null}
 
           {quote?.durationDays ? (
-            <small className="quote-detail-duration">
-              {t('detail.durationDays', { count: quote.durationDays })}
-            </small>
+            <small className="quote-detail-duration">{t('detail.durationDays', { count: quote.durationDays })}</small>
           ) : null}
         </div>
 

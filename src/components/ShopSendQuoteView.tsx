@@ -79,7 +79,7 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
     let totalMax = 0
     for (const item of lineItems) {
       const min = parseFloat(item.priceMin) || 0
-      const max = item.priceMode === 'range' ? (parseFloat(item.priceMax) || min) : min
+      const max = item.priceMode === 'range' ? parseFloat(item.priceMax) || min : min
       totalMin += min
       totalMax += max
     }
@@ -200,7 +200,9 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
       <form className="quote-form" onSubmit={(e) => void handleSubmit(e)}>
         {errors.length > 0 ? (
           <div className="auth-error">
-            {errors.map((err, i) => <p key={i}>{err}</p>)}
+            {errors.map((err, i) => (
+              <p key={i}>{err}</p>
+            ))}
           </div>
         ) : null}
 
@@ -307,8 +309,18 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
                         onClick={() => removeLineItem(item.key)}
                         title={t('shopQuoteForm.removeItem')}
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M18 6L6 18" /><path d="M6 6l12 12" />
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M18 6L6 18" />
+                          <path d="M6 6l12 12" />
                         </svg>
                       </button>
                     ) : null}
@@ -331,7 +343,9 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
                   </div>
                   <div className="line-item-prices">
                     <label>
-                      {item.priceMode === 'range' ? t('shopQuoteForm.lineItemPriceMin') : t('shopQuoteForm.lineItemPrice')}
+                      {item.priceMode === 'range'
+                        ? t('shopQuoteForm.lineItemPriceMin')
+                        : t('shopQuoteForm.lineItemPrice')}
                       <div className="input-with-suffix">
                         <input
                           type="number"
@@ -364,11 +378,7 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
                 </div>
               ))}
 
-              <button
-                type="button"
-                className="line-items-toggle"
-                onClick={addLineItem}
-              >
+              <button type="button" className="line-items-toggle" onClick={addLineItem}>
                 {t('shopQuoteForm.addLineItem')}
               </button>
 
@@ -411,19 +421,11 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
         {/* Share phone toggle */}
         <div className="phone-share-row">
           <label className="toggle-label">
-            <input
-              type="checkbox"
-              checked={sharePhone}
-              onChange={(e) => setSharePhone(e.target.checked)}
-            />
+            <input type="checkbox" checked={sharePhone} onChange={(e) => setSharePhone(e.target.checked)} />
             {t('shopQuoteForm.sharePhoneLabel')}
           </label>
           {sharePhone ? (
-            <PhoneInput
-              value={phone}
-              onChange={setPhone}
-              placeholder={t('shopQuoteForm.phonePlaceholder')}
-            />
+            <PhoneInput value={phone} onChange={setPhone} placeholder={t('shopQuoteForm.phonePlaceholder')} />
           ) : null}
         </div>
 

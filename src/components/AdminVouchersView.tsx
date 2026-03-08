@@ -57,10 +57,7 @@ export function AdminVouchersView({ onLogout }: AdminVouchersViewProps) {
     try {
       const result = await createVoucher(code)
       setSuccess(t('admin.voucherCreated'))
-      setRecentVouchers((prev) => [
-        { id: result.id, code: result.code, createdAt: new Date().toISOString() },
-        ...prev,
-      ])
+      setRecentVouchers((prev) => [{ id: result.id, code: result.code, createdAt: new Date().toISOString() }, ...prev])
       setCode('')
     } catch (err) {
       if (err instanceof ApiError) {
@@ -113,11 +110,7 @@ export function AdminVouchersView({ onLogout }: AdminVouchersViewProps) {
               placeholder={t('admin.voucherCodePlaceholder')}
               maxLength={30}
             />
-            <button
-              className="btn btn-ghost"
-              type="button"
-              onClick={handleGenerateRandom}
-            >
+            <button className="btn btn-ghost" type="button" onClick={handleGenerateRandom}>
               {t('admin.generateRandom')}
             </button>
           </div>
@@ -139,11 +132,7 @@ export function AdminVouchersView({ onLogout }: AdminVouchersViewProps) {
             {recentVouchers.map((v) => (
               <li className="admin-voucher-item" key={v.id}>
                 <code className="admin-voucher-code">{v.code}</code>
-                <button
-                  className="btn btn-ghost btn-sm"
-                  type="button"
-                  onClick={() => void handleCopy(v.code)}
-                >
+                <button className="btn btn-ghost btn-sm" type="button" onClick={() => void handleCopy(v.code)}>
                   {copied === v.code ? '✓' : t('admin.copy')}
                 </button>
               </li>

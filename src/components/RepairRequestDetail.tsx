@@ -114,15 +114,15 @@ export function RepairRequestDetail({
       setAttachmentUrls((prev) => ({ ...prev, ...urls }))
     })
 
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [request.issue.attachments])
 
   const isReadOnly = request.status === 'closed'
 
   const displayedQuotes = useMemo(() => {
-    const filtered = interestedOnly
-      ? request.shopQuotes.filter((quote) => quote.interested)
-      : request.shopQuotes
+    const filtered = interestedOnly ? request.shopQuotes.filter((quote) => quote.interested) : request.shopQuotes
 
     return sortQuotes(filtered, sortBy)
   }, [interestedOnly, request.shopQuotes, sortBy])
@@ -166,7 +166,9 @@ export function RepairRequestDetail({
       .map((shop) => {
         const thread = request.threads[shop.shopId]
         const lastMessage = thread?.messages[thread.messages.length - 1]
-        const needsReply = shop.state === 'question_sent' && (!thread || thread.messages.length === 0 || thread.messages[thread.messages.length - 1].author === 'shop')
+        const needsReply =
+          shop.state === 'question_sent' &&
+          (!thread || thread.messages.length === 0 || thread.messages[thread.messages.length - 1].author === 'shop')
         return {
           shop,
           unreadCount: thread?.unreadCount ?? 0,
@@ -231,12 +233,25 @@ export function RepairRequestDetail({
   return (
     <section className="screen request-detail-screen">
       {/* Collapsible request summary */}
-      <header className="request-header" style={summaryCollapsed ? { padding: 'var(--space-3) var(--space-5)' } : undefined}>
+      <header
+        className="request-header"
+        style={summaryCollapsed ? { padding: 'var(--space-3) var(--space-5)' } : undefined}
+      >
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center', marginBottom: 'var(--space-1)' }}>
             <button className="btn btn-ghost" onClick={onBackHome} style={{ padding: 'var(--space-1) var(--space-2)' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M19 12H5" />
+                <path d="M12 19l-7-7 7-7" />
               </svg>
             </button>
             <span className={`pill pill-${request.status}`}>{t(`status.${request.status}`)}</span>
@@ -253,15 +268,27 @@ export function RepairRequestDetail({
                     const url = att.previewUrl ?? attachmentUrls[att.id]
                     const loaded = loadedImages[att.id]
                     return (
-                      <div className={`attachment-thumb${!loaded ? ' loading' : ''}`} key={att.id} onClick={() => url && loaded && setLightboxImg({ src: url, alt: att.name })}>
-                        {url ? <img src={url} alt={att.name} style={loaded ? undefined : { display: 'none' }} onLoad={() => setLoadedImages(prev => ({ ...prev, [att.id]: true }))} /> : null}
+                      <div
+                        className={`attachment-thumb${!loaded ? ' loading' : ''}`}
+                        key={att.id}
+                        onClick={() => url && loaded && setLightboxImg({ src: url, alt: att.name })}
+                      >
+                        {url ? (
+                          <img
+                            src={url}
+                            alt={att.name}
+                            style={loaded ? undefined : { display: 'none' }}
+                            onLoad={() => setLoadedImages((prev) => ({ ...prev, [att.id]: true }))}
+                          />
+                        ) : null}
                       </div>
                     )
                   })}
                 </div>
               ) : null}
               <small>
-                {t('detail.radiusUpdated', { radius: request.location.radiusKm })} &middot; {t('detail.updated', { date: formatDateTime(request.updatedAt, i18n.language) })}
+                {t('detail.radiusUpdated', { radius: request.location.radiusKm })} &middot;{' '}
+                {t('detail.updated', { date: formatDateTime(request.updatedAt, i18n.language) })}
               </small>
             </>
           ) : (
@@ -343,12 +370,11 @@ export function RepairRequestDetail({
           </div>
 
           <div className="cards-stack">
-            {displayedQuotes.length === 0 ? (
-              <article className="empty-state">{t('detail.noShops')}</article>
-            ) : null}
+            {displayedQuotes.length === 0 ? <article className="empty-state">{t('detail.noShops')}</article> : null}
 
             {displayedQuotes.map((shop) => {
-              const expanded = expandedShops[shop.shopId] ?? (shop.state === 'quote_sent' || shop.state === 'question_sent')
+              const expanded =
+                expandedShops[shop.shopId] ?? (shop.state === 'quote_sent' || shop.state === 'question_sent')
               const thread = request.threads[shop.shopId]
               const isBusy = pendingShopAction === shop.shopId
 
@@ -358,11 +384,15 @@ export function RepairRequestDetail({
                     <div>
                       <h3>{shop.shopName}</h3>
                       <small>{t('detail.kmAway', { distance: shop.distanceKm.toFixed(1) })}</small>
-                      <small className="shop-card-timestamp">{t('detail.receivedAt', { date: formatDateTime(shop.lastUpdatedAt, i18n.language) })}</small>
+                      <small className="shop-card-timestamp">
+                        {t('detail.receivedAt', { date: formatDateTime(shop.lastUpdatedAt, i18n.language) })}
+                      </small>
                     </div>
                     <div className="shop-card-badges">
                       <span className={`pill state-${shop.state}`}>{t(`quoteState.${shop.state}`)}</span>
-                      {shop.interested ? <span className="pill pill-interested">{t('detail.filterInterested')}</span> : null}
+                      {shop.interested ? (
+                        <span className="pill pill-interested">{t('detail.filterInterested')}</span>
+                      ) : null}
                       {shop.ignored ? <span className="pill pill-muted">{t('detail.ignored')}</span> : null}
                       <button
                         className="btn btn-ghost"
@@ -413,10 +443,24 @@ export function RepairRequestDetail({
                             role="button"
                             tabIndex={0}
                             onClick={() => setQuoteDetailShop(shop)}
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setQuoteDetailShop(shop) }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') setQuoteDetailShop(shop)
+                            }}
                           >
                             {formatQuoteRange(shop.quote, i18n.language)}
-                            <svg className="quote-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                            <svg
+                              className="quote-chevron"
+                              width="14"
+                              height="14"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M9 18l6-6-6-6" />
+                            </svg>
                           </strong>
                           {shop.quote.comment ? <p>{shop.quote.comment}</p> : null}
                           <div className="quote-meta">
@@ -424,7 +468,9 @@ export function RepairRequestDetail({
                               <small>{t('detail.durationDays', { count: shop.quote.durationDays })}</small>
                             ) : null}
                             {shop.quote.validUntil ? (
-                              <small>{t('detail.validUntil', { date: formatDateTime(shop.quote.validUntil, i18n.language) })}</small>
+                              <small>
+                                {t('detail.validUntil', { date: formatDateTime(shop.quote.validUntil, i18n.language) })}
+                              </small>
                             ) : null}
                           </div>
                           {shop.quote.lineItems && shop.quote.lineItems.length > 0 ? (
@@ -475,7 +521,16 @@ export function RepairRequestDetail({
                                     }}
                                     title={t('detail.copyPhone')}
                                   >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg
+                                      width="16"
+                                      height="16"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="1.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
                                       {copiedPhone === shop.shopId ? (
                                         <path d="M20 6L9 17l-5-5" />
                                       ) : (
@@ -492,7 +547,16 @@ export function RepairRequestDetail({
                                     className="btn btn-primary btn-call"
                                     onClick={() => setRevealedPhones((prev) => ({ ...prev, [shop.shopId]: true }))}
                                   >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg
+                                      width="16"
+                                      height="16"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="1.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
                                       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
                                     </svg>
                                     {t('detail.showPhone')}
@@ -531,8 +595,19 @@ export function RepairRequestDetail({
         <div className="cards-stack">
           {unansweredCount > 0 ? (
             <div className="qna-urgency-banner">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
               {t('detail.unansweredBanner')}
             </div>
@@ -558,7 +633,9 @@ export function RepairRequestDetail({
                 <p>{row.preview}</p>
               </div>
               <div className="thread-row-actions">
-                {row.needsReply ? <span className="pill pill-pending-question">{t('detail.pendingQuestion')}</span> : null}
+                {row.needsReply ? (
+                  <span className="pill pill-pending-question">{t('detail.pendingQuestion')}</span>
+                ) : null}
                 {row.unreadCount > 0 ? <span className="pill pill-alert">{row.unreadCount}</span> : null}
               </div>
             </article>
@@ -603,12 +680,7 @@ export function RepairRequestDetail({
         />
       ) : null}
 
-      {quoteDetailShop ? (
-        <QuoteDetailPanel
-          shop={quoteDetailShop}
-          onClose={() => setQuoteDetailShop(null)}
-        />
-      ) : null}
+      {quoteDetailShop ? <QuoteDetailPanel shop={quoteDetailShop} onClose={() => setQuoteDetailShop(null)} /> : null}
 
       {lightboxImg ? (
         <ImageLightbox src={lightboxImg.src} alt={lightboxImg.alt} onClose={() => setLightboxImg(null)} />

@@ -65,12 +65,7 @@ const q = (
   ...overrides,
 })
 
-const t = (
-  shopId: string,
-  shopName: string,
-  unreadCount: number,
-  messages: ThreadMessage[],
-): ShopThread => ({
+const t = (shopId: string, shopName: string, unreadCount: number, messages: ThreadMessage[]): ShopThread => ({
   shopId,
   shopName,
   unreadCount,
@@ -94,8 +89,7 @@ export const initialMockRequests: RepairRequest[] = [
       mileageKm: 112000,
     },
     issue: {
-      description:
-        'Szlifujący dźwięk z przednich hamulców i wibracje przy zwalnianiu z prędkości autostradowej.',
+      description: 'Szlifujący dźwięk z przednich hamulców i wibracje przy zwalnianiu z prędkości autostradowej.',
       tags: ['brakes', 'suspension'],
       attachments: [],
     },
@@ -140,11 +134,7 @@ export const initialMockRequests: RepairRequest[] = [
         ),
       ]),
       shop_4: t('shop_4', 'FixPoint Auto', 0, [
-        createMessage(
-          'shop',
-          'Możemy umówić wizytę na jutro rano. Proszę dać znać, czy to odpowiada.',
-          minutesAgo(5),
-        ),
+        createMessage('shop', 'Możemy umówić wizytę na jutro rano. Proszę dać znać, czy to odpowiada.', minutesAgo(5)),
       ]),
     },
   },
@@ -164,8 +154,7 @@ export const initialMockRequests: RepairRequest[] = [
       mileageKm: 134000,
     },
     issue: {
-      description:
-        'Klimatyzacja nie chłodzi, po uruchomieniu słychać syczący dźwięk.',
+      description: 'Klimatyzacja nie chłodzi, po uruchomieniu słychać syczący dźwięk.',
       tags: ['air conditioning', 'engine'],
       attachments: [],
     },
@@ -199,9 +188,7 @@ export const deepCloneRequests = (requests: RepairRequest[]): RepairRequest[] =>
   return JSON.parse(JSON.stringify(requests)) as RepairRequest[]
 }
 
-export const createRequestFromPayload = (
-  payload: CreateRepairRequestPayload,
-): RepairRequest => {
+export const createRequestFromPayload = (payload: CreateRepairRequestPayload): RepairRequest => {
   const createdAt = new Date().toISOString()
 
   return {
@@ -227,10 +214,7 @@ export const createRequestFromPayload = (
   }
 }
 
-export const createDriverMessage = (
-  text: string,
-  attachments: Attachment[],
-): ThreadMessage => ({
+export const createDriverMessage = (text: string, attachments: Attachment[]): ThreadMessage => ({
   id: nextId('msg'),
   author: 'driver',
   text,

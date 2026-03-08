@@ -15,12 +15,32 @@ interface UpgradeLimitModalProps {
 }
 
 const LIMIT_KEYS: Record<LimitType, { title: string; message: string; entitlementKey: keyof Entitlements }> = {
-  open_orders: { title: 'plan.limitOpenTitle', message: 'plan.limitOpenMessage', entitlementKey: 'maxOpenRepairRequests' },
-  daily_orders: { title: 'plan.limitDailyTitle', message: 'plan.limitDailyMessage', entitlementKey: 'maxRepairRequestsPerDay' },
-  questions: { title: 'plan.limitQuestionsTitle', message: 'plan.limitQuestionsMessage', entitlementKey: 'maxQuestionsPerRepairRequest' },
+  open_orders: {
+    title: 'plan.limitOpenTitle',
+    message: 'plan.limitOpenMessage',
+    entitlementKey: 'maxOpenRepairRequests',
+  },
+  daily_orders: {
+    title: 'plan.limitDailyTitle',
+    message: 'plan.limitDailyMessage',
+    entitlementKey: 'maxRepairRequestsPerDay',
+  },
+  questions: {
+    title: 'plan.limitQuestionsTitle',
+    message: 'plan.limitQuestionsMessage',
+    entitlementKey: 'maxQuestionsPerRepairRequest',
+  },
 }
 
-export function UpgradeLimitModal({ limitType, onUpgrade, onDismiss, loading, freeEntitlements, proPriceMonthly, currency }: UpgradeLimitModalProps) {
+export function UpgradeLimitModal({
+  limitType,
+  onUpgrade,
+  onDismiss,
+  loading,
+  freeEntitlements,
+  proPriceMonthly,
+  currency,
+}: UpgradeLimitModalProps) {
   const { t, i18n } = useTranslation()
   const { title, message, entitlementKey } = LIMIT_KEYS[limitType]
   const max = freeEntitlements[entitlementKey]

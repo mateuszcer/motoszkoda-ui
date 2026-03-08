@@ -47,72 +47,93 @@ export function useShopPortal(userId: string | null) {
     }
   }, [shopProfile?.shopId])
 
-  const openShopRequestDetail = useCallback(async (requestId: string) => {
-    setShopLoading(true)
-    setShopError(null)
-    try {
-      const [request, ownResponse] = await Promise.all([
-        shopApi.fetchRequestDetail(requestId),
-        shopApi.fetchOwnResponse(requestId),
-      ])
-      setShopSelectedRequest(request)
-      setShopOwnResponse(ownResponse)
+  const openShopRequestDetail = useCallback(
+    async (requestId: string) => {
+      setShopLoading(true)
+      setShopError(null)
+      try {
+        const [request, ownResponse] = await Promise.all([
+          shopApi.fetchRequestDetail(requestId),
+          shopApi.fetchOwnResponse(requestId),
+        ])
+        setShopSelectedRequest(request)
+        setShopOwnResponse(ownResponse)
 
-      // Load messages — shop endpoint derives shopId from JWT
-      if (userId) {
-        try {
-          const msgs = await shopApi.fetchMessages(requestId, userId)
-          setShopMessages(msgs)
-        } catch {
+        // Load messages — shop endpoint derives shopId from JWT
+        if (userId) {
+          try {
+            const msgs = await shopApi.fetchMessages(requestId, userId)
+            setShopMessages(msgs)
+          } catch {
+            setShopMessages([])
+          }
+        } else {
           setShopMessages([])
         }
-      } else {
-        setShopMessages([])
+      } catch {
+        setShopError('app.loadError')
+      } finally {
+        setShopLoading(false)
       }
-    } catch {
-      setShopError('app.loadError')
-    } finally {
-      setShopLoading(false)
-    }
-  }, [userId])
+    },
+    [userId],
+  )
 
-  const handleShopAcknowledge = useCallback(async (requestId: string) => {
-    await shopApi.acknowledge(requestId)
-    await loadShopQueue()
-  }, [loadShopQueue])
+  const handleShopAcknowledge = useCallback(
+    async (requestId: string) => {
+      await shopApi.acknowledge(requestId)
+      await loadShopQueue()
+    },
+    [loadShopQueue],
+  )
 
-  const handleShopDecline = useCallback(async (requestId: string) => {
-    await shopApi.decline(requestId)
-    await loadShopQueue()
-  }, [loadShopQueue])
+  const handleShopDecline = useCallback(
+    async (requestId: string) => {
+      await shopApi.decline(requestId)
+      await loadShopQueue()
+    },
+    [loadShopQueue],
+  )
 
-  const handleSubmitQuote = useCallback(async (requestId: string, payload: SubmitQuotePayload, phone?: string) => {
-    await shopApi.submitQuote(requestId, payload)
-    if (phone) {
-      await shopApi.sharePhone(requestId, { phone } satisfies SharePhonePayload)
-    }
-    await openShopRequestDetail(requestId)
-  }, [openShopRequestDetail])
+  const handleSubmitQuote = useCallback(
+    async (requestId: string, payload: SubmitQuotePayload, phone?: string) => {
+      await shopApi.submitQuote(requestId, payload)
+      if (phone) {
+        await shopApi.sharePhone(requestId, { phone } satisfies SharePhonePayload)
+      }
+      await openShopRequestDetail(requestId)
+    },
+    [openShopRequestDetail],
+  )
 
-  const handleSharePhone = useCallback(async (requestId: string, phone: string) => {
-    await shopApi.sharePhone(requestId, { phone })
-    await openShopRequestDetail(requestId)
-  }, [openShopRequestDetail])
+  const handleSharePhone = useCallback(
+    async (requestId: string, phone: string) => {
+      await shopApi.sharePhone(requestId, { phone })
+      await openShopRequestDetail(requestId)
+    },
+    [openShopRequestDetail],
+  )
 
-  const handleShopAskQuestion = useCallback(async (requestId: string, text: string) => {
-    await shopApi.sendQuestion(requestId, text)
-    if (userId) {
+  const handleShopAskQuestion = useCallback(
+    async (requestId: string, text: string) => {
+      await shopApi.sendQuestion(requestId, text)
+      if (userId) {
+        const msgs = await shopApi.fetchMessages(requestId, userId)
+        setShopMessages(msgs)
+      }
+    },
+    [userId],
+  )
+
+  const handleShopSendMessage = useCallback(
+    async (requestId: string, text: string) => {
+      if (!userId) return
+      await shopApi.sendQuestion(requestId, text)
       const msgs = await shopApi.fetchMessages(requestId, userId)
       setShopMessages(msgs)
-    }
-  }, [userId])
-
-  const handleShopSendMessage = useCallback(async (requestId: string, text: string) => {
-    if (!userId) return
-    await shopApi.sendQuestion(requestId, text)
-    const msgs = await shopApi.fetchMessages(requestId, userId)
-    setShopMessages(msgs)
-  }, [userId])
+    },
+    [userId],
+  )
 
   const loadShopProfile = useCallback(async () => {
     try {

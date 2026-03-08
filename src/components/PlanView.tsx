@@ -17,7 +17,18 @@ interface PlanViewProps {
   currency: string
 }
 
-export function PlanView({ planInfo, requests, onUpgrade, onManageSubscription, onBack, upgradeLoading, freeEntitlements, proPriceMonthly, proPriceAnnual, currency }: PlanViewProps) {
+export function PlanView({
+  planInfo,
+  requests,
+  onUpgrade,
+  onManageSubscription,
+  onBack,
+  upgradeLoading,
+  freeEntitlements,
+  proPriceMonthly,
+  proPriceAnnual,
+  currency,
+}: PlanViewProps) {
   const { t, i18n } = useTranslation()
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('MONTHLY')
 
@@ -44,7 +55,15 @@ export function PlanView({ planInfo, requests, onUpgrade, onManageSubscription, 
       {/* Warning banners */}
       {isCancelScheduled && planInfo?.cancelAt ? (
         <div className="plan-warning-banner">
-          <p>{t('plan.cancelAtNotice', { date: new Date(planInfo.cancelAt).toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' }) })}</p>
+          <p>
+            {t('plan.cancelAtNotice', {
+              date: new Date(planInfo.cancelAt).toLocaleDateString(i18n.language, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }),
+            })}
+          </p>
           <button className="btn btn-primary btn-sm" onClick={onManageSubscription}>
             {t('plan.restoreSubscription')}
           </button>
@@ -71,11 +90,19 @@ export function PlanView({ planInfo, requests, onUpgrade, onManageSubscription, 
         <div className="plan-stats">
           <div className="plan-stat-row">
             <span>{t('plan.openOrders')}</span>
-            <span>{isFree ? t('plan.usageOf', { used: openCount, max: freeEntitlements.maxOpenRepairRequests }) : t('plan.unlimited')}</span>
+            <span>
+              {isFree
+                ? t('plan.usageOf', { used: openCount, max: freeEntitlements.maxOpenRepairRequests })
+                : t('plan.unlimited')}
+            </span>
           </div>
           <div className="plan-stat-row">
             <span>{t('plan.dailyOrders')}</span>
-            <span>{isFree ? t('plan.usageOf', { used: dailyCount, max: freeEntitlements.maxRepairRequestsPerDay }) : t('plan.unlimited')}</span>
+            <span>
+              {isFree
+                ? t('plan.usageOf', { used: dailyCount, max: freeEntitlements.maxRepairRequestsPerDay })
+                : t('plan.unlimited')}
+            </span>
           </div>
           <div className="plan-stat-row">
             <span>{t('plan.questionsPerOrder')}</span>

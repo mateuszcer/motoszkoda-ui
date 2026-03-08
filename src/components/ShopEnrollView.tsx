@@ -151,11 +151,7 @@ export function ShopEnrollView({
 
         {error ? <div className="auth-error">{error}</div> : null}
 
-        {isSuspended ? (
-          <p className="enroll-support-msg">
-            {t('shopEnroll.contactSupport')}
-          </p>
-        ) : null}
+        {isSuspended ? <p className="enroll-support-msg">{t('shopEnroll.contactSupport')}</p> : null}
 
         {!isSuspended && !isActive ? (
           <>
@@ -166,11 +162,7 @@ export function ShopEnrollView({
                 ) : (
                   <>
                     <div className="auth-error">{t('shopEnroll.activationTimeout')}</div>
-                    <button
-                      className="btn btn-primary btn-lg auth-submit"
-                      type="button"
-                      onClick={handleRetryPolling}
-                    >
+                    <button className="btn btn-primary btn-lg auth-submit" type="button" onClick={handleRetryPolling}>
                       {t('shopEnroll.retryActivation')}
                     </button>
                   </>
@@ -196,17 +188,17 @@ export function ShopEnrollView({
                           className={`enroll-billing-btn${billingInterval === 'ANNUAL' ? ' enroll-billing-btn--active' : ''}`}
                           onClick={() => setBillingInterval('ANNUAL')}
                         >
-                          {t('shopEnroll.annual')}
-                          {' '}
-                          <span className="enroll-save-pill">{t('shopEnroll.savePercent', { percent: savePercent })}</span>
+                          {t('shopEnroll.annual')}{' '}
+                          <span className="enroll-save-pill">
+                            {t('shopEnroll.savePercent', { percent: savePercent })}
+                          </span>
                         </button>
                       </div>
 
                       <div className="enroll-price">
                         {billingInterval === 'ANNUAL' ? (
                           <>
-                            <span className="enroll-price-original">{priceOriginalAnnualLabel}</span>
-                            {' '}
+                            <span className="enroll-price-original">{priceOriginalAnnualLabel}</span>{' '}
                             <strong>{priceAnnualLabel}</strong>
                           </>
                         ) : (
@@ -217,10 +209,7 @@ export function ShopEnrollView({
                   ) : null}
 
                   {paymentStep === 'ready' && clientSecret ? (
-                    <StripePaymentForm
-                      clientSecret={clientSecret}
-                      onSuccess={handlePaymentSuccess}
-                    />
+                    <StripePaymentForm clientSecret={clientSecret} onSuccess={handlePaymentSuccess} />
                   ) : (
                     <button
                       className="btn btn-primary btn-lg auth-submit"
@@ -240,11 +229,7 @@ export function ShopEnrollView({
                 {paymentStep === 'idle' ? (
                   <div className="enroll-voucher-toggle">
                     {!voucherOpen ? (
-                      <button
-                        type="button"
-                        className="enroll-voucher-link"
-                        onClick={() => setVoucherOpen(true)}
-                      >
+                      <button type="button" className="enroll-voucher-link" onClick={() => setVoucherOpen(true)}>
                         {t('shopEnroll.haveVoucher')}
                       </button>
                     ) : (
@@ -273,11 +258,7 @@ export function ShopEnrollView({
         ) : null}
 
         {isActive ? (
-          <button
-            className="btn btn-primary btn-lg auth-submit"
-            type="button"
-            onClick={() => void onStatusRefresh()}
-          >
+          <button className="btn btn-primary btn-lg auth-submit" type="button" onClick={() => void onStatusRefresh()}>
             {t('shopEnroll.continueToDashboard')}
           </button>
         ) : null}

@@ -42,11 +42,7 @@ function CheckoutForm({ onSuccess }: CheckoutFormProps) {
         <PaymentElement />
       </div>
       {error ? <div className="auth-error">{error}</div> : null}
-      <button
-        className="btn btn-primary btn-lg auth-submit"
-        type="submit"
-        disabled={submitting || !stripe}
-      >
+      <button className="btn btn-primary btn-lg auth-submit" type="submit" disabled={submitting || !stripe}>
         {submitting ? t('shopEnroll.processing') : t('shopEnroll.pay')}
       </button>
     </form>

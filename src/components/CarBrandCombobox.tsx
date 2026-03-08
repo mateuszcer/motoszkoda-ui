@@ -14,9 +14,7 @@ export function CarBrandCombobox({ value, onChange, placeholder = 'Audi' }: CarB
   const listRef = useRef<HTMLUListElement>(null)
 
   const query = value.toLowerCase()
-  const filtered = query
-    ? CAR_BRANDS.filter((b) => b.toLowerCase().includes(query))
-    : [...CAR_BRANDS]
+  const filtered = query ? CAR_BRANDS.filter((b) => b.toLowerCase().includes(query)) : [...CAR_BRANDS]
 
   const showList = open && filtered.length > 0 && value !== filtered[0]
 

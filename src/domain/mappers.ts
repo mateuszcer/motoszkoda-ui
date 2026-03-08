@@ -31,10 +31,7 @@ export function mapRequestStatus(status: string): RequestStatus {
   return 'closed' // CLOSED and EXPIRED both map to 'closed'
 }
 
-export function mapShopRequestStatus(
-  status: string | null,
-  lastMessageType: string | null,
-): QuoteState {
+export function mapShopRequestStatus(status: string | null, lastMessageType: string | null): QuoteState {
   switch (status) {
     case 'PENDING':
     case 'REQUEST_DELIVERED_TO_SHOP':
@@ -114,11 +111,7 @@ export function mapRepairRequest(
 
 // ── CompareViewResponse → ShopQuoteCard ──────────────────────────────
 
-export function mapCompareToShopQuote(
-  cv: CompareViewResponse,
-  interested: boolean,
-  ignored: boolean,
-): ShopQuoteCard {
+export function mapCompareToShopQuote(cv: CompareViewResponse, interested: boolean, ignored: boolean): ShopQuoteCard {
   let quote: QuoteOffer | undefined
   if (cv.quoteSummary) {
     const min = cv.quoteSummary.priceMinMinorUnits / 100
@@ -158,11 +151,7 @@ export function mapMessage(msg: MessageResponse, currentUserId: string): ThreadM
 
 // ── ThreadSummaryResponse + messages → ShopThread ────────────────────
 
-export function mapThread(
-  summary: ThreadSummaryResponse,
-  shopName: string,
-  messages: ThreadMessage[],
-): ShopThread {
+export function mapThread(summary: ThreadSummaryResponse, shopName: string, messages: ThreadMessage[]): ShopThread {
   return {
     shopId: summary.shopId,
     shopName,

@@ -67,8 +67,8 @@ export const formatMinorCurrency = (minorUnits: number, currency: string, locale
 }
 
 export const formatLineItemRange = (item: LineItem, locale: string): string => {
-  const min = item.totalPriceMinPln ?? ((item.workPriceMinPln ?? 0) + (item.partsPriceMinPln ?? 0))
-  const max = item.totalPriceMaxPln ?? ((item.workPriceMaxPln ?? 0) + (item.partsPriceMaxPln ?? 0))
+  const min = item.totalPriceMinPln ?? (item.workPriceMinPln ?? 0) + (item.partsPriceMinPln ?? 0)
+  const max = item.totalPriceMaxPln ?? (item.workPriceMaxPln ?? 0) + (item.partsPriceMaxPln ?? 0)
   const minStr = formatCurrencyPln(min, locale)
   if (max === min || max === 0) return minStr
   return `${minStr} – ${formatCurrencyPln(max, locale)}`

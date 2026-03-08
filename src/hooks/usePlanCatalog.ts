@@ -21,10 +21,7 @@ export function usePlanCatalog() {
 
   useEffect(() => {
     const load = async () => {
-      const [billing, enrollment] = await Promise.allSettled([
-        billingApi.getCatalog(),
-        enrollmentApi.getCatalog(),
-      ])
+      const [billing, enrollment] = await Promise.allSettled([billingApi.getCatalog(), enrollmentApi.getCatalog()])
       if (billing.status === 'fulfilled') setBillingCatalog(billing.value)
       if (enrollment.status === 'fulfilled') setEnrollmentCatalog(enrollment.value)
     }

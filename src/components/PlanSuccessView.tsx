@@ -60,26 +60,29 @@ export function PlanSuccessView({ onRefreshPlan, onContinue }: PlanSuccessViewPr
       ) : (
         <div className="plan-result">
           <p className="auth-error">{t('plan.successTimeout')}</p>
-          <button className="btn btn-primary" onClick={() => {
-            pollCountRef.current = 0
-            setStatus('polling')
-            pollRef.current = setInterval(() => {
-              pollCountRef.current += 1
-              if (pollCountRef.current > MAX_POLL_ATTEMPTS) {
-                if (pollRef.current) clearInterval(pollRef.current)
-                pollRef.current = null
-                setStatus('timeout')
-                return
-              }
-              void onRefreshPlan().then((info) => {
-                if (info && info.planCode === 'PRO') {
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              pollCountRef.current = 0
+              setStatus('polling')
+              pollRef.current = setInterval(() => {
+                pollCountRef.current += 1
+                if (pollCountRef.current > MAX_POLL_ATTEMPTS) {
                   if (pollRef.current) clearInterval(pollRef.current)
                   pollRef.current = null
-                  setStatus('success')
+                  setStatus('timeout')
+                  return
                 }
-              })
-            }, POLL_INTERVAL_MS)
-          }}>
+                void onRefreshPlan().then((info) => {
+                  if (info && info.planCode === 'PRO') {
+                    if (pollRef.current) clearInterval(pollRef.current)
+                    pollRef.current = null
+                    setStatus('success')
+                  }
+                })
+              }, POLL_INTERVAL_MS)
+            }}
+          >
             {t('shopEnroll.retryActivation')}
           </button>
         </div>

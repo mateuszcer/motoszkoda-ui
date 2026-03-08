@@ -73,7 +73,9 @@ export function ShopRequestDetailView({
       setAttachmentUrls((prev) => ({ ...prev, ...urls }))
     })
 
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [request.issue.attachments])
 
   useEffect(() => {
@@ -146,22 +148,20 @@ export function ShopRequestDetailView({
             <span>{formatDateTime(request.createdAt, i18n.language)}</span>
           </div>
         </div>
-        <span className={`pill pill-shop-${status === 'PENDING' ? 'new' : status === 'ACKNOWLEDGED' ? 'in_progress' : status === 'QUOTED' ? 'quoted' : 'declined'}`}>
+        <span
+          className={`pill pill-shop-${status === 'PENDING' ? 'new' : status === 'ACKNOWLEDGED' ? 'in_progress' : status === 'QUOTED' ? 'quoted' : 'declined'}`}
+        >
           {t(`shopRequestStatus.${status}`)}
         </span>
       </header>
 
       {/* System banner for closed/expired */}
-      {isClosed ? (
-        <div className="status-banner status-banner-warning">
-          {t('shopDetail.requestClosed')}
-        </div>
-      ) : null}
+      {isClosed ? <div className="status-banner status-banner-warning">{t('shopDetail.requestClosed')}</div> : null}
 
       {/* Action bar */}
       {!isClosed ? (
         <div className="shop-action-bar">
-          {(status === 'PENDING') ? (
+          {status === 'PENDING' ? (
             <>
               <button className="btn btn-primary" onClick={() => void handleAcknowledge()} disabled={ackLoading}>
                 {ackLoading ? t('shopDetail.acknowledging') : t('shopDetail.acknowledge')}
@@ -227,9 +227,7 @@ export function ShopRequestDetailView({
             </div>
           ) : null}
           {status === 'DECLINED' ? (
-            <div className="status-banner status-banner-muted">
-              {t('shopDetail.declinedLabel')}
-            </div>
+            <div className="status-banner status-banner-muted">{t('shopDetail.declinedLabel')}</div>
           ) : null}
         </div>
       ) : null}
@@ -263,7 +261,9 @@ export function ShopRequestDetailView({
               <h3>{t('shopDetail.categoriesTitle')}</h3>
               <div className="tags-inline">
                 {request.issue.tags.map((tag) => (
-                  <span className="pill pill-tag" key={tag}>{t(`tags.${tag}`, tag)}</span>
+                  <span className="pill pill-tag" key={tag}>
+                    {t(`tags.${tag}`, tag)}
+                  </span>
                 ))}
               </div>
             </div>
@@ -272,14 +272,42 @@ export function ShopRequestDetailView({
           <div className="detail-section">
             <h3>{t('shopDetail.carTitle')}</h3>
             <dl className="detail-grid">
-              <dt>{t('form.make')}</dt><dd>{request.car.make}</dd>
-              <dt>{t('form.model')}</dt><dd>{request.car.model}</dd>
-              <dt>{t('form.year')}</dt><dd>{request.car.year}</dd>
-              {request.car.variant ? <><dt>{t('form.variant')}</dt><dd>{request.car.variant}</dd></> : null}
-              {request.car.vin ? <><dt>{t('form.vin')}</dt><dd>{request.car.vin}</dd></> : null}
-              {request.car.engineType ? <><dt>{t('form.engineType')}</dt><dd>{request.car.engineType}</dd></> : null}
-              {request.car.fuelType ? <><dt>{t('form.fuelType')}</dt><dd>{request.car.fuelType}</dd></> : null}
-              {request.car.mileageKm ? <><dt>{t('form.mileageKm')}</dt><dd>{request.car.mileageKm.toLocaleString()} km</dd></> : null}
+              <dt>{t('form.make')}</dt>
+              <dd>{request.car.make}</dd>
+              <dt>{t('form.model')}</dt>
+              <dd>{request.car.model}</dd>
+              <dt>{t('form.year')}</dt>
+              <dd>{request.car.year}</dd>
+              {request.car.variant ? (
+                <>
+                  <dt>{t('form.variant')}</dt>
+                  <dd>{request.car.variant}</dd>
+                </>
+              ) : null}
+              {request.car.vin ? (
+                <>
+                  <dt>{t('form.vin')}</dt>
+                  <dd>{request.car.vin}</dd>
+                </>
+              ) : null}
+              {request.car.engineType ? (
+                <>
+                  <dt>{t('form.engineType')}</dt>
+                  <dd>{request.car.engineType}</dd>
+                </>
+              ) : null}
+              {request.car.fuelType ? (
+                <>
+                  <dt>{t('form.fuelType')}</dt>
+                  <dd>{request.car.fuelType}</dd>
+                </>
+              ) : null}
+              {request.car.mileageKm ? (
+                <>
+                  <dt>{t('form.mileageKm')}</dt>
+                  <dd>{request.car.mileageKm.toLocaleString()} km</dd>
+                </>
+              ) : null}
             </dl>
           </div>
 
@@ -291,8 +319,19 @@ export function ShopRequestDetailView({
                   const url = att.previewUrl ?? attachmentUrls[att.id]
                   const loaded = loadedImages[att.id]
                   return (
-                    <div className={`attachment-thumb${!loaded ? ' loading' : ''}`} key={att.id} onClick={() => url && loaded && setLightboxImg({ src: url, alt: att.name })}>
-                      {url ? <img src={url} alt={att.name} style={loaded ? undefined : { display: 'none' }} onLoad={() => setLoadedImages(prev => ({ ...prev, [att.id]: true }))} /> : null}
+                    <div
+                      className={`attachment-thumb${!loaded ? ' loading' : ''}`}
+                      key={att.id}
+                      onClick={() => url && loaded && setLightboxImg({ src: url, alt: att.name })}
+                    >
+                      {url ? (
+                        <img
+                          src={url}
+                          alt={att.name}
+                          style={loaded ? undefined : { display: 'none' }}
+                          onLoad={() => setLoadedImages((prev) => ({ ...prev, [att.id]: true }))}
+                        />
+                      ) : null}
                     </div>
                   )
                 })}
@@ -306,14 +345,9 @@ export function ShopRequestDetailView({
       {activeTab === 'messages' ? (
         <div className="shop-messages-content">
           <div className="thread-messages">
-            {messages.length === 0 ? (
-              <p className="empty-state">{t('shopDetail.noMessages')}</p>
-            ) : null}
+            {messages.length === 0 ? <p className="empty-state">{t('shopDetail.noMessages')}</p> : null}
             {messages.map((msg) => (
-              <article
-                className={`thread-message thread-message-${msg.author}`}
-                key={msg.id}
-              >
+              <article className={`thread-message thread-message-${msg.author}`} key={msg.id}>
                 <p>{msg.text}</p>
                 <small>{formatDateTime(msg.sentAt, i18n.language)}</small>
               </article>
@@ -343,11 +377,11 @@ export function ShopRequestDetailView({
                 onClick={() => void handleSendMessage()}
                 disabled={sendingMessage || !messageDraft.trim()}
               >
-                {sendingMessage ? t('thread.sending') : (
-                  status === 'PENDING' || status === 'ACKNOWLEDGED'
+                {sendingMessage
+                  ? t('thread.sending')
+                  : status === 'PENDING' || status === 'ACKNOWLEDGED'
                     ? t('shopDetail.askQuestion')
-                    : t('thread.send')
-                )}
+                    : t('thread.send')}
               </button>
             </div>
           ) : null}

@@ -43,9 +43,11 @@ export const shopApi = {
   async fetchRequestDetail(requestId: string): Promise<RepairRequest | null> {
     const [raw, rawAttachments] = await Promise.all([
       api.get<RepairRequestResponse>(`/api/repair-requests/${requestId}`).catch(() => null),
-      api.get<AttachmentResponse[]>('/api/attachments', {
-        params: { targetType: 'REPAIR_REQUEST', repairRequestId: requestId },
-      }).catch(() => [] as AttachmentResponse[]),
+      api
+        .get<AttachmentResponse[]>('/api/attachments', {
+          params: { targetType: 'REPAIR_REQUEST', repairRequestId: requestId },
+        })
+        .catch(() => [] as AttachmentResponse[]),
     ])
     if (!raw) return null
     const attachments = rawAttachments.filter((a) => a.status === 'ACTIVE').map(mapAttachment)
@@ -92,17 +94,14 @@ export const shopApi = {
 
   // Shop fetches own thread messages (shopId derived from JWT on backend)
   async fetchMessages(requestId: string, currentUserId: string): Promise<ThreadMessage[]> {
-    const raw = await api.get<MessageResponse[]>(
-      `/api/repair-requests/${requestId}/messages`,
-    )
+    const raw = await api.get<MessageResponse[]>(`/api/repair-requests/${requestId}/messages`)
     return raw.map((m) => mapMessage(m, currentUserId)).reverse()
   },
 
   async sendMessage(requestId: string, shopId: string, text: string): Promise<void> {
-    await api.post<MessageResponse>(
-      `/api/repair-requests/${requestId}/messages/shops/${shopId}/message`,
-      { body: { content: text } },
-    )
+    await api.post<MessageResponse>(`/api/repair-requests/${requestId}/messages/shops/${shopId}/message`, {
+      body: { content: text },
+    })
   },
 
   async fetchProfile(): Promise<ShopProfile> {

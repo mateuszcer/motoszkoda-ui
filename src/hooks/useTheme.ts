@@ -10,10 +10,7 @@ function getTheme(): Theme {
 
 function applyTheme(theme: Theme) {
   document.documentElement.setAttribute('data-theme', theme)
-  document.querySelector('meta[name="theme-color"]')?.setAttribute(
-    'content',
-    theme === 'dark' ? '#0C1B19' : '#1B3533',
-  )
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0C1B19' : '#1B3533')
 }
 
 let listeners: (() => void)[] = []

@@ -201,6 +201,7 @@ function App() {
   }, [navigate])
 
   const isAdmin = auth.user?.role === 'ADMIN'
+  const { loadShopQueue } = shop
 
   // Load requests when authenticated (skip for admin)
   // For shops, re-fetch when enrollmentStatus becomes ACTIVE (e.g. after payment)
@@ -208,13 +209,13 @@ function App() {
     if (auth.isAuthenticated && !isAdmin) {
       if (isShop) {
         if (enrollmentStatus === 'ACTIVE' || enrollmentStatus === 'CANCEL_SCHEDULED') {
-          void shop.loadShopQueue()
+          void loadShopQueue()
         }
       } else {
         void loadRequests()
       }
     }
-  }, [auth.isAuthenticated, isAdmin, isShop, enrollmentStatus, loadRequests, shop])
+  }, [auth.isAuthenticated, isAdmin, isShop, enrollmentStatus, loadRequests, loadShopQueue])
 
   const handleLogin = async (email: string, password: string, captchaToken?: string) => {
     const result = await authApi.login(email, password, captchaToken)

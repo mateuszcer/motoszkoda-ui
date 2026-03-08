@@ -59,7 +59,7 @@ const repairRequestApiImpl: RepairRequestApi = {
         // Merge latest status from API with cached detail data
         return {
           ...cached,
-          status: raw.status === 'OPEN' ? 'open' as const : 'closed' as const,
+          status: raw.status === 'OPEN' ? ('open' as const) : ('closed' as const),
           updatedAt: raw.updatedAt,
         }
       }
@@ -71,12 +71,20 @@ const repairRequestApiImpl: RepairRequestApi = {
     // Fetch repair-request, compare view, thread summaries, attachments, and shop responses in parallel
     const [rawRequest, compareData, threadSummaries, rawAttachments, shopResponses] = await Promise.all([
       api.get<RepairRequestResponse>(`/api/repair-requests/${requestId}`).catch(() => null),
-      api.get<CompareViewResponse[]>(`/api/repair-requests/${requestId}/compare`).catch(() => [] as CompareViewResponse[]),
-      api.get<ThreadSummaryResponse[]>(`/api/repair-requests/${requestId}/messages/threads`).catch(() => [] as ThreadSummaryResponse[]),
-      api.get<AttachmentResponse[]>('/api/attachments', {
-        params: { targetType: 'REPAIR_REQUEST', repairRequestId: requestId },
-      }).catch(() => [] as AttachmentResponse[]),
-      api.get<ShopResponseForDriverView[]>(`/api/repair-requests/${requestId}/shop-responses`).catch(() => [] as ShopResponseForDriverView[]),
+      api
+        .get<CompareViewResponse[]>(`/api/repair-requests/${requestId}/compare`)
+        .catch(() => [] as CompareViewResponse[]),
+      api
+        .get<ThreadSummaryResponse[]>(`/api/repair-requests/${requestId}/messages/threads`)
+        .catch(() => [] as ThreadSummaryResponse[]),
+      api
+        .get<AttachmentResponse[]>('/api/attachments', {
+          params: { targetType: 'REPAIR_REQUEST', repairRequestId: requestId },
+        })
+        .catch(() => [] as AttachmentResponse[]),
+      api
+        .get<ShopResponseForDriverView[]>(`/api/repair-requests/${requestId}/shop-responses`)
+        .catch(() => [] as ShopResponseForDriverView[]),
     ])
 
     if (!rawRequest) return null
@@ -89,11 +97,7 @@ const repairRequestApiImpl: RepairRequestApi = {
 
     // Map compare data → ShopQuoteCard[]
     const shopQuotes: ShopQuoteCard[] = compareData.map((cv) =>
-      mapCompareToShopQuote(
-        cv,
-        prefs.isInterested(requestId, cv.shopId),
-        prefs.isIgnored(requestId, cv.shopId),
-      ),
+      mapCompareToShopQuote(cv, prefs.isInterested(requestId, cv.shopId), prefs.isIgnored(requestId, cv.shopId)),
     )
 
     // Merge line items from shop responses into quote cards
@@ -116,13 +120,11 @@ const repairRequestApiImpl: RepairRequestApi = {
     // Fetch messages for each thread in parallel
     const threadEntries = await Promise.all(
       threadSummaries.map(async (summary): Promise<[string, ShopThread]> => {
-        const rawMessages = await api.get<MessageResponse[]>(
-          `/api/repair-requests/${requestId}/messages/shops/${summary.shopId}`,
-        ).catch(() => [] as MessageResponse[])
+        const rawMessages = await api
+          .get<MessageResponse[]>(`/api/repair-requests/${requestId}/messages/shops/${summary.shopId}`)
+          .catch(() => [] as MessageResponse[])
 
-        const messages: ThreadMessage[] = rawMessages
-          .map((m) => mapMessage(m, currentUserId))
-          .reverse() // API returns newest first, UI expects oldest first
+        const messages: ThreadMessage[] = rawMessages.map((m) => mapMessage(m, currentUserId)).reverse() // API returns newest first, UI expects oldest first
 
         const shopName = shopNameMap.get(summary.shopId) ?? summary.shopId
         return [summary.shopId, mapThread(summary, shopName, messages)]
@@ -154,18 +156,15 @@ const repairRequestApiImpl: RepairRequestApi = {
   },
 
   async sendThreadMessage({ requestId, shopId, text }: SendMessagePayload): Promise<void> {
-    await api.post<MessageResponse>(
-      `/api/repair-requests/${requestId}/messages/shops/${shopId}/message`,
-      { body: { content: text } },
-    )
+    await api.post<MessageResponse>(`/api/repair-requests/${requestId}/messages/shops/${shopId}/message`, {
+      body: { content: text },
+    })
     // Invalidate cache so next detail fetch gets fresh data
     detailCache.delete(requestId)
   },
 
   async getThreadMessages(requestId: string, shopId: string, currentUserId: string): Promise<ThreadMessage[]> {
-    const rawMessages = await api.get<MessageResponse[]>(
-      `/api/repair-requests/${requestId}/messages/shops/${shopId}`,
-    )
+    const rawMessages = await api.get<MessageResponse[]>(`/api/repair-requests/${requestId}/messages/shops/${shopId}`)
     return rawMessages.map((m) => mapMessage(m, currentUserId)).reverse()
   },
 

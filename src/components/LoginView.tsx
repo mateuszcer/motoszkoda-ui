@@ -13,7 +13,14 @@ interface LoginViewProps {
   brandMark?: string
 }
 
-export function LoginView({ onLogin, onSwitchToRegister, onForgotPassword, titleKey, subtitleKey, brandMark }: LoginViewProps) {
+export function LoginView({
+  onLogin,
+  onSwitchToRegister,
+  onForgotPassword,
+  titleKey,
+  subtitleKey,
+  brandMark,
+}: LoginViewProps) {
   const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

@@ -32,9 +32,7 @@ export const COUNTRY_LIST: CountryEntry[] = [
 ]
 
 // Sorted longest-first so +420 matches before +4, etc.
-const DIAL_CODES_DESC = COUNTRY_LIST
-  .map((c) => c.dialCode)
-  .sort((a, b) => b.length - a.length)
+const DIAL_CODES_DESC = COUNTRY_LIST.map((c) => c.dialCode).sort((a, b) => b.length - a.length)
 
 const DEFAULT_COUNTRY = COUNTRY_LIST[0] // Poland
 

@@ -15,20 +15,20 @@ const FILTERS: ShopInboxFilter[] = ['all', 'new', 'in_progress', 'quoted', 'decl
 
 function statusToFilter(status: ShopRequestStatus | null): ShopInboxFilter {
   switch (status) {
-    case 'PENDING': return 'new'
-    case 'ACKNOWLEDGED': return 'in_progress'
-    case 'QUOTED': return 'quoted'
-    case 'DECLINED': return 'declined'
-    default: return 'new'
+    case 'PENDING':
+      return 'new'
+    case 'ACKNOWLEDGED':
+      return 'in_progress'
+    case 'QUOTED':
+      return 'quoted'
+    case 'DECLINED':
+      return 'declined'
+    default:
+      return 'new'
   }
 }
 
-export function ShopInboxView({
-  queueItems,
-  onOpenRequest,
-  onAcknowledge,
-  onDecline,
-}: ShopInboxViewProps) {
+export function ShopInboxView({ queueItems, onOpenRequest, onAcknowledge, onDecline }: ShopInboxViewProps) {
   const { t, i18n } = useTranslation()
   const [filter, setFilter] = useState<ShopInboxFilter>('all')
   const [search, setSearch] = useState('')
@@ -100,20 +100,14 @@ export function ShopInboxView({
 
       <div className="filter-chips">
         {FILTERS.map((f) => (
-          <button
-            key={f}
-            className={`chip ${filter === f ? 'chip-active' : ''}`}
-            onClick={() => setFilter(f)}
-          >
+          <button key={f} className={`chip ${filter === f ? 'chip-active' : ''}`} onClick={() => setFilter(f)}>
             {t(`shopInbox.filter_${f}`)}
           </button>
         ))}
       </div>
 
       <div className="cards-stack">
-        {filtered.length === 0 ? (
-          <article className="empty-state">{t('shopInbox.noItems')}</article>
-        ) : null}
+        {filtered.length === 0 ? <article className="empty-state">{t('shopInbox.noItems')}</article> : null}
         {filtered.map((item) => {
           const displayStatus = item.status ?? 'PENDING'
           return (
@@ -142,7 +136,9 @@ export function ShopInboxView({
                 {item.categories.length > 0 ? (
                   <div className="tags-inline">
                     {item.categories.map((tag) => (
-                      <span className="pill pill-tag" key={tag}>{t(`tags.${tag}`, tag)}</span>
+                      <span className="pill pill-tag" key={tag}>
+                        {t(`tags.${tag}`, tag)}
+                      </span>
                     ))}
                   </div>
                 ) : null}
@@ -153,16 +149,10 @@ export function ShopInboxView({
                 </span>
                 {displayStatus === 'PENDING' ? (
                   <div className="inbox-quick-actions" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      className="btn btn-sm btn-primary"
-                      onClick={() => onAcknowledge(item.repairRequestId)}
-                    >
+                    <button className="btn btn-sm btn-primary" onClick={() => onAcknowledge(item.repairRequestId)}>
                       {t('shopInbox.acknowledge')}
                     </button>
-                    <button
-                      className="btn btn-sm btn-ghost"
-                      onClick={() => onDecline(item.repairRequestId)}
-                    >
+                    <button className="btn btn-sm btn-ghost" onClick={() => onDecline(item.repairRequestId)}>
                       {t('shopInbox.decline')}
                     </button>
                   </div>

@@ -92,12 +92,12 @@ export function ShopProfileView({ profile, onSave, onBack }: ShopProfileViewProp
       <form className="profile-form" onSubmit={(e) => void handleSubmit(e)}>
         {errors.length > 0 ? (
           <div className="auth-error">
-            {errors.map((err, i) => <p key={i}>{err}</p>)}
+            {errors.map((err, i) => (
+              <p key={i}>{err}</p>
+            ))}
           </div>
         ) : null}
-        {success ? (
-          <div className="auth-success">{t('shopProfile.saved')}</div>
-        ) : null}
+        {success ? <div className="auth-success">{t('shopProfile.saved')}</div> : null}
 
         <div className="form-grid">
           <label>
@@ -132,9 +132,7 @@ export function ShopProfileView({ profile, onSave, onBack }: ShopProfileViewProp
                   placeholder={t('shopProfile.addressPlaceholder')}
                   autoComplete="off"
                 />
-                {autocomplete.loading ? (
-                  <span className="address-spinner" />
-                ) : null}
+                {autocomplete.loading ? <span className="address-spinner" /> : null}
               </div>
             </label>
 
@@ -165,11 +163,7 @@ export function ShopProfileView({ profile, onSave, onBack }: ShopProfileViewProp
 
           <label>
             {t('shopProfile.phone')}
-            <PhoneInput
-              value={phone}
-              onChange={setPhone}
-              placeholder={t('shopProfile.phonePlaceholder')}
-            />
+            <PhoneInput value={phone} onChange={setPhone} placeholder={t('shopProfile.phonePlaceholder')} />
           </label>
 
           <label>

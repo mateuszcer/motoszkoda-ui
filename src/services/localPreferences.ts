@@ -2,7 +2,7 @@ const STORAGE_KEY = 'autoceny_preferences'
 
 interface Preferences {
   interested: Record<string, string[]> // requestId → shopId[]
-  ignored: Record<string, string[]>    // requestId → shopId[]
+  ignored: Record<string, string[]> // requestId → shopId[]
 }
 
 function load(): Preferences {

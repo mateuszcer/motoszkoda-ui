@@ -63,8 +63,7 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
     }
   }
 
-  const hasNeedsAnswer = thread.messages.length > 0 &&
-    thread.messages[thread.messages.length - 1].author === 'shop'
+  const hasNeedsAnswer = thread.messages.length > 0 && thread.messages[thread.messages.length - 1].author === 'shop'
 
   return (
     <aside className="thread-panel-backdrop" role="presentation" onClick={onClose}>
@@ -83,37 +82,44 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
             <h3>{thread.shopName}</h3>
           </div>
           <button className="btn btn-ghost" onClick={onClose}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </header>
 
         <div className="thread-messages">
           {hasNeedsAnswer && !readOnly ? (
-            <div style={{
-              padding: 'var(--space-2) var(--space-3)',
-              background: 'var(--warning-50)',
-              border: '1px solid var(--warning-100)',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '13px',
-              fontWeight: 500,
-              color: 'var(--warning-600)',
-              textAlign: 'center',
-            }}>
+            <div
+              style={{
+                padding: 'var(--space-2) var(--space-3)',
+                background: 'var(--warning-50)',
+                border: '1px solid var(--warning-100)',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: 'var(--warning-600)',
+                textAlign: 'center',
+              }}
+            >
               {t('thread.needsAnswer')}
             </div>
           ) : null}
 
           {thread.messages.map((message) => (
-            <article
-              className={`thread-message thread-message-${message.author}`}
-              key={message.id}
-            >
+            <article className={`thread-message thread-message-${message.author}`} key={message.id}>
               <p>{message.text}</p>
-              {message.attachments.length > 0 ? (
-                <AttachmentGrid attachments={message.attachments} />
-              ) : null}
+              {message.attachments.length > 0 ? <AttachmentGrid attachments={message.attachments} /> : null}
               <small>{formatDateTime(message.sentAt, i18n.language)}</small>
             </article>
           ))}
@@ -145,7 +151,7 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
                       key={key}
                       className="chip"
                       type="button"
-                      onClick={() => setDraft((prev) => prev ? `${prev} ${t(`thread.${key}`)}` : t(`thread.${key}`))}
+                      onClick={() => setDraft((prev) => (prev ? `${prev} ${t(`thread.${key}`)}` : t(`thread.${key}`)))}
                     >
                       {t(`thread.${key}`)}
                     </button>
@@ -154,7 +160,16 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
               ) : null}
               <div className="composer-actions">
                 <label className="btn btn-ghost file-input-btn" htmlFor="thread-attachment-input">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
                   </svg>
                 </label>
@@ -211,14 +226,8 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
                   {sending ? t('thread.sending') : t('thread.send')}
                 </button>
               </div>
-              {attachmentError ? (
-                <small className="field-error">{t(attachmentError)}</small>
-              ) : null}
-              <AttachmentGrid
-                attachments={attachments}
-                removable
-                onRemove={handleRemoveAttachment}
-              />
+              {attachmentError ? <small className="field-error">{t(attachmentError)}</small> : null}
+              <AttachmentGrid attachments={attachments} removable onRemove={handleRemoveAttachment} />
             </>
           )}
         </footer>

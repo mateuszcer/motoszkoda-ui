@@ -50,21 +50,16 @@ export function useAddressAutocomplete() {
         limit: '5',
         countrycodes: 'pl',
       })
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?${params}`,
-        {
-          signal: controller.signal,
-          headers: { 'Accept-Language': 'pl,en' },
-        },
-      )
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+        signal: controller.signal,
+        headers: { 'Accept-Language': 'pl,en' },
+      })
       if (!res.ok) throw new Error('Nominatim request failed')
       const data: NominatimResult[] = await res.json()
       setSuggestions(
         data.map((r) => {
           const a = r.address
-          const street = a
-            ? [a.road, a.house_number].filter(Boolean).join(' ')
-            : undefined
+          const street = a ? [a.road, a.house_number].filter(Boolean).join(' ') : undefined
           const city = a?.city ?? a?.town ?? a?.village
           return {
             displayName: r.display_name,

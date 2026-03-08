@@ -1,4 +1,10 @@
-import type { BillingInterval, PortalResponse, UpgradeResponse, UserPlanCatalog, UserPlanInfo } from '../domain/apiTypes'
+import type {
+  BillingInterval,
+  PortalResponse,
+  UpgradeResponse,
+  UserPlanCatalog,
+  UserPlanInfo,
+} from '../domain/apiTypes'
 import { api } from './apiClient'
 
 export const billingApi = {
