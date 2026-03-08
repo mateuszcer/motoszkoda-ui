@@ -28,9 +28,7 @@ export function LocationStep({
   const { t } = useTranslation()
   const [showDropdown, setShowDropdown] = useState(false)
   const [geolocating, setGeolocating] = useState(false)
-  const [locationStatus, setLocationStatus] = useState<LocationStatus>(
-    autocomplete.selected ? 'set' : 'empty',
-  )
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>(autocomplete.selected ? 'set' : 'empty')
   const [geoError, setGeoError] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const reverseAbortRef = useRef<AbortController | null>(null)
@@ -68,10 +66,9 @@ export function LocationStep({
             format: 'json',
             addressdetails: '1',
           })
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?${params}`,
-            { headers: { 'Accept-Language': 'pl,en' } },
-          )
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?${params}`, {
+            headers: { 'Accept-Language': 'pl,en' },
+          })
           if (res.ok) {
             const data = await res.json()
             autocomplete.pick({
@@ -199,9 +196,7 @@ export function LocationStep({
             />
             {autocomplete.loading ? <span className="address-spinner" /> : null}
           </div>
-          {locationErrors.address ? (
-            <small className="field-error">{t(locationErrors.address)}</small>
-          ) : null}
+          {locationErrors.address ? <small className="field-error">{t(locationErrors.address)}</small> : null}
         </label>
 
         {showDropdown && autocomplete.suggestions.length > 0 ? (
@@ -216,9 +211,7 @@ export function LocationStep({
           </ul>
         ) : null}
 
-        {showNoResults ? (
-          <div className="location-error">{t('form.noResults')}</div>
-        ) : null}
+        {showNoResults ? <div className="location-error">{t('form.noResults')}</div> : null}
       </div>
 
       <button
@@ -230,15 +223,9 @@ export function LocationStep({
         {geolocating ? t('form.locating') : t('form.useCurrentLocation')}
       </button>
 
-      {geoError ? (
-        <div className="location-error">{geoError}</div>
-      ) : null}
+      {geoError ? <div className="location-error">{geoError}</div> : null}
 
-      {locationStatus === 'adjusted' ? (
-        <div className="location-hint">
-          {t('form.locationAdjusted')}
-        </div>
-      ) : null}
+      {locationStatus === 'adjusted' ? <div className="location-hint">{t('form.locationAdjusted')}</div> : null}
 
       {isLocationSet && autocomplete.selected ? (
         <div className="location-map-wrap">
@@ -251,11 +238,7 @@ export function LocationStep({
         </div>
       ) : null}
 
-      {showCityCenterHint ? (
-        <div className="location-hint">
-          {t('form.cityCenterHint')}
-        </div>
-      ) : null}
+      {showCityCenterHint ? <div className="location-hint">{t('form.cityCenterHint')}</div> : null}
 
       {isLocationSet ? (
         <label>
@@ -267,9 +250,7 @@ export function LocationStep({
             value={radiusKm}
             onChange={(event) => onRadiusChange(Number.parseInt(event.target.value, 10))}
           />
-          <small style={{ color: 'var(--neutral-500)' }}>
-            {t('form.radiusHelp', { radius: radiusKm })}
-          </small>
+          <small className="u-text-muted">{t('form.radiusHelp', { radius: radiusKm })}</small>
           {locationErrors.radiusKm ? (
             <small className="field-error">
               {t(locationErrors.radiusKm, { min: MIN_RADIUS_KM, max: MAX_RADIUS_KM })}
@@ -280,16 +261,11 @@ export function LocationStep({
         <p className="location-hint-muted">{t('form.radiusHiddenHint')}</p>
       )}
 
-      <div className="sticky-cta" style={{ display: 'flex', gap: 'var(--space-3)' }}>
+      <div className="sticky-cta u-flex u-gap-3">
         <button className="btn btn-ghost" onClick={onBack}>
           {t('common.back')}
         </button>
-        <button
-          className="btn btn-primary btn-lg"
-          onClick={onSubmit}
-          disabled={isSubmitting}
-          style={{ flex: 1 }}
-        >
+        <button className="btn btn-primary btn-lg u-flex-1" onClick={onSubmit} disabled={isSubmitting}>
           {isSubmitting ? t('form.submitting') : t('form.submitRequest')}
         </button>
       </div>

@@ -42,7 +42,7 @@ export function ResetPasswordView({ accessToken, onSubmit, onGoToLogin }: ResetP
   if (success) {
     return (
       <section className="auth-screen">
-        <div className="auth-card" style={{ textAlign: 'center' }}>
+        <div className="auth-card u-text-center">
           <div className="auth-brand">
             <div className="brand-mark">AC</div>
             <h2>{t('auth.resetPasswordSuccessTitle')}</h2>
@@ -60,7 +60,7 @@ export function ResetPasswordView({ accessToken, onSubmit, onGoToLogin }: ResetP
   if (!accessToken) {
     return (
       <section className="auth-screen">
-        <div className="auth-card" style={{ textAlign: 'center' }}>
+        <div className="auth-card u-text-center">
           <div className="auth-brand">
             <div className="brand-mark">AC</div>
             <h2>{t('auth.resetPasswordTitle')}</h2>

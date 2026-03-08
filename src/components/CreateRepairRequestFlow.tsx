@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DEFAULT_RADIUS_KM, ISSUE_TAGS, MAX_CAR_YEAR, MAX_RADIUS_KM, MIN_CAR_YEAR, MIN_RADIUS_KM } from '../domain/constants'
+import {
+  DEFAULT_RADIUS_KM,
+  ISSUE_TAGS,
+  MAX_CAR_YEAR,
+  MAX_RADIUS_KM,
+  MIN_CAR_YEAR,
+  MIN_RADIUS_KM,
+} from '../domain/constants'
 import type { Attachment, CreateRepairRequestPayload, RepairRequest } from '../domain/types'
 import { useAddressAutocomplete } from '../hooks/useAddressAutocomplete'
 import { fileToAttachment, revokeAttachmentPreview, revokeAttachmentsPreview } from '../utils/attachments'
@@ -38,11 +45,7 @@ interface LocationErrors {
   radiusKm?: string
 }
 
-export function CreateRepairRequestFlow({
-  onCancel,
-  onSubmitRequest,
-  onViewRequest,
-}: CreateRepairRequestFlowProps) {
+export function CreateRepairRequestFlow({ onCancel, onSubmitRequest, onViewRequest }: CreateRepairRequestFlowProps) {
   const { t } = useTranslation()
   const [step, setStep] = useState<FormStep>(1)
   const [showOptionalCar, setShowOptionalCar] = useState(false)
@@ -246,12 +249,10 @@ export function CreateRepairRequestFlow({
             const isActive = step === stepNum
             const isDone = step > stepNum
             return (
-              <div key={label} style={{ display: 'contents' }}>
+              <div key={label} className="u-contents">
                 {index > 0 ? <div className="stepper-line" /> : null}
                 <div className={`stepper-step ${isActive ? 'active' : ''} ${isDone ? 'done' : ''}`}>
-                  <span className="stepper-dot">
-                    {isDone ? '\u2713' : stepNum}
-                  </span>
+                  <span className="stepper-dot">{isDone ? '\u2713' : stepNum}</span>
                   <span>{label}</span>
                 </div>
               </div>
@@ -266,7 +267,7 @@ export function CreateRepairRequestFlow({
         {step === 1 ? (
           <div className="form-grid">
             <label>
-              {t('form.vin')} <small style={{ color: 'var(--neutral-400)' }}>({t('form.optional')})</small>
+              {t('form.vin')} <small className="u-text-faint">({t('form.optional')})</small>
               <input
                 className="vin-input"
                 value={vin}
@@ -298,7 +299,7 @@ export function CreateRepairRequestFlow({
             </label>
 
             <label>
-              {t('form.variant')} <small style={{ color: 'var(--neutral-400)' }}>({t('form.optional')})</small>
+              {t('form.variant')} <small className="u-text-faint">({t('form.optional')})</small>
               <input
                 value={variant}
                 onChange={(event) => {
@@ -318,7 +319,9 @@ export function CreateRepairRequestFlow({
                 }}
                 placeholder="2019"
               />
-              {carErrors.year ? <small className="field-error">{t(carErrors.year, { min: MIN_CAR_YEAR, max: MAX_CAR_YEAR })}</small> : null}
+              {carErrors.year ? (
+                <small className="field-error">{t(carErrors.year, { min: MIN_CAR_YEAR, max: MAX_CAR_YEAR })}</small>
+              ) : null}
             </label>
 
             <button
@@ -365,15 +368,13 @@ export function CreateRepairRequestFlow({
                     }}
                     placeholder="112000"
                   />
-                  {carErrors.mileageKm ? (
-                    <small className="field-error">{t(carErrors.mileageKm)}</small>
-                  ) : null}
+                  {carErrors.mileageKm ? <small className="field-error">{t(carErrors.mileageKm)}</small> : null}
                 </label>
               </>
             ) : null}
 
             <div className="sticky-cta">
-              <button className="btn btn-primary btn-lg" onClick={handleNext} style={{ width: '100%' }}>
+              <button className="btn btn-primary btn-lg u-w-full" onClick={handleNext}>
                 {t('common.next')}
               </button>
             </div>
@@ -392,9 +393,7 @@ export function CreateRepairRequestFlow({
                 rows={5}
                 placeholder={t('form.issuePlaceholder')}
               />
-              {issueErrors.description ? (
-                <small className="field-error">{t(issueErrors.description)}</small>
-              ) : null}
+              {issueErrors.description ? <small className="field-error">{t(issueErrors.description)}</small> : null}
             </label>
 
             <div>
@@ -465,17 +464,11 @@ export function CreateRepairRequestFlow({
                   event.target.value = ''
                 }}
               />
-              {attachmentError ? (
-                <small className="field-error">{t(attachmentError)}</small>
-              ) : null}
-              <AttachmentGrid
-                attachments={issueAttachments}
-                removable
-                onRemove={removeIssueAttachment}
-              />
+              {attachmentError ? <small className="field-error">{t(attachmentError)}</small> : null}
+              <AttachmentGrid attachments={issueAttachments} removable onRemove={removeIssueAttachment} />
             </div>
 
-            <div className="sticky-cta" style={{ display: 'flex', gap: 'var(--space-3)' }}>
+            <div className="sticky-cta u-flex u-gap-3">
               <button
                 className="btn btn-ghost"
                 onClick={() => {
@@ -484,7 +477,7 @@ export function CreateRepairRequestFlow({
               >
                 {t('common.back')}
               </button>
-              <button className="btn btn-primary btn-lg" onClick={handleNext} style={{ flex: 1 }}>
+              <button className="btn btn-primary btn-lg u-flex-1" onClick={handleNext}>
                 {t('common.next')}
               </button>
             </div>

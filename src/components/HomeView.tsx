@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Entitlements, UserPlanInfo } from '../domain/apiTypes'
 import type { RepairRequest } from '../domain/types'
@@ -16,7 +16,15 @@ interface HomeViewProps {
 
 type HomeTab = 'open' | 'closed' | 'all'
 
-export function HomeView({ requests, onCreateRequest, onMyRequests, onOpenRequest, planInfo, onNavigatePlan, freeEntitlements }: HomeViewProps) {
+export const HomeView = memo(function HomeView({
+  requests,
+  onCreateRequest,
+  onMyRequests,
+  onOpenRequest,
+  planInfo,
+  onNavigatePlan,
+  freeEntitlements,
+}: HomeViewProps) {
   const { t, i18n } = useTranslation()
   const [activeTab, setActiveTab] = useState<HomeTab>('open')
 
@@ -25,10 +33,7 @@ export function HomeView({ requests, onCreateRequest, onMyRequests, onOpenReques
   const isFree = planInfo?.planCode === 'FREE'
   const atOpenLimit = isFree && openRequests.length >= freeEntitlements.maxOpenRepairRequests
 
-  const filteredRequests =
-    activeTab === 'open' ? openRequests
-    : activeTab === 'closed' ? closedRequests
-    : requests
+  const filteredRequests = activeTab === 'open' ? openRequests : activeTab === 'closed' ? closedRequests : requests
 
   return (
     <section className="screen home-screen">
@@ -49,11 +54,13 @@ export function HomeView({ requests, onCreateRequest, onMyRequests, onOpenReques
       </header>
 
       <div className="tab-strip home-tabs" role="tablist" aria-label="Request filter">
-        {([
-          ['open', openRequests.length],
-          ['closed', closedRequests.length],
-          ['all', requests.length],
-        ] as const).map(([tab, count]) => (
+        {(
+          [
+            ['open', openRequests.length],
+            ['closed', closedRequests.length],
+            ['all', requests.length],
+          ] as const
+        ).map(([tab, count]) => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'tab-btn-active' : ''}`}
@@ -112,4 +119,4 @@ export function HomeView({ requests, onCreateRequest, onMyRequests, onOpenReques
       )}
     </section>
   )
-}
+})

@@ -1,0 +1,49 @@
+Shop subscription management
+Where it lives: Add a "Subskrypcja" section to the shop dashboard/settings. This can be a card on the existing shop panel or a dedicated /shop/plan route — whichever is simpler given your current routing.
+On page load: Call GET /api/enrollment/status and render based on status:
+
+Status: ACTIVE
+Card:
+  Title:    "Plan Warsztatowy"
+  Badge:    "Aktywny" (--success-100 bg, --success-600 text)
+  Desc:     "Masz pełny dostęp do zleceń i wycen."
+  Button:   "Zarządzaj subskrypcją" (secondary style, --teal-700 outline)
+            → POST /api/enrollment/portal → redirect to portalUrl
+
+Status: CANCEL_SCHEDULED
+Card:
+  Title:    "Plan Warsztatowy"
+  Badge:    "Anulowany" (--warning-100 bg, --warning-600 text)
+
+  Banner inside card:
+    Background:  --warning-100
+    Border-radius: 10px
+    Padding: 14px 18px
+    Text: "Twoja subskrypcja zostanie zakończona [cancelAt sformatowany, np. '8 kwietnia 2026']. 
+           Do tego czasu masz pełny dostęp."
+    Style: 14px, --warning-700
+
+  Button:   "Przywróć subskrypcję" (primary style, --teal-700 bg)
+            → POST /api/enrollment/portal → redirect to portalUrl
+            (Stripe portal lets them reverse the cancellation)
+Keep all features unlocked — treat CANCEL_SCHEDULED as ACTIVE for access. Just show the banner.
+
+Status: ACTIVE but voucher-enrolled (no Stripe)
+Call POST /api/enrollment/portal. If it returns 409, hide the manage button entirely. Show instead:
+Card:
+  Title:    "Plan Warsztatowy"
+  Badge:    "Aktywny" (green)
+  Desc:     "Twój plan został aktywowany kodem. Subskrypcja nie wymaga zarządzania."
+  No button.
+
+Error handling
+
+404 from /api/enrollment/status → shop has no enrollment, shouldn't see this section at all
+409 from /api/enrollment/portal → voucher shop, hide the manage button
+Network error on portal call → toast: "Nie udało się otworzyć portalu. Spróbuj ponownie."
+
+
+Where to put the "Zarządzaj subskrypcją" entry point
+Don't bury it. Add it in two places:
+
+Shop nav/menu — a "Subskrypcja" or "Mój plan" link alongside existing items like "Wyloguj". Goes to the plan card.

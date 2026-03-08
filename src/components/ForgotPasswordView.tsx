@@ -48,7 +48,7 @@ export function ForgotPasswordView({ onSubmit, onBackToLogin }: ForgotPasswordVi
   if (sent) {
     return (
       <section className="auth-screen">
-        <div className="auth-card" style={{ textAlign: 'center' }}>
+        <div className="auth-card u-text-center">
           <div className="auth-brand">
             <div className="brand-mark">AC</div>
             <h2>{t('auth.forgotPasswordSentTitle')}</h2>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { RepairRequest } from '../domain/types'
 import { formatDateTime } from '../utils/format'
@@ -11,7 +11,11 @@ interface MyRequestsViewProps {
 
 type FilterValue = 'all' | 'open' | 'closed'
 
-export function MyRequestsView({ requests, onBackHome, onOpenRequest }: MyRequestsViewProps) {
+export const MyRequestsView = memo(function MyRequestsView({
+  requests,
+  onBackHome,
+  onOpenRequest,
+}: MyRequestsViewProps) {
   const { t, i18n } = useTranslation()
   const [filter, setFilter] = useState<FilterValue>('all')
 
@@ -48,9 +52,7 @@ export function MyRequestsView({ requests, onBackHome, onOpenRequest }: MyReques
       </div>
 
       <div className="cards-stack">
-        {filtered.length === 0 ? (
-          <article className="empty-state">{t('myRequests.noRequests')}</article>
-        ) : null}
+        {filtered.length === 0 ? <article className="empty-state">{t('myRequests.noRequests')}</article> : null}
 
         {filtered.map((request) => {
           const quoteCount = request.shopQuotes.filter((shop) => shop.state === 'quote_sent').length
@@ -93,4 +95,4 @@ export function MyRequestsView({ requests, onBackHome, onOpenRequest }: MyReques
       </div>
     </section>
   )
-}
+})

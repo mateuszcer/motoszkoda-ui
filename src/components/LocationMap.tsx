@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { Circle, MapContainer, Marker, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 // Fix Leaflet default marker icon (broken by bundlers)
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
@@ -71,14 +72,7 @@ function DraggableMarker({
     [onDragEnd],
   )
 
-  return (
-    <Marker
-      draggable
-      eventHandlers={eventHandlers}
-      position={[lat, lon]}
-      ref={markerRef}
-    />
-  )
+  return <Marker draggable eventHandlers={eventHandlers} position={[lat, lon]} ref={markerRef} />
 }
 
 export function LocationMap({ lat, lon, radiusKm, onPinDragEnd }: LocationMapProps) {
@@ -100,13 +94,7 @@ export function LocationMap({ lat, lon, radiusKm, onPinDragEnd }: LocationMapPro
   }, [])
 
   return (
-    <MapContainer
-      center={[lat, lon]}
-      zoom={11}
-      scrollWheelZoom={false}
-      className="location-map"
-      ref={mapRef}
-    >
+    <MapContainer center={[lat, lon]} zoom={11} scrollWheelZoom={false} className="location-map" ref={mapRef}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

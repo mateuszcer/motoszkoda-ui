@@ -1,30 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './App.css'
-import { AdminLoginView } from './components/AdminLoginView'
-import { CheckEmailView } from './components/CheckEmailView'
-import { ForgotPasswordView } from './components/ForgotPasswordView'
-import { AdminVouchersView } from './components/AdminVouchersView'
-import { CreateRepairRequestFlow } from './components/CreateRepairRequestFlow'
+import { AppHeader } from './components/AppHeader'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { EnrollmentGate } from './components/EnrollmentGate'
-import { HomeView } from './components/HomeView'
-import { LandingPage } from './components/LandingPage'
-import { PlanView } from './components/PlanView'
-import { PlanSuccessView } from './components/PlanSuccessView'
-import { PlanCancelView } from './components/PlanCancelView'
-import { UpgradeLimitModal } from './components/UpgradeLimitModal'
 import { LoginView } from './components/LoginView'
-import { MyRequestsView } from './components/MyRequestsView'
 import { RegisterView } from './components/RegisterView'
-import { ResetPasswordView } from './components/ResetPasswordView'
+import { CheckEmailView } from './components/CheckEmailView'
 import { SignupConfirmationView } from './components/SignupConfirmationView'
-import { RepairRequestDetail } from './components/RepairRequestDetail'
-import { ShopInboxView } from './components/ShopInboxView'
-import { ShopProfileView } from './components/ShopProfileView'
+import { ForgotPasswordView } from './components/ForgotPasswordView'
+import { ResetPasswordView } from './components/ResetPasswordView'
+import { AdminLoginView } from './components/AdminLoginView'
 import { ShopRegisterView } from './components/ShopRegisterView'
-import { ShopRequestDetailView } from './components/ShopRequestDetailView'
-import { ShopSendQuoteView } from './components/ShopSendQuoteView'
-import { ThemeToggle } from './components/ThemeToggle'
+import { UpgradeLimitModal } from './components/UpgradeLimitModal'
 import type { BillingInterval, ShopRegistrationRequest, UserPlanInfo } from './domain/apiTypes'
 import type { AuthState } from './domain/auth-types'
 import type {
@@ -47,25 +35,48 @@ import { fetchNotifications } from './services/notificationsApi'
 import { uploadAttachments } from './services/attachmentApi'
 import { repairRequestApi } from './services/repairRequestApi'
 
+// Lazy-loaded route components
+const LandingPage = lazy(() => import('./components/LandingPage').then((m) => ({ default: m.LandingPage })))
+const HomeView = lazy(() => import('./components/HomeView').then((m) => ({ default: m.HomeView })))
+const CreateRepairRequestFlow = lazy(() =>
+  import('./components/CreateRepairRequestFlow').then((m) => ({ default: m.CreateRepairRequestFlow })),
+)
+const MyRequestsView = lazy(() => import('./components/MyRequestsView').then((m) => ({ default: m.MyRequestsView })))
+const RepairRequestDetail = lazy(() =>
+  import('./components/RepairRequestDetail').then((m) => ({ default: m.RepairRequestDetail })),
+)
+const PlanView = lazy(() => import('./components/PlanView').then((m) => ({ default: m.PlanView })))
+const PlanSuccessView = lazy(() => import('./components/PlanSuccessView').then((m) => ({ default: m.PlanSuccessView })))
+const PlanCancelView = lazy(() => import('./components/PlanCancelView').then((m) => ({ default: m.PlanCancelView })))
+const AdminVouchersView = lazy(() =>
+  import('./components/AdminVouchersView').then((m) => ({ default: m.AdminVouchersView })),
+)
+const ShopInboxView = lazy(() => import('./components/ShopInboxView').then((m) => ({ default: m.ShopInboxView })))
+const ShopRequestDetailView = lazy(() =>
+  import('./components/ShopRequestDetailView').then((m) => ({ default: m.ShopRequestDetailView })),
+)
+const ShopSendQuoteView = lazy(() =>
+  import('./components/ShopSendQuoteView').then((m) => ({ default: m.ShopSendQuoteView })),
+)
+const ShopProfileView = lazy(() => import('./components/ShopProfileView').then((m) => ({ default: m.ShopProfileView })))
+
 const NOTIFICATION_POLL_INTERVAL = 60_000
 
 const sortRequests = (requests: RepairRequest[]): RepairRequest[] => {
   return [...requests].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
 }
 
-function LanguageToggle() {
-  const { i18n } = useTranslation()
-  const isPolish = i18n.language.startsWith('pl')
-
+function BannerStack({ banners }: { banners: NotificationEvent[] }) {
+  if (banners.length === 0) return null
   return (
-    <button
-      className="btn btn-ghost lang-toggle"
-      onClick={() => {
-        void i18n.changeLanguage(isPolish ? 'en' : 'pl')
-      }}
-    >
-      {isPolish ? 'EN' : 'PL'}
-    </button>
+    <section className="banner-stack" aria-live="polite">
+      {banners.map((banner) => (
+        <article className={`banner banner-${banner.type}`} key={banner.id}>
+          <strong>{banner.title}</strong>
+          <p>{banner.message}</p>
+        </article>
+      ))}
+    </section>
   )
 }
 
@@ -91,6 +102,12 @@ function App() {
   const [enrollmentLoading, setEnrollmentLoading] = useState(false)
 
   const lastNotificationTime = useRef<string | undefined>(undefined)
+
+  // Read reset-password token once, not on every render
+  const resetToken = useMemo(() => {
+    if (screen !== 'reset-password') return ''
+    return new URLSearchParams(window.location.search).get('token') ?? ''
+  }, [screen])
 
   const selectedRequest = useMemo(() => {
     if (!selectedRequestId) {
@@ -246,11 +263,6 @@ function App() {
     await authApi.resetPassword(accessToken, newPassword)
   }
 
-  const handleLogout = async () => {
-    doLogout()
-    await Promise.resolve()
-  }
-
   const upsertRequest = useCallback((updatedRequest: RepairRequest) => {
     setRequests((previous) => {
       const withoutCurrent = previous.filter((request) => request.id !== updatedRequest.id)
@@ -270,7 +282,10 @@ function App() {
     }
   }
 
-  const handleCreateRequest = async (payload: CreateRepairRequestPayload, files: Map<string, File>): Promise<RepairRequest> => {
+  const handleCreateRequest = async (
+    payload: CreateRepairRequestPayload,
+    files: Map<string, File>,
+  ): Promise<RepairRequest> => {
     const created = await repairRequestApi.createRequest(payload)
     upsertRequest(created)
     pushBanner({
@@ -362,7 +377,7 @@ function App() {
     }
   }
 
-  // Notification polling — replaces advanceMockUpdates
+  // Notification polling
   useEffect(() => {
     if (!auth.isAuthenticated || isAdmin) return
 
@@ -389,39 +404,44 @@ function App() {
             id: n.id,
             requestId: payload.repairRequestId ?? '',
             shopId: payload.shopId,
-            type: n.type === 'SHOP_SENT_QUOTE' ? 'new_quote'
-              : n.type === 'SHOP_ACKNOWLEDGED_REQUEST' ? 'shop_acknowledged'
-              : n.type === 'SHOP_ASKED_QUESTION' ? 'new_question'
-              : 'request_submitted',
-            title: n.type === 'SHOP_SENT_QUOTE' ? t('notification.shopSentQuoteTitle')
-              : n.type === 'SHOP_ACKNOWLEDGED_REQUEST' ? t('notification.shopAcknowledgedTitle')
-              : n.type === 'SHOP_ASKED_QUESTION' ? t('notification.shopAskedQuestionTitle')
-              : t('notification.requestSubmittedTitle'),
-            message: n.type === 'SHOP_SENT_QUOTE' ? t('notification.shopSentQuoteMessage')
-              : n.type === 'SHOP_ACKNOWLEDGED_REQUEST' ? t('notification.shopAcknowledgedMessage')
-              : n.type === 'SHOP_ASKED_QUESTION' ? t('notification.shopAskedQuestionMessage')
-              : t('notification.requestSubmittedMessage'),
+            type:
+              n.type === 'SHOP_SENT_QUOTE'
+                ? 'new_quote'
+                : n.type === 'SHOP_ACKNOWLEDGED_REQUEST'
+                  ? 'shop_acknowledged'
+                  : n.type === 'SHOP_ASKED_QUESTION'
+                    ? 'new_question'
+                    : 'request_submitted',
+            title:
+              n.type === 'SHOP_SENT_QUOTE'
+                ? t('notification.shopSentQuoteTitle')
+                : n.type === 'SHOP_ACKNOWLEDGED_REQUEST'
+                  ? t('notification.shopAcknowledgedTitle')
+                  : n.type === 'SHOP_ASKED_QUESTION'
+                    ? t('notification.shopAskedQuestionTitle')
+                    : t('notification.requestSubmittedTitle'),
+            message:
+              n.type === 'SHOP_SENT_QUOTE'
+                ? t('notification.shopSentQuoteMessage')
+                : n.type === 'SHOP_ACKNOWLEDGED_REQUEST'
+                  ? t('notification.shopAcknowledgedMessage')
+                  : n.type === 'SHOP_ASKED_QUESTION'
+                    ? t('notification.shopAskedQuestionMessage')
+                    : t('notification.requestSubmittedMessage'),
             createdAt: n.createdAt,
           })
 
           // If we're viewing this request's detail, refresh it
-          if (
-            selectedRequestId &&
-            payload.repairRequestId === selectedRequestId &&
-            auth.user
-          ) {
+          if (selectedRequestId && payload.repairRequestId === selectedRequestId && auth.user) {
             repairRequestApi.invalidateCache(selectedRequestId)
-            const updated = await repairRequestApi.fetchRequestDetail(
-              selectedRequestId,
-              auth.user.id,
-            )
+            const updated = await repairRequestApi.fetchRequestDetail(selectedRequestId, auth.user.id)
             if (updated) {
               upsertRequest(updated)
             }
           }
         }
       } catch {
-        // Silently ignore polling errors
+        // Polling errors are non-critical — silently ignore
       }
     }
 
@@ -449,12 +469,14 @@ function App() {
   // Landing page (unauthenticated entry point)
   if (!auth.isAuthenticated && screen === 'landing') {
     return (
-      <LandingPage
-        onGetStarted={() => navigate('login')}
-        onJoinAsShop={() => navigate('shop-login')}
-        billingCatalog={catalog.billingCatalog}
-        enrollmentCatalog={catalog.enrollmentCatalog}
-      />
+      <ErrorBoundary>
+        <LandingPage
+          onGetStarted={() => navigate('login')}
+          onJoinAsShop={() => navigate('shop-login')}
+          billingCatalog={catalog.billingCatalog}
+          enrollmentCatalog={catalog.enrollmentCatalog}
+        />
+      </ErrorBoundary>
     )
   }
 
@@ -462,17 +484,12 @@ function App() {
   if (!auth.isAuthenticated && screen === 'check-email' && pendingEmail) {
     return (
       <main className="app-shell">
-        <header className="app-header">
-          <div className="brand" onClick={() => navigate('landing')} style={{ cursor: 'pointer' }}>
-            <div className="brand-mark">AC</div>
-            <h1>Autoceny</h1>
-          </div>
-          <div className="header-actions">
-            <ThemeToggle />
-            <LanguageToggle />
-          </div>
-        </header>
-        <CheckEmailView email={pendingEmail} onGoToLogin={() => navigate('login')} onResendConfirmation={handleResendConfirmation} />
+        <AppHeader brandMark="AC" onBrandClick={() => navigate('landing')} />
+        <CheckEmailView
+          email={pendingEmail}
+          onGoToLogin={() => navigate('login')}
+          onResendConfirmation={handleResendConfirmation}
+        />
       </main>
     )
   }
@@ -481,16 +498,7 @@ function App() {
   if (!auth.isAuthenticated && screen === 'signup-confirmation') {
     return (
       <main className="app-shell">
-        <header className="app-header">
-          <div className="brand" onClick={() => navigate('landing')} style={{ cursor: 'pointer' }}>
-            <div className="brand-mark">AC</div>
-            <h1>Autoceny</h1>
-          </div>
-          <div className="header-actions">
-            <ThemeToggle />
-            <LanguageToggle />
-          </div>
-        </header>
+        <AppHeader brandMark="AC" onBrandClick={() => navigate('landing')} />
         <SignupConfirmationView onGoToLogin={() => navigate('login')} />
       </main>
     )
@@ -500,42 +508,19 @@ function App() {
   if (!auth.isAuthenticated && screen === 'forgot-password') {
     return (
       <main className="app-shell">
-        <header className="app-header">
-          <div className="brand" onClick={() => navigate('landing')} style={{ cursor: 'pointer' }}>
-            <div className="brand-mark">AC</div>
-            <h1>Autoceny</h1>
-          </div>
-          <div className="header-actions">
-            <ThemeToggle />
-            <LanguageToggle />
-          </div>
-        </header>
-        <ForgotPasswordView
-          onSubmit={handleRequestPasswordReset}
-          onBackToLogin={() => navigate('login')}
-        />
+        <AppHeader brandMark="AC" onBrandClick={() => navigate('landing')} />
+        <ForgotPasswordView onSubmit={handleRequestPasswordReset} onBackToLogin={() => navigate('login')} />
       </main>
     )
   }
 
   // Reset password screen (accessed via email link with token in URL)
   if (!auth.isAuthenticated && screen === 'reset-password') {
-    const params = new URLSearchParams(window.location.search)
-    const token = params.get('token') ?? ''
     return (
       <main className="app-shell">
-        <header className="app-header">
-          <div className="brand" onClick={() => navigate('landing')} style={{ cursor: 'pointer' }}>
-            <div className="brand-mark">AC</div>
-            <h1>Autoceny</h1>
-          </div>
-          <div className="header-actions">
-            <ThemeToggle />
-            <LanguageToggle />
-          </div>
-        </header>
+        <AppHeader brandMark="AC" onBrandClick={() => navigate('landing')} />
         <ResetPasswordView
-          accessToken={token}
+          accessToken={resetToken}
           onSubmit={handleResetPassword}
           onGoToLogin={() => navigate('login')}
         />
@@ -547,16 +532,7 @@ function App() {
   if (!auth.isAuthenticated && screen === 'admin-login') {
     return (
       <main className="app-shell admin-shell">
-        <header className="app-header">
-          <div className="brand">
-            <div className="brand-mark admin-brand-mark">AD</div>
-            <h1>Autoceny</h1>
-          </div>
-          <div className="header-actions">
-            <ThemeToggle />
-            <LanguageToggle />
-          </div>
-        </header>
+        <AppHeader brandMark="AD" brandMarkClass="admin-brand-mark" />
         <AdminLoginView onLogin={handleAdminLogin} />
       </main>
     )
@@ -567,22 +543,10 @@ function App() {
     const isShopAuth = screen === 'shop-login' || screen === 'shop-register'
     return (
       <main className="app-shell">
-        <header className="app-header">
-          <div className="brand" onClick={() => navigate('landing')} style={{ cursor: 'pointer' }}>
-            <div className="brand-mark">{isShopAuth ? 'W' : 'AC'}</div>
-            <h1>Autoceny</h1>
-          </div>
-          <div className="header-actions">
-            <ThemeToggle />
-            <LanguageToggle />
-          </div>
-        </header>
+        <AppHeader brandMark={isShopAuth ? 'W' : 'AC'} onBrandClick={() => navigate('landing')} />
 
         {screen === 'shop-register' ? (
-          <ShopRegisterView
-            onRegister={handleShopRegister}
-            onSwitchToLogin={() => navigate('shop-login')}
-          />
+          <ShopRegisterView onRegister={handleShopRegister} onSwitchToLogin={() => navigate('shop-login')} />
         ) : screen === 'shop-login' ? (
           <LoginView
             onLogin={handleShopLogin}
@@ -593,10 +557,7 @@ function App() {
             brandMark="W"
           />
         ) : screen === 'register' ? (
-          <RegisterView
-            onRegister={handleRegister}
-            onSwitchToLogin={() => navigate('login')}
-          />
+          <RegisterView onRegister={handleRegister} onSwitchToLogin={() => navigate('login')} />
         ) : (
           <LoginView
             onLogin={handleLogin}
@@ -651,17 +612,10 @@ function App() {
   if (isAdmin) {
     return (
       <main className="app-shell admin-shell">
-        <header className="app-header">
-          <div className="brand">
-            <div className="brand-mark admin-brand-mark">AD</div>
-            <h1>Autoceny</h1>
-          </div>
-          <div className="header-actions">
-            <ThemeToggle />
-            <LanguageToggle />
-          </div>
-        </header>
-        <AdminVouchersView onLogout={doLogout} />
+        <AppHeader brandMark="AD" brandMarkClass="admin-brand-mark" />
+        <ErrorBoundary>
+          <AdminVouchersView onLogout={doLogout} />
+        </ErrorBoundary>
       </main>
     )
   }
@@ -685,127 +639,123 @@ function App() {
         enrollmentCatalog={catalog.enrollmentCatalog}
       >
         <main className="app-shell">
-          <header className="app-header">
-            <div className="brand" onClick={() => navigate('shop-inbox')} style={{ cursor: 'pointer' }}>
-              <div className="brand-mark">W</div>
-              <h1>Autoceny</h1>
-            </div>
-            <div className="header-actions">
-              {screen !== 'shop-inbox' ? (
-                <button className="btn btn-ghost" onClick={() => navigate('shop-inbox')}>
-                  {t('shopNav.inbox')}
+          <AppHeader
+            brandMark="W"
+            onBrandClick={() => navigate('shop-inbox')}
+            navSlot={
+              <>
+                {screen !== 'shop-inbox' ? (
+                  <button className="btn btn-ghost" onClick={() => navigate('shop-inbox')}>
+                    {t('shopNav.inbox')}
+                  </button>
+                ) : null}
+                <button
+                  className="btn btn-ghost"
+                  onClick={() => {
+                    void shop.loadShopProfile()
+                    navigate('shop-profile')
+                  }}
+                >
+                  {t('shopNav.profile')}
                 </button>
-              ) : null}
-              <button className="btn btn-ghost" onClick={() => {
-                void shop.loadShopProfile()
-                navigate('shop-profile')
-              }}>
-                {t('shopNav.profile')}
-              </button>
-              <button className="btn btn-ghost" onClick={() => void handleLogout()}>
-                {t('auth.logout')}
-              </button>
-              <ThemeToggle />
-              <LanguageToggle />
-            </div>
-          </header>
+                <button className="btn btn-ghost" onClick={doLogout}>
+                  {t('auth.logout')}
+                </button>
+              </>
+            }
+          />
 
-          <section className="banner-stack" aria-live="polite">
-            {banners.map((banner) => (
-              <article className={`banner banner-${banner.type}`} key={banner.id}>
-                <strong>{banner.title}</strong>
-                <p>{banner.message}</p>
-              </article>
-            ))}
-          </section>
+          <BannerStack banners={banners} />
 
           {shop.shopLoading ? <p className="loading">{t('app.loading')}</p> : null}
           {shop.shopError ? <p className="field-error">{t(shop.shopError as 'app.loadError')}</p> : null}
 
-          {!shop.shopLoading && !shop.shopError && screen === 'shop-inbox' ? (
-            <ShopInboxView
-              queueItems={shop.shopQueue}
-              onOpenRequest={shopOpenDetail}
-              onAcknowledge={(requestId) => {
-                void shop.handleShopAcknowledge(requestId)
-              }}
-              onDecline={(requestId) => {
-                void shop.handleShopDecline(requestId)
-              }}
-              onProfile={() => {
-                void shop.loadShopProfile()
-                navigate('shop-profile')
-              }}
-            />
-          ) : null}
+          <ErrorBoundary>
+            {!shop.shopLoading && !shop.shopError && screen === 'shop-inbox' ? (
+              <ShopInboxView
+                queueItems={shop.shopQueue}
+                onOpenRequest={shopOpenDetail}
+                onAcknowledge={(requestId) => {
+                  void shop.handleShopAcknowledge(requestId)
+                }}
+                onDecline={(requestId) => {
+                  void shop.handleShopDecline(requestId)
+                }}
+                onProfile={() => {
+                  void shop.loadShopProfile()
+                  navigate('shop-profile')
+                }}
+              />
+            ) : null}
 
-          {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && shop.shopSelectedRequest ? (
-            <ShopRequestDetailView
-              request={shop.shopSelectedRequest}
-              shopResponse={shop.shopOwnResponse}
-              messages={shop.shopMessages}
-              onBack={() => {
-                void shop.loadShopQueue()
-                navigate('shop-inbox')
-              }}
-              onAcknowledge={() => {
-                if (shopSelectedRequestId) {
-                  void shop.handleShopAcknowledge(shopSelectedRequestId).then(() => {
-                    void shop.openShopRequestDetail(shopSelectedRequestId)
-                  })
-                }
-              }}
-              onDecline={() => {
-                if (shopSelectedRequestId) {
-                  void shop.handleShopDecline(shopSelectedRequestId).then(() => {
-                    void shop.loadShopQueue()
-                    navigate('shop-inbox')
-                  })
-                }
-              }}
-              onSendQuote={() => navigate('shop-send-quote')}
-              onAskQuestion={async (text) => {
-                if (shopSelectedRequestId) {
-                  await shop.handleShopAskQuestion(shopSelectedRequestId, text)
-                }
-              }}
-              onSendMessage={async (text) => {
-                if (shopSelectedRequestId) {
-                  await shop.handleShopSendMessage(shopSelectedRequestId, text)
-                }
-              }}
-              onSharePhone={async (phone) => {
-                if (shopSelectedRequestId) {
-                  await shop.handleSharePhone(shopSelectedRequestId, phone)
-                }
-              }}
-            />
-          ) : null}
+            {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && shop.shopSelectedRequest ? (
+              <ShopRequestDetailView
+                request={shop.shopSelectedRequest}
+                shopResponse={shop.shopOwnResponse}
+                messages={shop.shopMessages}
+                onBack={() => {
+                  void shop.loadShopQueue()
+                  navigate('shop-inbox')
+                }}
+                onAcknowledge={() => {
+                  if (shopSelectedRequestId) {
+                    void shop.handleShopAcknowledge(shopSelectedRequestId).then(() => {
+                      void shop.openShopRequestDetail(shopSelectedRequestId)
+                    })
+                  }
+                }}
+                onDecline={() => {
+                  if (shopSelectedRequestId) {
+                    void shop.handleShopDecline(shopSelectedRequestId).then(() => {
+                      void shop.loadShopQueue()
+                      navigate('shop-inbox')
+                    })
+                  }
+                }}
+                onSendQuote={() => navigate('shop-send-quote')}
+                onAskQuestion={async (text) => {
+                  if (shopSelectedRequestId) {
+                    await shop.handleShopAskQuestion(shopSelectedRequestId, text)
+                  }
+                }}
+                onSendMessage={async (text) => {
+                  if (shopSelectedRequestId) {
+                    await shop.handleShopSendMessage(shopSelectedRequestId, text)
+                  }
+                }}
+                onSharePhone={async (phone) => {
+                  if (shopSelectedRequestId) {
+                    await shop.handleSharePhone(shopSelectedRequestId, phone)
+                  }
+                }}
+              />
+            ) : null}
 
-          {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && !shop.shopSelectedRequest ? (
-            <article className="empty-state">{t('app.notFound')}</article>
-          ) : null}
+            {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && !shop.shopSelectedRequest ? (
+              <article className="empty-state">{t('app.notFound')}</article>
+            ) : null}
 
-          {!shop.shopLoading && !shop.shopError && screen === 'shop-send-quote' && shop.shopSelectedRequest ? (
-            <ShopSendQuoteView
-              request={shop.shopSelectedRequest}
-              onSubmit={async (payload, phone) => {
-                if (shopSelectedRequestId) {
-                  await shop.handleSubmitQuote(shopSelectedRequestId, payload, phone)
-                  navigate('shop-request-detail')
-                }
-              }}
-              onBack={() => navigate('shop-request-detail')}
-            />
-          ) : null}
+            {!shop.shopLoading && !shop.shopError && screen === 'shop-send-quote' && shop.shopSelectedRequest ? (
+              <ShopSendQuoteView
+                request={shop.shopSelectedRequest}
+                onSubmit={async (payload, phone) => {
+                  if (shopSelectedRequestId) {
+                    await shop.handleSubmitQuote(shopSelectedRequestId, payload, phone)
+                    navigate('shop-request-detail')
+                  }
+                }}
+                onBack={() => navigate('shop-request-detail')}
+              />
+            ) : null}
 
-          {screen === 'shop-profile' ? (
-            <ShopProfileView
-              profile={shop.shopProfile}
-              onSave={shop.handleSaveProfile}
-              onBack={() => navigate('shop-inbox')}
-            />
-          ) : null}
+            {screen === 'shop-profile' ? (
+              <ShopProfileView
+                profile={shop.shopProfile}
+                onSave={shop.handleSaveProfile}
+                onBack={() => navigate('shop-inbox')}
+              />
+            ) : null}
+          </ErrorBoundary>
         </main>
       </EnrollmentGate>
     )
@@ -814,140 +764,128 @@ function App() {
   // Authenticated driver app
   return (
     <main className="app-shell">
-      <header className="app-header">
-        <div className="brand" onClick={() => navigate('home')} style={{ cursor: 'pointer' }}>
-          <div className="brand-mark">AC</div>
-          <h1>Autoceny</h1>
-        </div>
-        <div className="header-actions">
-          {screen !== 'home' ? (
-            <button
-              className="btn btn-ghost"
-              onClick={() => {
-                navigate('home')
-              }}
-            >
-              {t('app.home')}
+      <AppHeader
+        brandMark="AC"
+        onBrandClick={() => navigate('home')}
+        navSlot={
+          <>
+            {screen !== 'home' ? (
+              <button
+                className="btn btn-ghost"
+                onClick={() => {
+                  navigate('home')
+                }}
+              >
+                {t('app.home')}
+              </button>
+            ) : null}
+            <button className="btn btn-ghost" onClick={() => navigate('plan')}>
+              {t('plan.nav')}
             </button>
-          ) : null}
-          <button className="btn btn-ghost" onClick={() => navigate('plan')}>
-            {t('plan.nav')}
-          </button>
-          <button
-            className="btn btn-ghost"
-            onClick={() => void handleLogout()}
-          >
-            {t('auth.logout')}
-          </button>
-          <ThemeToggle />
-          <LanguageToggle />
-        </div>
-      </header>
+            <button className="btn btn-ghost" onClick={doLogout}>
+              {t('auth.logout')}
+            </button>
+          </>
+        }
+      />
 
-      <section className="banner-stack" aria-live="polite">
-        {banners.map((banner) => (
-          <article className={`banner banner-${banner.type}`} key={banner.id}>
-            <strong>{banner.title}</strong>
-            <p>{banner.message}</p>
-          </article>
-        ))}
-      </section>
+      <BannerStack banners={banners} />
 
       {loading ? <p className="loading">{t('app.loading')}</p> : null}
       {error ? <p className="field-error">{t(error as 'app.loadError')}</p> : null}
 
-      {!loading && !error && screen === 'home' ? (
-        <HomeView
-          requests={requests}
-          onCreateRequest={() => {
-            if (plan.isAtOpenLimit(requests)) {
-              setLimitModal('open_orders')
-              return
-            }
-            if (plan.isAtDailyLimit(requests)) {
-              setLimitModal('daily_orders')
-              return
-            }
-            navigate('create-request')
-          }}
-          onMyRequests={() => {
-            navigate('my-requests')
-          }}
-          onOpenRequest={(requestId) => {
-            void openRequestDetail(requestId)
-          }}
-          planInfo={plan.planInfo}
-          onNavigatePlan={() => navigate('plan')}
-          freeEntitlements={plan.freeEntitlements}
-        />
-      ) : null}
+      <ErrorBoundary>
+        {!loading && !error && screen === 'home' ? (
+          <HomeView
+            requests={requests}
+            onCreateRequest={() => {
+              if (plan.isAtOpenLimit(requests)) {
+                setLimitModal('open_orders')
+                return
+              }
+              if (plan.isAtDailyLimit(requests)) {
+                setLimitModal('daily_orders')
+                return
+              }
+              navigate('create-request')
+            }}
+            onMyRequests={() => {
+              navigate('my-requests')
+            }}
+            onOpenRequest={(requestId) => {
+              void openRequestDetail(requestId)
+            }}
+            planInfo={plan.planInfo}
+            onNavigatePlan={() => navigate('plan')}
+            freeEntitlements={plan.freeEntitlements}
+          />
+        ) : null}
 
-      {!loading && !error && screen === 'create-request' ? (
-        <CreateRepairRequestFlow
-          onCancel={() => {
-            navigate('home')
-          }}
-          onSubmitRequest={handleCreateRequest}
-          onViewRequest={(requestId) => {
-            void openRequestDetail(requestId)
-          }}
-        />
-      ) : null}
+        {!loading && !error && screen === 'create-request' ? (
+          <CreateRepairRequestFlow
+            onCancel={() => {
+              navigate('home')
+            }}
+            onSubmitRequest={handleCreateRequest}
+            onViewRequest={(requestId) => {
+              void openRequestDetail(requestId)
+            }}
+          />
+        ) : null}
 
-      {!loading && !error && screen === 'my-requests' ? (
-        <MyRequestsView
-          requests={requests}
-          onBackHome={() => {
-            navigate('home')
-          }}
-          onOpenRequest={(requestId) => {
-            void openRequestDetail(requestId)
-          }}
-        />
-      ) : null}
+        {!loading && !error && screen === 'my-requests' ? (
+          <MyRequestsView
+            requests={requests}
+            onBackHome={() => {
+              navigate('home')
+            }}
+            onOpenRequest={(requestId) => {
+              void openRequestDetail(requestId)
+            }}
+          />
+        ) : null}
 
-      {!loading && !error && screen === 'request-detail' && selectedRequest ? (
-        <RepairRequestDetail
-          request={selectedRequest}
-          onBackHome={() => {
-            navigate('home')
-          }}
-          onCloseRequest={handleCloseRequest}
-          onMarkInterested={handleMarkInterested}
-          onIgnoreShop={handleIgnoreShop}
-          onSendThreadMessage={handleSendThreadMessage}
-        />
-      ) : null}
+        {!loading && !error && screen === 'request-detail' && selectedRequest ? (
+          <RepairRequestDetail
+            request={selectedRequest}
+            onBackHome={() => {
+              navigate('home')
+            }}
+            onCloseRequest={handleCloseRequest}
+            onMarkInterested={handleMarkInterested}
+            onIgnoreShop={handleIgnoreShop}
+            onSendThreadMessage={handleSendThreadMessage}
+          />
+        ) : null}
 
-      {!loading && !error && screen === 'request-detail' && !selectedRequest ? (
-        <article className="empty-state">{t('app.notFound')}</article>
-      ) : null}
+        {!loading && !error && screen === 'request-detail' && !selectedRequest ? (
+          <article className="empty-state">{t('app.notFound')}</article>
+        ) : null}
 
-      {screen === 'plan' ? (
-        <PlanView
-          planInfo={plan.planInfo}
-          requests={requests}
-          onUpgrade={(bi) => void handleUpgrade(bi)}
-          onManageSubscription={() => void handleManageSubscription()}
-          onBack={() => navigate('home')}
-          upgradeLoading={upgradeLoading}
-          freeEntitlements={plan.freeEntitlements}
-          proPriceMonthly={catalog.getPlanPrice('PRO', 'MONTHLY')}
-          proPriceAnnual={catalog.getPlanPrice('PRO', 'ANNUAL')}
-          currency={catalog.currency}
-        />
-      ) : null}
+        {screen === 'plan' ? (
+          <PlanView
+            planInfo={plan.planInfo}
+            requests={requests}
+            onUpgrade={(bi) => void handleUpgrade(bi)}
+            onManageSubscription={() => void handleManageSubscription()}
+            onBack={() => navigate('home')}
+            upgradeLoading={upgradeLoading}
+            freeEntitlements={plan.freeEntitlements}
+            proPriceMonthly={catalog.getPlanPrice('PRO', 'MONTHLY')}
+            proPriceAnnual={catalog.getPlanPrice('PRO', 'ANNUAL')}
+            currency={catalog.currency}
+          />
+        ) : null}
 
-      {screen === 'plan-success' ? (
-        <PlanSuccessView
-          onRefreshPlan={plan.refreshPlan as () => Promise<UserPlanInfo | null | undefined>}
-          onContinue={() => navigate('home')}
-        />
-      ) : null}
+        {screen === 'plan-success' ? (
+          <PlanSuccessView
+            onRefreshPlan={plan.refreshPlan as () => Promise<UserPlanInfo | null | undefined>}
+            onContinue={() => navigate('home')}
+          />
+        ) : null}
 
-      {screen === 'plan-cancel' ? (
-        <PlanCancelView onBack={() => navigate('home')} />
-      ) : null}
+        {screen === 'plan-cancel' ? <PlanCancelView onBack={() => navigate('home')} /> : null}
+      </ErrorBoundary>
 
       {limitModal ? (
         <UpgradeLimitModal

@@ -74,9 +74,12 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
 
   const stepSubtitle = useMemo(() => {
     switch (step) {
-      case 1: return t('shopRegister.subtitleStep1')
-      case 2: return t('shopRegister.subtitleStep2')
-      case 3: return t('shopRegister.subtitleStep3')
+      case 1:
+        return t('shopRegister.subtitleStep1')
+      case 2:
+        return t('shopRegister.subtitleStep2')
+      case 3:
+        return t('shopRegister.subtitleStep3')
     }
   }, [step, t])
 
@@ -110,7 +113,8 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
       if (!billingStreet.trim()) errs.billingStreet = t('shopRegister.billingStreetRequired')
       if (!billingCity.trim()) errs.billingCity = t('shopRegister.billingCityRequired')
       if (!billingPostalCode.trim()) errs.billingPostalCode = t('shopRegister.billingPostalCodeRequired')
-      else if (!isValidPolishPostalCode(billingPostalCode.trim())) errs.billingPostalCode = t('shopRegister.billingPostalCodeInvalid')
+      else if (!isValidPolishPostalCode(billingPostalCode.trim()))
+        errs.billingPostalCode = t('shopRegister.billingPostalCodeInvalid')
     }
     if (!termsAccepted) errs.terms = t('shopRegister.termsRequired')
     if (TURNSTILE_SITE_KEY && !captchaToken) errs.captcha = t('auth.captchaRequired')
@@ -176,7 +180,7 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
           const isActive = step === stepNum
           const isDone = step > stepNum
           return (
-            <div key={label} style={{ display: 'contents' }}>
+            <div key={label} className="u-contents">
               {index > 0 ? <div className={`stepper-line${isDone ? ' done' : ''}`} /> : null}
               <div className={`stepper-step${isActive ? ' active' : ''}${isDone ? ' done' : ''}`}>
                 <span className="stepper-dot">{isDone ? '\u2713' : stepNum}</span>
@@ -196,7 +200,16 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
 
         {submitError ? <div className="auth-error">{submitError}</div> : null}
 
-        <form onSubmit={step === 3 ? (e) => void handleSubmit(e) : (e) => { e.preventDefault(); handleNext() }}>
+        <form
+          onSubmit={
+            step === 3
+              ? (e) => void handleSubmit(e)
+              : (e) => {
+                  e.preventDefault()
+                  handleNext()
+                }
+          }
+        >
           {/* Step 1: Account */}
           {step === 1 ? (
             <div className="form-grid">
@@ -362,11 +375,7 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
               </label>
 
               <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={sameAsShop}
-                  onChange={(e) => setSameAsShop(e.target.checked)}
-                />
+                <input type="checkbox" checked={sameAsShop} onChange={(e) => setSameAsShop(e.target.checked)} />
                 {t('shopRegister.sameAsShopAddress')}
               </label>
 
@@ -403,7 +412,9 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
                       placeholder={t('shopRegister.billingPostalCodePlaceholder')}
                       inputMode="numeric"
                     />
-                    {errors.billingPostalCode ? <small className="field-error">{errors.billingPostalCode}</small> : null}
+                    {errors.billingPostalCode ? (
+                      <small className="field-error">{errors.billingPostalCode}</small>
+                    ) : null}
                   </label>
                 </>
               ) : null}
@@ -419,11 +430,7 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
               </label>
 
               <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={termsAccepted}
-                  onChange={(e) => setTermsAccepted(e.target.checked)}
-                />
+                <input type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} />
                 {t('shopRegister.termsLabel')}
               </label>
               {errors.terms ? <small className="field-error">{errors.terms}</small> : null}
@@ -445,7 +452,9 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
             ) : null}
             <button className="shop-register-submit" type="submit" disabled={submitting}>
               {step === 3
-                ? (submitting ? t('shopRegister.registering') : t('shopRegister.register'))
+                ? submitting
+                  ? t('shopRegister.registering')
+                  : t('shopRegister.register')
                 : t('common.next')}
             </button>
           </div>
