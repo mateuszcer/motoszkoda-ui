@@ -293,7 +293,8 @@
 
   "shopNav": {
     "inbox": "Inbox",
-    "profile": "Profile"
+    "profile": "Profile",
+    "plan": "Subscription"
   },
 
   "shopInbox": {
@@ -693,6 +694,19 @@
     "cancelTitle": "Payment cancelled",
     "cancelMessage": "No changes were made to your plan.",
     "cancelCta": "Back to dashboard"
+  },
+
+  "shopPlan": {
+    "title": "Your subscription",
+    "planName": "Shop subscription",
+    "statusActive": "Active",
+    "statusCancelScheduled": "Cancellation scheduled",
+    "descriptionActive": "Your shop subscription is active. You are receiving repair requests from nearby drivers.",
+    "manageSubscription": "Manage subscription",
+    "restoreSubscription": "Restore subscription",
+    "cancelAtNotice": "Your subscription will be cancelled on {{date}}.",
+    "voucherDescription": "Your shop is activated with a voucher. No subscription management needed.",
+    "portalError": "Could not open subscription portal. Please try again."
   },
 
   "shopEnroll": {

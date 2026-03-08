@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: MotoSzkoda Enrollment API
   description: Shop enrollment endpoints — registration, voucher redemption, subscription payment, and admin management.
-  version: 3.0.0
+  version: 4.0.0
 
 paths:
   /api/enrollment/plans:
@@ -132,9 +132,39 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EnrollmentResponse"
+                $ref: "#/components/schemas/EnrollmentStatusResponse"
         "404":
           description: No enrollment found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/enrollment/portal:
+    post:
+      operationId: createEnrollmentPortalSession
+      summary: Create Stripe Customer Portal session for subscription management
+      description: |
+        Creates a Stripe Customer Portal session so shop owners can manage their subscription
+        (cancel, reverse cancellation, update payment method). Requires an active Stripe subscription.
+      tags: [Enrollment - Shop]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Portal session URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortalResponse"
+        "404":
+          description: No enrollment found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: No active subscription (no Stripe customer ID)
           content:
             application/json:
               schema:
@@ -147,6 +177,7 @@ paths:
       description: |
         Receives Stripe webhook events. Verifies signature via `Stripe-Signature` header.
         Handles `invoice.paid` (activate/unsuspend), `invoice.payment_failed` (suspend),
+        `customer.subscription.updated` (schedule/reverse cancellation),
         and `customer.subscription.deleted` (suspend). Always returns 200 to acknowledge.
         Idempotent via `stripe_webhook_event` table.
       tags: [Enrollment - Webhook]
@@ -435,9 +466,30 @@ components:
         billingInterval:
           $ref: "#/components/schemas/BillingInterval"
 
+    EnrollmentStatusResponse:
+      type: object
+      properties:
+        shopId:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/EnrollmentStatus"
+        cancelAt:
+          type: string
+          format: date-time
+          description: Scheduled cancellation timestamp (only present when status is CANCEL_SCHEDULED)
+
+    PortalResponse:
+      type: object
+      properties:
+        portalUrl:
+          type: string
+          format: uri
+          description: Stripe Customer Portal session URL
+
     EnrollmentStatus:
       type: string
-      enum: [PENDING_PAYMENT, ACTIVE, SUSPENDED]
+      enum: [PENDING_PAYMENT, ACTIVE, CANCEL_SCHEDULED, SUSPENDED]
 
     EnrollmentPlanCatalog:
       type: object

@@ -3722,6 +3722,12 @@ label small {
   color: var(--neutral-950);
 }
 
+.plan-card-description {
+  font-size: 15px;
+  color: var(--neutral-600);
+  margin: 0;
+}
+
 .plan-stats {
   display: grid;
   gap: var(--space-3);

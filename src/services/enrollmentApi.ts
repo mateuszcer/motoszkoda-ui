@@ -2,6 +2,7 @@ import type {
   BillingInterval,
   EnrollmentPlanCatalog,
   EnrollmentStatusResponse,
+  PortalResponse,
   SubscriptionResponse,
   ShopRegistrationRequest,
   ShopRegistrationResponse,
@@ -34,5 +35,9 @@ export const enrollmentApi = {
     return api.post<SubscriptionResponse>('/api/enrollment/payment', {
       body: { billingInterval },
     })
+  },
+
+  async portal(): Promise<PortalResponse> {
+    return api.post<PortalResponse>('/api/enrollment/portal')
   },
 }

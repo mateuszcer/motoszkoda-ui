@@ -297,7 +297,8 @@
 
   "shopNav": {
     "inbox": "Skrzynka",
-    "profile": "Profil"
+    "profile": "Profil",
+    "plan": "Subskrypcja"
   },
 
   "shopInbox": {
@@ -697,6 +698,19 @@
     "cancelTitle": "Platnosc anulowana",
     "cancelMessage": "Nie dokonano zadnych zmian w Twoim planie.",
     "cancelCta": "Wroc do panelu"
+  },
+
+  "shopPlan": {
+    "title": "Twoja subskrypcja",
+    "planName": "Subskrypcja warsztatu",
+    "statusActive": "Aktywna",
+    "statusCancelScheduled": "Anulowanie zaplanowane",
+    "descriptionActive": "Twoja subskrypcja jest aktywna. Otrzymujesz zlecenia napraw od pobliskich kierowców.",
+    "manageSubscription": "Zarządzaj subskrypcją",
+    "restoreSubscription": "Przywróć subskrypcję",
+    "cancelAtNotice": "Twoja subskrypcja zostanie anulowana {{date}}.",
+    "voucherDescription": "Twój warsztat jest aktywowany voucherem. Zarządzanie subskrypcją nie jest wymagane.",
+    "portalError": "Nie udało się otworzyć portalu subskrypcji. Spróbuj ponownie."
   },
 
   "shopEnroll": {

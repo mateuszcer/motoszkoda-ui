@@ -347,7 +347,7 @@ export interface ShopRegistrationResponse {
   userId: string
   shopId: string
   email: string
-  enrollmentStatus: 'PENDING_PAYMENT' | 'ACTIVE' | 'SUSPENDED'
+  enrollmentStatus: 'PENDING_PAYMENT' | 'ACTIVE' | 'SUSPENDED' | 'CANCEL_SCHEDULED'
 }
 
 export interface EnrollWithVoucherRequest {
@@ -356,7 +356,8 @@ export interface EnrollWithVoucherRequest {
 
 export interface EnrollmentStatusResponse {
   shopId: string
-  status: 'PENDING_PAYMENT' | 'ACTIVE' | 'SUSPENDED'
+  status: 'PENDING_PAYMENT' | 'ACTIVE' | 'SUSPENDED' | 'CANCEL_SCHEDULED'
+  cancelAt?: string
 }
 
 export interface SubscriptionResponse {

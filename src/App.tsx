@@ -59,6 +59,7 @@ const ShopSendQuoteView = lazy(() =>
   import('./components/ShopSendQuoteView').then((m) => ({ default: m.ShopSendQuoteView })),
 )
 const ShopProfileView = lazy(() => import('./components/ShopProfileView').then((m) => ({ default: m.ShopProfileView })))
+const ShopPlanView = lazy(() => import('./components/ShopPlanView').then((m) => ({ default: m.ShopPlanView })))
 
 const NOTIFICATION_POLL_INTERVAL = 60_000
 
@@ -99,6 +100,7 @@ function App() {
   const [pendingEmail, setPendingEmail] = useState<string | null>(null)
 
   const [enrollmentStatus, setEnrollmentStatus] = useState<EnrollmentStatus | null>(null)
+  const [enrollmentCancelAt, setEnrollmentCancelAt] = useState<string | null>(null)
   const [enrollmentLoading, setEnrollmentLoading] = useState(false)
 
   const lastNotificationTime = useRef<string | undefined>(undefined)
@@ -122,6 +124,7 @@ function App() {
     void authApi.logout()
     setAuth({ user: null, token: null, isAuthenticated: false })
     setEnrollmentStatus(null)
+    setEnrollmentCancelAt(null)
     setRequests([])
     setBanners([])
     lastNotificationTime.current = undefined
@@ -181,6 +184,7 @@ function App() {
           try {
             const status = await enrollmentApi.getStatus()
             setEnrollmentStatus(status.status)
+            setEnrollmentCancelAt(status.cancelAt ?? null)
           } catch {
             setEnrollmentStatus(null)
           } finally {
@@ -194,7 +198,7 @@ function App() {
       setAuthLoading(false)
     }
     void restore()
-  }, [])
+  }, [navigate])
 
   const isAdmin = auth.user?.role === 'ADMIN'
 
@@ -203,14 +207,14 @@ function App() {
   useEffect(() => {
     if (auth.isAuthenticated && !isAdmin) {
       if (isShop) {
-        if (enrollmentStatus === 'ACTIVE') {
+        if (enrollmentStatus === 'ACTIVE' || enrollmentStatus === 'CANCEL_SCHEDULED') {
           void shop.loadShopQueue()
         }
       } else {
         void loadRequests()
       }
     }
-  }, [auth.isAuthenticated, isAdmin, isShop, enrollmentStatus, loadRequests, shop.loadShopQueue])
+  }, [auth.isAuthenticated, isAdmin, isShop, enrollmentStatus, loadRequests, shop])
 
   const handleLogin = async (email: string, password: string, captchaToken?: string) => {
     const result = await authApi.login(email, password, captchaToken)
@@ -231,6 +235,7 @@ function App() {
     try {
       const status = await enrollmentApi.getStatus()
       setEnrollmentStatus(status.status)
+      setEnrollmentCancelAt(status.cancelAt ?? null)
     } catch {
       setEnrollmentStatus(null)
     } finally {
@@ -455,7 +460,7 @@ function App() {
     return () => {
       window.clearInterval(intervalId)
     }
-  }, [auth.isAuthenticated, auth.user, pushBanner, selectedRequestId, upsertRequest, t])
+  }, [auth.isAuthenticated, auth.user, isAdmin, pushBanner, selectedRequestId, upsertRequest, t])
 
   // Auth loading state
   if (authLoading) {
@@ -603,6 +608,7 @@ function App() {
     try {
       const result = await enrollmentApi.getStatus()
       setEnrollmentStatus(result.status)
+      setEnrollmentCancelAt(result.cancelAt ?? null)
     } catch {
       // keep current status
     }
@@ -657,6 +663,9 @@ function App() {
                   }}
                 >
                   {t('shopNav.profile')}
+                </button>
+                <button className="btn btn-ghost" onClick={() => navigate('shop-plan')}>
+                  {t('shopNav.plan')}
                 </button>
                 <button className="btn btn-ghost" onClick={doLogout}>
                   {t('auth.logout')}
@@ -752,6 +761,14 @@ function App() {
               <ShopProfileView
                 profile={shop.shopProfile}
                 onSave={shop.handleSaveProfile}
+                onBack={() => navigate('shop-inbox')}
+              />
+            ) : null}
+
+            {screen === 'shop-plan' && enrollmentStatus ? (
+              <ShopPlanView
+                enrollmentStatus={enrollmentStatus}
+                cancelAt={enrollmentCancelAt}
                 onBack={() => navigate('shop-inbox')}
               />
             ) : null}

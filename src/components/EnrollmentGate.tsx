@@ -34,7 +34,7 @@ export function EnrollmentGate({
     )
   }
 
-  if (enrollmentStatus === 'ACTIVE') {
+  if (enrollmentStatus === 'ACTIVE' || enrollmentStatus === 'CANCEL_SCHEDULED') {
     return <>{children}</>
   }
 
