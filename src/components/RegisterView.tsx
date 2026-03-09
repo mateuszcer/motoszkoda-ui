@@ -64,7 +64,7 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
       <form className="auth-card" onSubmit={(e) => void handleSubmit(e)}>
         <div className="auth-brand">
           <div className="brand-mark">
-            {brandMark ?? <img src="/logo/logomark-main.svg" alt="" className="brand-mark-logo" />}
+            {brandMark ?? <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />}
           </div>
           <h2>{titleKey ? t(titleKey as 'auth.registerTitle') : t('auth.registerTitle')}</h2>
           <p>{subtitleKey ? t(subtitleKey as 'auth.registerSubtitle') : t('auth.registerSubtitle')}</p>

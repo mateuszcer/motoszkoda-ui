@@ -61,7 +61,7 @@ export function LoginView({
       <form className="auth-card" onSubmit={(e) => void handleSubmit(e)}>
         <div className="auth-brand">
           <div className="brand-mark">
-            {brandMark ?? <img src="/logo/logomark-main.svg" alt="" className="brand-mark-logo" />}
+            {brandMark ?? <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />}
           </div>
           <h2>{titleKey ? t(titleKey as 'auth.loginTitle') : t('auth.loginTitle')}</h2>
           <p>{subtitleKey ? t(subtitleKey as 'auth.loginSubtitle') : t('auth.loginSubtitle')}</p>

@@ -12,7 +12,7 @@ export function SignupConfirmationView({ onGoToLogin }: SignupConfirmationViewPr
       <div className="auth-card u-text-center">
         <div className="auth-brand">
           <div className="brand-mark">
-            <img src="/logo/logomark-main.svg" alt="" className="brand-mark-logo" />
+            <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
           </div>
           <h2>{t('signupConfirmation.title')}</h2>
           <p>{t('signupConfirmation.message')}</p>

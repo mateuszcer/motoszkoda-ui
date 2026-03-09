@@ -25,7 +25,7 @@ interface AppHeaderProps {
   navSlot?: ReactNode
 }
 
-const defaultBrandMark = <img src="/logo/logomark-main.svg" alt="" className="brand-mark-logo" />
+const defaultBrandMark = <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
 
 export function AppHeader({ brandMark, brandMarkClass, onBrandClick, navSlot }: AppHeaderProps) {
   const mark = brandMark ?? defaultBrandMark

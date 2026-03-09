@@ -45,7 +45,7 @@ export function ResetPasswordView({ accessToken, onSubmit, onGoToLogin }: ResetP
         <div className="auth-card u-text-center">
           <div className="auth-brand">
             <div className="brand-mark">
-              <img src="/logo/logomark-main.svg" alt="" className="brand-mark-logo" />
+              <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
             </div>
             <h2>{t('auth.resetPasswordSuccessTitle')}</h2>
             <p>{t('auth.resetPasswordSuccessMessage')}</p>
@@ -65,7 +65,7 @@ export function ResetPasswordView({ accessToken, onSubmit, onGoToLogin }: ResetP
         <div className="auth-card u-text-center">
           <div className="auth-brand">
             <div className="brand-mark">
-              <img src="/logo/logomark-main.svg" alt="" className="brand-mark-logo" />
+              <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
             </div>
             <h2>{t('auth.resetPasswordTitle')}</h2>
             <p>{t('auth.resetPasswordInvalidLink')}</p>
@@ -84,7 +84,7 @@ export function ResetPasswordView({ accessToken, onSubmit, onGoToLogin }: ResetP
       <form className="auth-card" onSubmit={(e) => void handleSubmit(e)}>
         <div className="auth-brand">
           <div className="brand-mark">
-            <img src="/logo/logomark-main.svg" alt="" className="brand-mark-logo" />
+            <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
           </div>
           <h2>{t('auth.resetPasswordTitle')}</h2>
           <p>{t('auth.resetPasswordSubtitle')}</p>

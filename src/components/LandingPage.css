@@ -144,8 +144,13 @@
   gap: 10px;
 }
 
-.lp-nav__brand .brand-mark-logo {
-  height: 26px;
+.lp-nav__brand .brand-mark {
+  width: 30px;
+  height: 30px;
+  background: var(--teal-700);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
 }
 
 .lp-nav__brand-name {
@@ -1560,8 +1565,13 @@
   gap: 8px;
 }
 
-.lp-footer__brand .brand-mark-logo {
-  height: 22px;
+.lp-footer__brand .brand-mark {
+  width: 26px;
+  height: 26px;
+  background: var(--teal-700);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
 }
 
 .lp-footer__brand-name {
