@@ -1,4 +1,5 @@
 import { Turnstile } from '@marsidev/react-turnstile'
+import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getSignupErrorMessage } from '../utils/signupErrors'
@@ -10,7 +11,7 @@ interface RegisterViewProps {
   onSwitchToLogin: () => void
   titleKey?: string
   subtitleKey?: string
-  brandMark?: string
+  brandMark?: ReactNode
 }
 
 export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKey, brandMark }: RegisterViewProps) {
@@ -62,7 +63,9 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
     <section className="auth-screen">
       <form className="auth-card" onSubmit={(e) => void handleSubmit(e)}>
         <div className="auth-brand">
-          <div className="brand-mark">{brandMark ?? 'AC'}</div>
+          <div className="brand-mark">
+            {brandMark ?? <img src="/logo/logomark-main.svg" alt="" className="brand-mark-logo" />}
+          </div>
           <h2>{titleKey ? t(titleKey as 'auth.registerTitle') : t('auth.registerTitle')}</h2>
           <p>{subtitleKey ? t(subtitleKey as 'auth.registerSubtitle') : t('auth.registerSubtitle')}</p>
         </div>

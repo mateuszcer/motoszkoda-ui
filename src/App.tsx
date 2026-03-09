@@ -490,7 +490,7 @@ function App() {
   if (!auth.isAuthenticated && screen === 'check-email' && pendingEmail) {
     return (
       <main className="app-shell">
-        <AppHeader brandMark="AC" onBrandClick={() => navigate('landing')} />
+        <AppHeader onBrandClick={() => navigate('landing')} />
         <CheckEmailView
           email={pendingEmail}
           onGoToLogin={() => navigate('login')}
@@ -504,7 +504,7 @@ function App() {
   if (!auth.isAuthenticated && screen === 'signup-confirmation') {
     return (
       <main className="app-shell">
-        <AppHeader brandMark="AC" onBrandClick={() => navigate('landing')} />
+        <AppHeader onBrandClick={() => navigate('landing')} />
         <SignupConfirmationView onGoToLogin={() => navigate('login')} />
       </main>
     )
@@ -514,7 +514,7 @@ function App() {
   if (!auth.isAuthenticated && screen === 'forgot-password') {
     return (
       <main className="app-shell">
-        <AppHeader brandMark="AC" onBrandClick={() => navigate('landing')} />
+        <AppHeader onBrandClick={() => navigate('landing')} />
         <ForgotPasswordView onSubmit={handleRequestPasswordReset} onBackToLogin={() => navigate('login')} />
       </main>
     )
@@ -524,7 +524,7 @@ function App() {
   if (!auth.isAuthenticated && screen === 'reset-password') {
     return (
       <main className="app-shell">
-        <AppHeader brandMark="AC" onBrandClick={() => navigate('landing')} />
+        <AppHeader onBrandClick={() => navigate('landing')} />
         <ResetPasswordView
           accessToken={resetToken}
           onSubmit={handleResetPassword}
@@ -538,7 +538,7 @@ function App() {
   if (!auth.isAuthenticated && screen === 'admin-login') {
     return (
       <main className="app-shell admin-shell">
-        <AppHeader brandMark="AD" brandMarkClass="admin-brand-mark" />
+        <AppHeader brandMarkClass="admin-brand-mark" />
         <AdminLoginView onLogin={handleAdminLogin} />
       </main>
     )
@@ -546,10 +546,9 @@ function App() {
 
   // Auth screens (login/register) — driver & shop
   if (!auth.isAuthenticated) {
-    const isShopAuth = screen === 'shop-login' || screen === 'shop-register'
     return (
       <main className="app-shell">
-        <AppHeader brandMark={isShopAuth ? 'W' : 'AC'} onBrandClick={() => navigate('landing')} />
+        <AppHeader onBrandClick={() => navigate('landing')} />
 
         {screen === 'shop-register' ? (
           <ShopRegisterView onRegister={handleShopRegister} onSwitchToLogin={() => navigate('shop-login')} />
@@ -560,7 +559,6 @@ function App() {
             onForgotPassword={() => navigate('forgot-password')}
             titleKey="shopAuth.loginTitle"
             subtitleKey="shopAuth.loginSubtitle"
-            brandMark="W"
           />
         ) : screen === 'register' ? (
           <RegisterView onRegister={handleRegister} onSwitchToLogin={() => navigate('login')} />
@@ -619,7 +617,7 @@ function App() {
   if (isAdmin) {
     return (
       <main className="app-shell admin-shell">
-        <AppHeader brandMark="AD" brandMarkClass="admin-brand-mark" />
+        <AppHeader brandMarkClass="admin-brand-mark" />
         <ErrorBoundary>
           <AdminVouchersView onLogout={doLogout} />
         </ErrorBoundary>
@@ -647,7 +645,6 @@ function App() {
       >
         <main className="app-shell">
           <AppHeader
-            brandMark="W"
             onBrandClick={() => navigate('shop-inbox')}
             navSlot={
               <>
@@ -783,7 +780,6 @@ function App() {
   return (
     <main className="app-shell">
       <AppHeader
-        brandMark="AC"
         onBrandClick={() => navigate('home')}
         navSlot={
           <>

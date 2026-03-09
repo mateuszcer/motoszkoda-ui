@@ -5,10 +5,9 @@ interface CheckEmailViewProps {
   email: string
   onGoToLogin: () => void
   onResendConfirmation?: (email: string) => Promise<void>
-  isShop?: boolean
 }
 
-export function CheckEmailView({ email, onGoToLogin, onResendConfirmation, isShop }: CheckEmailViewProps) {
+export function CheckEmailView({ email, onGoToLogin, onResendConfirmation }: CheckEmailViewProps) {
   const { t } = useTranslation()
   const [resending, setResending] = useState(false)
   const [resent, setResent] = useState(false)
@@ -32,7 +31,9 @@ export function CheckEmailView({ email, onGoToLogin, onResendConfirmation, isSho
     <section className="auth-screen">
       <div className="auth-card u-text-center">
         <div className="auth-brand">
-          <div className="brand-mark">{isShop ? 'W' : 'AC'}</div>
+          <div className="brand-mark">
+            <img src="/logo/logomark-main.svg" alt="" className="brand-mark-logo" />
+          </div>
           <h2>{t('checkEmail.title')}</h2>
           <p>{t('checkEmail.message', { email })}</p>
         </div>

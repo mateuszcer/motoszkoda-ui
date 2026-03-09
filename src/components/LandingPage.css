@@ -144,15 +144,8 @@
   gap: 10px;
 }
 
-.lp-nav__brand .brand-mark {
-  width: 30px;
-  height: 30px;
-  background: var(--teal-700);
-  border-radius: 7px;
-  display: grid;
-  place-items: center;
-  font: 700 12px/1 var(--lp-font-b);
-  color: var(--mint-light);
+.lp-nav__brand .brand-mark-logo {
+  height: 26px;
 }
 
 .lp-nav__brand-name {
@@ -1567,15 +1560,8 @@
   gap: 8px;
 }
 
-.lp-footer__brand .brand-mark {
-  width: 26px;
-  height: 26px;
-  background: var(--teal-700);
-  border-radius: 6px;
-  display: grid;
-  place-items: center;
-  font: 700 10px/1 var(--lp-font-b);
-  color: var(--mint-light);
+.lp-footer__brand .brand-mark-logo {
+  height: 22px;
 }
 
 .lp-footer__brand-name {

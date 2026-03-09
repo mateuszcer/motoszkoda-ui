@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 10.37">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #0fa3a3;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g id="favicon">
+      <path class="cls-1" d="M15.55,5.63l-2.29-3.96c-.59-1.03-1.69-1.66-2.88-1.66h-4.76c-1.19,0-2.29.63-2.88,1.66L.45,5.63c-.92,1.59-.37,3.63,1.22,4.55l.27.16c.11.06.24.02.3-.08L7.04,1.95c.43-.74,1.5-.74,1.92,0l4.8,8.31c.06.11.2.14.3.08l.27-.16c1.59-.92,2.14-2.96,1.22-4.55Z"/>
+      <circle class="cls-1" cx="8" cy="7.72" r="1.42"/>
+    </g>
+  </g>
+</svg>
