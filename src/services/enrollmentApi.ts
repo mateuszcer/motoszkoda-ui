@@ -7,11 +7,15 @@ import type {
   ShopRegistrationRequest,
   ShopRegistrationResponse,
 } from '../domain/apiTypes'
-import { api } from './apiClient'
+import { api, cachedGet } from './apiClient'
 
 export const enrollmentApi = {
   async getCatalog(): Promise<EnrollmentPlanCatalog> {
-    return api.get<EnrollmentPlanCatalog>('/api/enrollment/plans', { auth: false })
+    return cachedGet<EnrollmentPlanCatalog>('/api/enrollment/plans', {
+      auth: false,
+      cacheKey: 'enrollment_plans',
+      ttlMs: 60 * 60 * 1000,
+    })
   },
 
   async register(payload: ShopRegistrationRequest): Promise<ShopRegistrationResponse> {

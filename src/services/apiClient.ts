@@ -103,6 +103,44 @@ function buildHeaders(auth: boolean, hasBody: boolean): HeadersInit {
   return headers
 }
 
+interface CachedEntry<T> {
+  data: T
+  expiresAt: number
+}
+
+const CACHE_PREFIX = 'autoceny_cache_'
+
+export async function cachedGet<T>(
+  path: string,
+  opts: RequestOptions & { ttlMs: number; cacheKey: string },
+): Promise<T> {
+  const { ttlMs, cacheKey, ...requestOpts } = opts
+  const storageKey = CACHE_PREFIX + cacheKey
+
+  try {
+    const raw = localStorage.getItem(storageKey)
+    if (raw) {
+      const entry = JSON.parse(raw) as CachedEntry<T>
+      if (entry.expiresAt > Date.now()) {
+        return entry.data
+      }
+    }
+  } catch {
+    // corrupt cache — fall through to fetch
+  }
+
+  const data = await api.get<T>(path, requestOpts)
+
+  try {
+    const entry: CachedEntry<T> = { data, expiresAt: Date.now() + ttlMs }
+    localStorage.setItem(storageKey, JSON.stringify(entry))
+  } catch {
+    // localStorage full or unavailable — still return data
+  }
+
+  return data
+}
+
 export const api = {
   async get<T>(path: string, opts: RequestOptions = {}): Promise<T> {
     const { auth = true, params } = opts

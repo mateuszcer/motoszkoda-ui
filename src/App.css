@@ -2,42 +2,42 @@
    DESIGN TOKENS
    ============================================================ */
 :root {
-  /* Mint accent */
-  --mint-700: #36a07a;
-  --mint-600: #4cb890;
-  --mint-500: #6ecfab;
-  --mint-400: #8ddbc0;
-  --mint-300: #b0e8d4;
-  --mint-200: #d4f3e8;
-  --mint-100: #eaf9f2;
-  --mint-50: #f3fcf8;
+  /* Mint accent — #34D399 base */
+  --mint-700: #1a9b6b;
+  --mint-600: #27b77f;
+  --mint-500: #34d399;
+  --mint-400: #5ddcad;
+  --mint-300: #86e5c2;
+  --mint-200: #b8f0db;
+  --mint-100: #dcf8ed;
+  --mint-50: #edfcf5;
 
-  /* Teal darks */
-  --teal-900: #0c1b19;
-  --teal-800: #122623;
-  --teal-700: #1b3533;
-  --teal-600: #213f3c;
-  --teal-500: #2d524e;
+  /* Teal darks — #0FA3A3 base */
+  --teal-900: #070707;
+  --teal-800: #0a2e2e;
+  --teal-700: #0c4e4e;
+  --teal-600: #0e7878;
+  --teal-500: #0fa3a3;
 
-  /* Neutrals — warm */
-  --neutral-950: #191c1a;
-  --neutral-900: #252825;
-  --neutral-800: #363936;
-  --neutral-700: #4d504d;
-  --neutral-600: #656965;
-  --neutral-500: #868a86;
-  --neutral-400: #a5a9a5;
-  --neutral-300: #c2c5c2;
-  --neutral-200: #dcdedd;
-  --neutral-150: #edeeed;
-  --neutral-100: #f2f3f2;
-  --neutral-50: #f5f5f3;
+  /* Neutrals — cool slate */
+  --neutral-950: #070707;
+  --neutral-900: #1e2024;
+  --neutral-800: #334155;
+  --neutral-700: #475569;
+  --neutral-600: #64748b;
+  --neutral-500: #94a3b8;
+  --neutral-400: #b0bec9;
+  --neutral-300: #cbd5e1;
+  --neutral-200: #e2e8f0;
+  --neutral-150: #e8edf3;
+  --neutral-100: #eef2f6;
+  --neutral-50: #f1f5f9;
   --white: #ffffff;
 
   /* Semantic */
-  --success-600: #2d7a56;
-  --success-100: #e6f4ed;
-  --success-50: #f0faf5;
+  --success-600: #1a9b6b;
+  --success-100: #dcf8ed;
+  --success-50: #edfcf5;
 
   --warning-600: #8b6914;
   --warning-100: #fdf6e3;
@@ -72,12 +72,12 @@
   --radius-xl: 20px;
   --radius-full: 999px;
 
-  /* Shadows — teal-tinted */
-  --shadow-xs: 0 1px 2px rgba(27, 53, 51, 0.03);
-  --shadow-card: 0 1px 3px rgba(27, 53, 51, 0.04), 0 1px 2px rgba(27, 53, 51, 0.02);
-  --shadow-hover: 0 2px 8px rgba(27, 53, 51, 0.06);
-  --shadow-elevated: 0 4px 12px rgba(27, 53, 51, 0.06), 0 1px 3px rgba(27, 53, 51, 0.04);
-  --shadow-modal: 0 16px 48px rgba(27, 53, 51, 0.12), 0 4px 12px rgba(27, 53, 51, 0.06);
+  /* Shadows — slate-tinted */
+  --shadow-xs: 0 1px 2px rgba(7, 7, 7, 0.03);
+  --shadow-card: 0 1px 3px rgba(7, 7, 7, 0.04), 0 1px 2px rgba(7, 7, 7, 0.02);
+  --shadow-hover: 0 2px 8px rgba(7, 7, 7, 0.06);
+  --shadow-elevated: 0 4px 12px rgba(7, 7, 7, 0.06), 0 1px 3px rgba(7, 7, 7, 0.04);
+  --shadow-modal: 0 16px 48px rgba(7, 7, 7, 0.12), 0 4px 12px rgba(7, 7, 7, 0.06);
   /* Aliases */
   --shadow-sm: var(--shadow-card);
   --shadow-md: var(--shadow-elevated);
@@ -112,24 +112,24 @@
   color-scheme: dark;
 
   /* Neutrals — invert */
-  --neutral-950: #edeeed;
-  --neutral-900: #dcdedd;
-  --neutral-800: #c2c5c2;
-  --neutral-700: #a5a9a5;
-  --neutral-600: #868a86;
-  --neutral-500: #656965;
-  --neutral-400: #4d504d;
-  --neutral-300: #363936;
-  --neutral-200: #252825;
-  --neutral-150: #1f211f;
-  --neutral-100: #1c1e1c;
-  --neutral-50: #191c1a;
-  --white: #141614;
+  --neutral-950: #e2e8f0;
+  --neutral-900: #cbd5e1;
+  --neutral-800: #b0bec9;
+  --neutral-700: #94a3b8;
+  --neutral-600: #64748b;
+  --neutral-500: #475569;
+  --neutral-400: #334155;
+  --neutral-300: #1e2936;
+  --neutral-200: #151c25;
+  --neutral-150: #111820;
+  --neutral-100: #0e141b;
+  --neutral-50: #0b1017;
+  --white: #080c12;
 
   /* Mint — darken light tints */
-  --mint-50: #0e1f1a;
-  --mint-100: #122b23;
-  --mint-200: #183d30;
+  --mint-50: #0a1f17;
+  --mint-100: #0e2b1f;
+  --mint-200: #143d2c;
 
   /* Semantic — darken light tints */
   --success-50: #0e1f1a;
@@ -151,7 +151,7 @@
 
 /* Header stays dark in both themes */
 [data-theme='dark'] .app-header {
-  background: #191c1a;
+  background: #080c12;
 }
 
 /* Empty state SVG — swap stroke to light */

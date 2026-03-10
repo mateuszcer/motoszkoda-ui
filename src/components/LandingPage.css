@@ -9,29 +9,30 @@
   --lp-font-h: 'Albert Sans', sans-serif;
   --lp-font-b: 'DM Sans', system-ui, sans-serif;
   --lp-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --lp-font-brand: 'Sora', 'DM Sans', system-ui, sans-serif;
 
-  --mint: #6ecfab;
-  --mint-light: #8ddbc0;
-  --mint-dark: #4cb890;
-  --mint-subtle: #eaf9f2;
-  --mint-head: #8de8c4;
+  --mint: #34d399;
+  --mint-light: #5ddcad;
+  --mint-dark: #27b77f;
+  --mint-subtle: #edfcf5;
+  --mint-head: #6ee7b7;
 
-  --teal-900: #0c1b19;
-  --teal-800: #122623;
-  --teal-700: #0a4945;
-  --teal-600: #213f3c;
-  --teal-500: #2d524e;
+  --teal-900: #070707;
+  --teal-800: #0a2e2e;
+  --teal-700: #0c4e4e;
+  --teal-600: #0e7878;
+  --teal-500: #0fa3a3;
 
-  --n900: #333633;
-  --n700: #4d504d;
-  --n600: #656965;
-  --n500: #868a86;
-  --n400: #a5a9a5;
-  --n300: #c2c5c2;
-  --n200: #dcdedd;
-  --n100: #edeeed;
-  --n75: #f2f3f2;
-  --n50: #f5f5f3;
+  --n900: #1e2024;
+  --n700: #475569;
+  --n600: #64748b;
+  --n500: #94a3b8;
+  --n400: #b0bec9;
+  --n300: #cbd5e1;
+  --n200: #e2e8f0;
+  --n100: #eef2f6;
+  --n75: #f1f5f9;
+  --n50: #f1f5f9;
   --white: #ffffff;
 
   --section-pad: clamp(80px, 10vw, 140px);
@@ -145,8 +146,8 @@
 }
 
 .lp-nav__brand .brand-mark {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   background: var(--teal-700);
   border-radius: 50%;
   display: grid;
@@ -154,7 +155,7 @@
 }
 
 .lp-nav__brand-name {
-  font: 600 17px/1 var(--lp-font-b);
+  font: 600 22px/1 var(--lp-font-brand);
   color: var(--teal-900);
 }
 
@@ -167,7 +168,7 @@
 }
 
 .lp-nav__links button {
-  font: 500 14px/1 var(--lp-font-b);
+  font: 500 15px/1 var(--lp-font-b);
   color: var(--n500);
   background: none;
   border: none;
@@ -187,13 +188,13 @@
 
 /* Nav: secondary solid teal (workshops), primary mint (drivers) */
 .lp-nav__btn-sec {
-  height: 36px;
-  padding: 0 18px;
+  height: 38px;
+  padding: 0 20px;
   border-radius: 999px;
   background: var(--teal-500);
   border: none;
   color: var(--white);
-  font: 500 13px/1 var(--lp-font-b);
+  font: 500 14px/1 var(--lp-font-b);
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -202,13 +203,13 @@
 }
 
 .lp-nav__btn-pri {
-  height: 36px;
-  padding: 0 18px;
+  height: 38px;
+  padding: 0 20px;
   border-radius: 999px;
   border: none;
   background: var(--mint);
   color: var(--teal-900);
-  font: 600 13px/1 var(--lp-font-b);
+  font: 600 14px/1 var(--lp-font-b);
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -397,7 +398,7 @@
 }
 
 .lp-app__header {
-  background: linear-gradient(145deg, #1b3533 0%, #284846 100%);
+  background: linear-gradient(145deg, #070707 0%, #0c4e4e 100%);
   padding: 34px 20px 16px;
   color: #fff;
   position: relative;
@@ -454,8 +455,8 @@
   border-bottom: 2px solid transparent;
 }
 .lp-app__tab--active {
-  color: #1b3533;
-  border-bottom-color: #1b3533;
+  color: #070707;
+  border-bottom-color: #070707;
 }
 
 /* App content */
@@ -470,7 +471,7 @@
   border-radius: 12px;
   padding: 14px;
   margin-bottom: 10px;
-  border-left: 3px solid #6ecfab;
+  border-left: 3px solid #34d399;
 }
 .lp-app__order-top {
   display: flex;
@@ -559,7 +560,7 @@
   cursor: default;
 }
 .lp-app__quote-btn--pri {
-  background: #1b3533;
+  background: #070707;
   color: #fff;
 }
 .lp-app__quote-btn--sec {
@@ -592,7 +593,7 @@
   color: #a5a9a5;
 }
 .lp-app__nav-item--active {
-  color: #1b3533;
+  color: #070707;
 }
 .lp-app__nav-icon {
   width: 18px;
@@ -658,7 +659,7 @@
 .lp-float-card__fill {
   height: 100%;
   width: 65%;
-  background: #6ecfab;
+  background: #34d399;
   border-radius: 2px;
 }
 .lp-float-card__sub {
@@ -1575,7 +1576,7 @@
 }
 
 .lp-footer__brand-name {
-  font: 600 15px/1 var(--lp-font-b);
+  font: 600 17px/1 var(--lp-font-brand);
   color: rgba(255, 255, 255, 0.6);
 }
 

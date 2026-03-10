@@ -102,7 +102,7 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
             <div className="brand-mark">
               <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
             </div>
-            <span className="lp-nav__brand-name">Autoceny</span>
+            <span className="lp-nav__brand-name">autoceny</span>
           </div>
 
           <ul className="lp-nav__links">
@@ -578,7 +578,7 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
             <div className="brand-mark">
               <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
             </div>
-            <span className="lp-footer__brand-name">Autoceny</span>
+            <span className="lp-footer__brand-name">autoceny</span>
           </div>
           <ul className="lp-footer__links">
             <li>

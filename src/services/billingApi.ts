@@ -5,11 +5,15 @@ import type {
   UserPlanCatalog,
   UserPlanInfo,
 } from '../domain/apiTypes'
-import { api } from './apiClient'
+import { api, cachedGet } from './apiClient'
 
 export const billingApi = {
   async getCatalog(): Promise<UserPlanCatalog> {
-    return api.get<UserPlanCatalog>('/api/billing/plans', { auth: false })
+    return cachedGet<UserPlanCatalog>('/api/billing/plans', {
+      auth: false,
+      cacheKey: 'billing_plans',
+      ttlMs: 60 * 60 * 1000,
+    })
   },
 
   async getPlan(): Promise<UserPlanInfo> {
