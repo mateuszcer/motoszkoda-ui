@@ -1,6 +1,7 @@
 import { Turnstile } from '@marsidev/react-turnstile'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import type { ReactNode } from 'react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getApiErrorMessage } from '../utils/apiErrors'
 
@@ -22,6 +23,7 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [captchaToken, setCaptchaToken] = useState<string | undefined>(undefined)
+  const turnstileRef = useRef<TurnstileInstance>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,6 +55,8 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
       await onRegister(email.trim(), password, captchaToken)
     } catch (err) {
       setError(getApiErrorMessage(err, t, 'auth.registerFailed'))
+      setCaptchaToken(undefined)
+      turnstileRef.current?.reset()
     } finally {
       setSubmitting(false)
     }
@@ -108,7 +112,7 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
 
         {TURNSTILE_SITE_KEY ? (
           <div className="turnstile-wrap">
-            <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setCaptchaToken} />
+            <Turnstile ref={turnstileRef} siteKey={TURNSTILE_SITE_KEY} onSuccess={setCaptchaToken} />
           </div>
         ) : null}
 

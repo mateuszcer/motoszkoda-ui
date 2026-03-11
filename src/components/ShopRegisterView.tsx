@@ -1,4 +1,5 @@
 import { Turnstile } from '@marsidev/react-turnstile'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ShopRegistrationRequest } from '../domain/apiTypes'
@@ -50,6 +51,7 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
 
   // CAPTCHA
   const [captchaToken, setCaptchaToken] = useState<string | undefined>(undefined)
+  const turnstileRef = useRef<TurnstileInstance>(null)
 
   // Form state
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -165,6 +167,8 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
       await onRegister(payload)
     } catch (err) {
       setSubmitError(getApiErrorMessage(err, t, 'shopRegister.registerFailed'))
+      setCaptchaToken(undefined)
+      turnstileRef.current?.reset()
     } finally {
       setSubmitting(false)
     }
@@ -436,7 +440,7 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
 
               {TURNSTILE_SITE_KEY ? (
                 <div className="turnstile-wrap">
-                  <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setCaptchaToken} />
+                  <Turnstile ref={turnstileRef} siteKey={TURNSTILE_SITE_KEY} onSuccess={setCaptchaToken} />
                 </div>
               ) : null}
             </div>
