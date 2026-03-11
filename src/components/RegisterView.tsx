@@ -2,7 +2,7 @@ import { Turnstile } from '@marsidev/react-turnstile'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getSignupErrorMessage } from '../utils/signupErrors'
+import { getApiErrorMessage } from '../utils/apiErrors'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
@@ -52,8 +52,7 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
     try {
       await onRegister(email.trim(), password, captchaToken)
     } catch (err) {
-      const mapped = getSignupErrorMessage(err, t)
-      setError(mapped ?? (err instanceof Error ? err.message : t('auth.registerFailed')))
+      setError(getApiErrorMessage(err, t, 'auth.registerFailed'))
     } finally {
       setSubmitting(false)
     }

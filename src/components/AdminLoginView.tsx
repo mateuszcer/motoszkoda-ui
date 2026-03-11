@@ -1,7 +1,7 @@
 import { Turnstile } from '@marsidev/react-turnstile'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ApiError } from '../services/apiClient'
+import { getApiErrorMessage } from '../utils/apiErrors'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
@@ -38,26 +38,7 @@ export function AdminLoginView({ onLogin }: AdminLoginViewProps) {
     try {
       await onLogin(email.trim(), password, captchaToken)
     } catch (err) {
-      if (err instanceof ApiError) {
-        switch (err.code) {
-          case 'INVALID_CREDENTIALS':
-            setError(t('admin.invalidCredentials'))
-            break
-          case 'ROLE_MISMATCH':
-            setError(t('admin.notAdmin'))
-            break
-          case 'CAPTCHA_FAILED':
-            setError(t('admin.captchaFailed'))
-            break
-          case 'RATE_LIMITED':
-            setError(t('auth.rateLimited'))
-            break
-          default:
-            setError(t('admin.loginFailed'))
-        }
-      } else {
-        setError(t('admin.loginFailed'))
-      }
+      setError(getApiErrorMessage(err, t, 'admin.loginFailed'))
     } finally {
       setSubmitting(false)
     }

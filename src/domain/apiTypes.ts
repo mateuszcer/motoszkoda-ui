@@ -218,6 +218,8 @@ export interface UploadUrlRequest {
 export interface UploadUrlResponse {
   attachmentId: string
   uploadUrl: string
+  /** Content-Type the signed URL was created with — must be sent on the PUT request. */
+  contentType: string
 }
 
 export interface AttachmentResponse {

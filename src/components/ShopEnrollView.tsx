@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { BillingInterval, EnrollmentPlanCatalog, SubscriptionResponse } from '../domain/apiTypes'
 import type { EnrollmentStatus } from '../domain/types'
+import { getApiErrorMessage } from '../utils/apiErrors'
 import { formatMinorCurrency } from '../utils/format'
 import { StripePaymentForm } from './StripePaymentForm'
 
@@ -98,7 +99,7 @@ export function ShopEnrollView({
     try {
       await onVoucherRedeem(voucherCode.trim())
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('shopEnroll.redeemFailed'))
+      setError(getApiErrorMessage(err, t, 'shopEnroll.redeemFailed'))
     } finally {
       setRedeeming(false)
     }
@@ -112,7 +113,7 @@ export function ShopEnrollView({
       setClientSecret(result.clientSecret)
       setPaymentStep('ready')
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('shopEnroll.paymentFailed'))
+      setError(getApiErrorMessage(err, t, 'shopEnroll.paymentFailed'))
     } finally {
       setPaying(false)
     }

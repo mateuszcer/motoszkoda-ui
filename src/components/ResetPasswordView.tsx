@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getApiErrorMessage } from '../utils/apiErrors'
 
 interface ResetPasswordViewProps {
   accessToken: string
@@ -33,7 +34,7 @@ export function ResetPasswordView({ accessToken, onSubmit, onGoToLogin }: ResetP
       await onSubmit(accessToken, password)
       setSuccess(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('auth.resetPasswordFailed'))
+      setError(getApiErrorMessage(err, t, 'auth.resetPasswordFailed'))
     } finally {
       setSubmitting(false)
     }

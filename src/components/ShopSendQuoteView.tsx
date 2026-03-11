@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { PhoneInput } from './PhoneInput'
 import type { LineItemPayload, RepairRequest, SubmitQuotePayload } from '../domain/types'
+import { getApiErrorMessage } from '../utils/apiErrors'
 import { formatCurrencyPln } from '../utils/format'
+import { PhoneInput } from './PhoneInput'
 
 type PriceMode = 'single' | 'range'
 
@@ -175,7 +176,7 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
 
       await onSubmit(payload, sharePhone ? phone.trim() : undefined)
     } catch (err) {
-      setErrors([err instanceof Error ? err.message : t('shopQuoteForm.submitFailed')])
+      setErrors([getApiErrorMessage(err, t, 'shopQuoteForm.submitFailed')])
     } finally {
       setSubmitting(false)
     }

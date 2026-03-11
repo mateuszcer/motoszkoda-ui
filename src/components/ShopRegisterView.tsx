@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ShopRegistrationRequest } from '../domain/apiTypes'
 import { useAddressAutocomplete } from '../hooks/useAddressAutocomplete'
-import { getSignupErrorMessage } from '../utils/signupErrors'
+import { getApiErrorMessage } from '../utils/apiErrors'
 import { isValidE164Phone, isValidNip, isValidPolishPostalCode } from '../utils/validation'
 import { PhoneInput } from './PhoneInput'
 
@@ -164,8 +164,7 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
     try {
       await onRegister(payload)
     } catch (err) {
-      const mapped = getSignupErrorMessage(err, t)
-      setSubmitError(mapped ?? (err instanceof Error ? err.message : t('shopRegister.registerFailed')))
+      setSubmitError(getApiErrorMessage(err, t, 'shopRegister.registerFailed'))
     } finally {
       setSubmitting(false)
     }

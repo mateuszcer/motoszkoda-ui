@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getApiErrorMessage } from '../utils/apiErrors'
 
 interface CheckEmailViewProps {
   email: string
@@ -21,7 +22,7 @@ export function CheckEmailView({ email, onGoToLogin, onResendConfirmation }: Che
       await onResendConfirmation(email)
       setResent(true)
     } catch (err) {
-      setResendError(err instanceof Error ? err.message : t('auth.resendFailed'))
+      setResendError(getApiErrorMessage(err, t, 'auth.resendFailed'))
     } finally {
       setResending(false)
     }

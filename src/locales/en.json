@@ -22,6 +22,28 @@
     "shopAskedQuestionMessage": "A shop has asked you a question."
   },
 
+  "errors": {
+    "invalidCredentials": "Invalid email or password.",
+    "roleMismatch": "This account does not have the required access.",
+    "captchaFailed": "Captcha verification failed. Please try again.",
+    "rateLimited": "Too many attempts. Please try again later.",
+    "rateLimitedWithRetry": "Too many attempts. Try again in {{seconds}} seconds.",
+    "disposableEmailNotAllowed": "Please use a permanent email address. Disposable email providers are not allowed.",
+    "emailAlreadyRegistered": "This email is already registered.",
+    "invalidVoucher": "Invalid voucher code. Please check and try again.",
+    "expiredVoucher": "This voucher has expired.",
+    "voucherAlreadyUsed": "This voucher has already been used.",
+    "forbidden": "You do not have permission to perform this action.",
+    "notFound": "The requested resource was not found.",
+    "conflict": "A conflict occurred. Please refresh and try again.",
+    "badRequest": "The request was invalid. Please check your input.",
+    "samePassword": "New password must be different from the current password.",
+    "weakPassword": "Password is too weak.",
+    "invalidRecoveryToken": "This reset link is invalid or has expired.",
+    "serverError": "Something went wrong on our end. Please try again later.",
+    "serviceUnavailable": "The service is temporarily unavailable. Please try again later."
+  },
+
   "common": {
     "back": "Back",
     "next": "Next",

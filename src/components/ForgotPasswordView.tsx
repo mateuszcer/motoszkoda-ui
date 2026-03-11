@@ -1,6 +1,7 @@
 import { Turnstile } from '@marsidev/react-turnstile'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getApiErrorMessage } from '../utils/apiErrors'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
@@ -39,7 +40,7 @@ export function ForgotPasswordView({ onSubmit, onBackToLogin }: ForgotPasswordVi
       await onSubmit(email.trim(), captchaToken)
       setSent(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('auth.forgotPasswordFailed'))
+      setError(getApiErrorMessage(err, t, 'auth.forgotPasswordFailed'))
     } finally {
       setSubmitting(false)
     }

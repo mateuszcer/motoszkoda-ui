@@ -12,10 +12,10 @@ export async function requestUploadUrl(req: UploadUrlRequest): Promise<UploadUrl
   return api.post<UploadUrlResponse>('/api/attachments/upload-url', { body: req })
 }
 
-export async function uploadFile(uploadUrl: string, file: File): Promise<void> {
+export async function uploadFile(uploadUrl: string, file: File, contentType: string): Promise<void> {
   const response = await fetch(uploadUrl, {
     method: 'PUT',
-    headers: { 'Content-Type': file.type },
+    headers: { 'Content-Type': contentType },
     body: file,
   })
   if (!response.ok) {
@@ -69,7 +69,7 @@ export async function uploadAttachments(
     onProgress?.(i + 1, total)
 
     try {
-      const { attachmentId, uploadUrl } = await requestUploadUrl({
+      const { attachmentId, uploadUrl, contentType } = await requestUploadUrl({
         targetType,
         repairRequestId,
         fileName: att.name,
@@ -77,7 +77,7 @@ export async function uploadAttachments(
         sizeBytes: file.size,
         shopId,
       })
-      await uploadFile(uploadUrl, file)
+      await uploadFile(uploadUrl, file, contentType)
       const confirmed = await confirmUpload(attachmentId)
       result.successes.push(confirmed)
     } catch (error) {

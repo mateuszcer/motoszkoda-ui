@@ -22,6 +22,28 @@
     "shopAskedQuestionMessage": "Warsztat zadał pytanie."
   },
 
+  "errors": {
+    "invalidCredentials": "Nieprawidłowy email lub hasło.",
+    "roleMismatch": "To konto nie ma wymaganych uprawnień.",
+    "captchaFailed": "Weryfikacja captcha nie powiodła się. Spróbuj ponownie.",
+    "rateLimited": "Zbyt wiele prób. Spróbuj ponownie później.",
+    "rateLimitedWithRetry": "Zbyt wiele prób. Spróbuj ponownie za {{seconds}} sekund.",
+    "disposableEmailNotAllowed": "Użyj stałego adresu email. Jednorazowe adresy email nie są dozwolone.",
+    "emailAlreadyRegistered": "Ten adres email jest już zarejestrowany.",
+    "invalidVoucher": "Nieprawidłowy kod vouchera. Sprawdź i spróbuj ponownie.",
+    "expiredVoucher": "Ten voucher wygasł.",
+    "voucherAlreadyUsed": "Ten voucher został już wykorzystany.",
+    "forbidden": "Nie masz uprawnień do wykonania tej akcji.",
+    "notFound": "Nie znaleziono żądanego zasobu.",
+    "conflict": "Wystąpił konflikt. Odśwież stronę i spróbuj ponownie.",
+    "badRequest": "Nieprawidłowe żądanie. Sprawdź wprowadzone dane.",
+    "samePassword": "Nowe hasło musi się różnić od obecnego.",
+    "weakPassword": "Hasło jest zbyt słabe.",
+    "invalidRecoveryToken": "Ten link jest nieprawidłowy lub wygasł.",
+    "serverError": "Coś poszło nie tak po naszej stronie. Spróbuj ponownie później.",
+    "serviceUnavailable": "Usługa jest tymczasowo niedostępna. Spróbuj ponownie później."
+  },
+
   "common": {
     "back": "Wstecz",
     "next": "Dalej",

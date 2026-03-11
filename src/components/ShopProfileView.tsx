@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ShopProfile, UpdateShopProfilePayload } from '../domain/types'
 import { useAddressAutocomplete } from '../hooks/useAddressAutocomplete'
+import { getApiErrorMessage } from '../utils/apiErrors'
 import { PhoneInput } from './PhoneInput'
 
 interface ShopProfileViewProps {
@@ -75,7 +76,7 @@ export function ShopProfileView({ profile, onSave, onBack }: ShopProfileViewProp
       })
       setSuccess(true)
     } catch (err) {
-      setErrors([err instanceof Error ? err.message : t('shopProfile.saveFailed')])
+      setErrors([getApiErrorMessage(err, t, 'shopProfile.saveFailed')])
     } finally {
       setSaving(false)
     }

@@ -2,6 +2,7 @@ import { Turnstile } from '@marsidev/react-turnstile'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getApiErrorMessage } from '../utils/apiErrors'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
@@ -50,7 +51,7 @@ export function LoginView({
     try {
       await onLogin(email.trim(), password, captchaToken)
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('auth.loginFailed'))
+      setError(getApiErrorMessage(err, t, 'auth.loginFailed'))
     } finally {
       setSubmitting(false)
     }
