@@ -130,6 +130,11 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
 
       {/* ── HERO ── */}
       <section className="lp-hero" ref={heroRef}>
+        <div className="lp-hero__decor" aria-hidden="true">
+          <div className="lp-hero__shape lp-hero__shape--1" />
+          <div className="lp-hero__shape lp-hero__shape--2" />
+          <div className="lp-hero__shape lp-hero__shape--3" />
+        </div>
         <div className="lp-hero__content">
           <div className="lp-hero__text">
             <h1 className="lp-hero__headline">
