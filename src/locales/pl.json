@@ -480,28 +480,21 @@
       "body": "Jako warsztat przeglądaj zlecenia, zadawaj pytania i wysyłaj wyceny — wszystko w jednej aplikacji.",
       "cta": "Dołącz jako warsztat"
     },
-    "why": {
-      "title": "Dlaczego Autoceny?",
-      "driverTitle": "Dla kierowców",
-      "shopTitle": "Dla warsztatów",
-      "driverBenefit1": "Oszczędzaj",
-      "driverBenefit1Desc": "Porównuj realne wyceny zamiast zgadywać ceny.",
-      "driverBenefit2": "Bez obdzwaniania",
-      "driverBenefit2Desc": "Jedno zlecenie trafia do każdego warsztatu w promieniu.",
-      "driverBenefit3": "Łatwe porównanie",
-      "driverBenefit3Desc": "Ceny, odległości i opinie obok siebie.",
-      "shopBenefit1": "Klienci gotowi na naprawę",
-      "shopBenefit1Desc": "Każde zlecenie pochodzi od kierowcy gotowego naprawić auto.",
-      "shopBenefit2": "Mniej przekazywania informacji",
-      "shopBenefit2Desc": "Zadawaj pytania i wyceniaj bezpośrednio w aplikacji.",
-      "shopBenefit3": "Wygrywaj lokalnie",
-      "shopBenefit3Desc": "Konkuruj wartością w swojej okolicy."
-    },
     "shopCallout": {
       "overline": "DLA WARSZTATÓW",
       "headline": "Zdobywaj klientów w swojej okolicy",
-      "subtitle": "Otrzymuj zlecenia od kierowców szukających naprawy. Bez prowizji od wyceny.",
-      "cta": "Dołącz jako warsztat"
+      "desc": "Otrzymuj zlecenia napraw od kierowców w Twoim promieniu. Wyceniaj bezpośrednio w aplikacji — bez pośredników, bez prowizji od wyceny.",
+      "cta": "Dołącz jako warsztat",
+      "benefit1Title": "Klienci gotowi na naprawę",
+      "benefit1Desc": "Każde zlecenie pochodzi od kierowcy, który aktywnie szuka warsztatu.",
+      "benefit2Title": "Pytania przed wyceną",
+      "benefit2Desc": "Doprecyzuj szczegóły z kierowcą bezpośrednio w aplikacji zanim przygotujesz ofertę.",
+      "benefit3Title": "Wygrywaj lokalnie",
+      "benefit3Desc": "Zlecenia trafiają tylko do warsztatów w promieniu ustawionym przez kierowcę.",
+      "benefit4Title": "Przejrzyste warunki",
+      "benefit4Desc": "Stała miesięczna opłata. Bez prowizji od wycen. Bez ukrytych kosztów.",
+      "noteHighlight": "120+ warsztatów",
+      "noteText": "już korzysta z Autoceny. Dołącz i zacznij otrzymywać zlecenia dziś."
     },
     "bottomCta": {
       "headline": "Napraw auto mądrzej",

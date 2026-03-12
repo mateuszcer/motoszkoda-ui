@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autoceny — Workshop Section</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',sans-serif;background:#F0FAF6}
+
+/* Context: fake sections above and below to show placement */
+.placeholder{
+  padding:80px 40px;text-align:center;
+  font:500 14px/1.5 'DM Sans',sans-serif;color:#A5A9A5;
+  letter-spacing:.05em;text-transform:uppercase;
+}
+.placeholder--light{background:#F5F5F3}
+.placeholder--white{background:#fff}
+
+/* ═══════════════════════════════════════
+   WORKSHOP SECTION
+   ═══════════════════════════════════════ */
+.workshop{
+  position:relative;
+  background:#1A3F3A;
+  padding:clamp(64px, 8vw, 100px) 40px;
+  overflow:hidden;
+}
+
+/* Subtle glow */
+.workshop::before{
+  content:'';position:absolute;
+  top:-40%;left:50%;transform:translateX(-50%);
+  width:120%;height:180%;
+  background:radial-gradient(ellipse at center, rgba(75,191,174,0.06) 0%, transparent 60%);
+  pointer-events:none;
+}
+
+.workshop__inner{
+  position:relative;z-index:1;
+  max-width:1140px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;
+  align-items:center;
+}
+
+/* Left: text content */
+.workshop__content{}
+
+.workshop__overline{
+  font:600 11px/1.3 'DM Sans',sans-serif;
+  color:#4BBFAE;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  margin-bottom:16px;
+}
+
+.workshop__title{
+  font:600 clamp(28px,3.2vw,40px)/1.15 'Jost',sans-serif;
+  color:#fff;
+  letter-spacing:-0.01em;
+  margin-bottom:16px;
+}
+
+.workshop__desc{
+  font:400 15px/1.7 'DM Sans',sans-serif;
+  color:rgba(255,255,255,.45);
+  max-width:420px;
+  margin-bottom:32px;
+}
+
+.workshop__actions{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+
+.workshop__btn-primary{
+  height:48px;padding:0 28px;border-radius:999px;border:none;
+  background:#fff;color:#0F1A18;
+  font:600 15px/1 'DM Sans',sans-serif;
+  cursor:pointer;transition:all .25s;
+  box-shadow:0 2px 12px rgba(0,0,0,.1);
+}
+.workshop__btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(0,0,0,.15);
+}
+
+.workshop__btn-secondary{
+  height:48px;padding:0 24px;border-radius:999px;
+  background:#2D524E;
+  border:none;
+  color:#fff;
+  font:600 15px/1 'DM Sans',sans-serif;
+  cursor:pointer;transition:all .25s;
+  display:flex;align-items:center;gap:8px;
+}
+.workshop__btn-secondary svg{
+  width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5;
+}
+.workshop__btn-secondary:hover{
+  background:#345E59;
+}
+
+/* Right: benefits list */
+.workshop__benefits{
+  display:flex;flex-direction:column;gap:20px;
+}
+
+.benefit{
+  display:flex;gap:16px;align-items:flex-start;
+}
+
+.benefit__icon{
+  width:44px;height:44px;flex-shrink:0;
+  background:rgba(75,191,174,.1);
+  border-radius:12px;
+  display:grid;place-items:center;
+}
+.benefit__icon svg{
+  width:20px;height:20px;stroke:#4BBFAE;fill:none;stroke-width:1.5;
+}
+
+.benefit__text{}
+.benefit__title{
+  font:600 15px/1.4 'DM Sans',sans-serif;
+  color:#fff;
+  margin-bottom:3px;
+}
+.benefit__desc{
+  font:400 13px/1.6 'DM Sans',sans-serif;
+  color:rgba(255,255,255,.4);
+}
+
+/* Divider line between benefits */
+.workshop__divider{
+  width:100%;height:1px;
+  background:rgba(255,255,255,.06);
+}
+
+/* Bottom note */
+.workshop__note{
+  margin-top:32px;
+  padding-top:20px;
+  border-top:1px solid rgba(255,255,255,.06);
+  font:400 13px/1.5 'DM Sans',sans-serif;
+  color:rgba(255,255,255,.3);
+}
+.workshop__note strong{
+  color:rgba(255,255,255,.5);font-weight:600;
+}
+
+/* ═══════ Responsive ═══════ */
+@media(max-width:900px){
+  .workshop__inner{grid-template-columns:1fr;gap:40px}
+}
+</style>
+</head>
+<body>
+
+<!-- Context: section above -->
+<div class="placeholder placeholder--white">
+  ↑ Dlaczego Autoceny? section above ↑
+</div>
+
+<!-- ═══════ WORKSHOP SECTION ═══════ -->
+<section class="workshop">
+  <div class="workshop__inner">
+
+    <!-- Left: pitch -->
+    <div class="workshop__content">
+      <div class="workshop__overline">Dla warsztatów</div>
+      <h2 class="workshop__title">Zdobywaj klientów<br>w swojej okolicy</h2>
+      <p class="workshop__desc">Otrzymuj zlecenia napraw od kierowców w Twoim promieniu. Wyceniaj bezpośrednio w aplikacji — bez pośredników, bez prowizji od wyceny.</p>
+      <div class="workshop__actions">
+        <button class="workshop__btn-primary">Dołącz jako warsztat</button>
+        <button class="workshop__btn-secondary">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
+          Porozmawiajmy
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: benefits -->
+    <div class="workshop__benefits">
+      <div class="benefit">
+        <div class="benefit__icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 12l-4-4-4 4M12 16V8"/></svg>
+        </div>
+        <div class="benefit__text">
+          <div class="benefit__title">Klienci gotowi na naprawę</div>
+          <div class="benefit__desc">Każde zlecenie pochodzi od kierowcy, który aktywnie szuka warsztatu.</div>
+        </div>
+      </div>
+
+      <div class="workshop__divider"></div>
+
+      <div class="benefit">
+        <div class="benefit__icon">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
+        </div>
+        <div class="benefit__text">
+          <div class="benefit__title">Pytania przed wyceną</div>
+          <div class="benefit__desc">Doprecyzuj szczegóły z kierowcą bezpośrednio w aplikacji zanim przygotujesz ofertę.</div>
+        </div>
+      </div>
+
+      <div class="workshop__divider"></div>
+
+      <div class="benefit">
+        <div class="benefit__icon">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="benefit__text">
+          <div class="benefit__title">Wygrywaj lokalnie</div>
+          <div class="benefit__desc">Zlecenia trafiają tylko do warsztatów w promieniu ustawionym przez kierowcę.</div>
+        </div>
+      </div>
+
+      <div class="workshop__divider"></div>
+
+      <div class="benefit">
+        <div class="benefit__icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <div class="benefit__text">
+          <div class="benefit__title">Przejrzyste warunki</div>
+          <div class="benefit__desc">Stała miesięczna opłata. Bez prowizji od wycen. Bez ukrytych kosztów.</div>
+        </div>
+      </div>
+
+      <div class="workshop__note">
+        <strong>120+ warsztatów</strong> już korzysta z Autoceny. Dołącz i zacznij otrzymywać zlecenia dziś.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Context: section below -->
+<div class="placeholder placeholder--light">
+  ↓ Cennik section below ↓
+</div>
+
+</body>
+</html>

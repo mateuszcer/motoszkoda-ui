@@ -476,28 +476,21 @@
       "body": "As a shop, browse incoming requests, ask questions, and send quotes — all in one app.",
       "cta": "Join as a shop"
     },
-    "why": {
-      "title": "Why Autoceny?",
-      "driverTitle": "For drivers",
-      "shopTitle": "For shops",
-      "driverBenefit1": "Save money",
-      "driverBenefit1Desc": "Compare real quotes instead of guessing prices.",
-      "driverBenefit2": "No calling around",
-      "driverBenefit2Desc": "One request reaches every shop in your radius.",
-      "driverBenefit3": "Clear comparison",
-      "driverBenefit3Desc": "Side-by-side prices, distances, and reviews.",
-      "shopBenefit1": "High-intent leads",
-      "shopBenefit1Desc": "Every request comes from a driver ready to repair.",
-      "shopBenefit2": "Less back-and-forth",
-      "shopBenefit2Desc": "Ask questions and quote directly in the app.",
-      "shopBenefit3": "Win locally",
-      "shopBenefit3Desc": "Compete on value in your neighborhood."
-    },
     "shopCallout": {
       "overline": "FOR WORKSHOPS",
       "headline": "Win customers in your area",
-      "subtitle": "Receive repair requests from local drivers. No commission on quotes.",
-      "cta": "Join as a workshop"
+      "desc": "Receive repair requests from drivers in your radius. Quote directly in the app — no middlemen, no commission on quotes.",
+      "cta": "Join as a workshop",
+      "benefit1Title": "Repair-ready customers",
+      "benefit1Desc": "Every request comes from a driver actively looking for a workshop.",
+      "benefit2Title": "Questions before quoting",
+      "benefit2Desc": "Clarify details with the driver directly in the app before preparing your offer.",
+      "benefit3Title": "Win locally",
+      "benefit3Desc": "Requests only reach workshops within the radius set by the driver.",
+      "benefit4Title": "Transparent terms",
+      "benefit4Desc": "Flat monthly fee. No commission on quotes. No hidden costs.",
+      "noteHighlight": "120+ workshops",
+      "noteText": "already use Autoceny. Join and start receiving requests today."
     },
     "bottomCta": {
       "headline": "Fix your car smarter",

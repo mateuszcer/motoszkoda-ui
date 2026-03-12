@@ -154,6 +154,9 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
             <div>
               <button className="lp-hero__cta-primary" onClick={onGetStarted}>
                 {t('landing.hero.cta')}
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
               </button>
             </div>
           </div>
@@ -258,105 +261,91 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
         </div>
       </section>
 
-      {/* ── WHY ── */}
-      <section className="lp-why">
-        <div className="lp-why__inner">
-          <h2 className="lp-why__title lp-rv">{t('landing.why.title')}</h2>
-          <div className="lp-why__grid">
-            <div>
-              <div className="lp-why__col-title">{t('landing.why.driverTitle')}</div>
-              <div className="lp-why__item lp-rv">
-                <div className="lp-why__icon">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="lp-why__item-title">{t('landing.why.driverBenefit1')}</div>
-                  <div className="lp-why__item-desc">{t('landing.why.driverBenefit1Desc')}</div>
-                </div>
-              </div>
-              <div className="lp-why__item lp-rv lp-rv-d1">
-                <div className="lp-why__icon">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.12.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0122 16.92z" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="lp-why__item-title">{t('landing.why.driverBenefit2')}</div>
-                  <div className="lp-why__item-desc">{t('landing.why.driverBenefit2Desc')}</div>
-                </div>
-              </div>
-              <div className="lp-why__item lp-rv lp-rv-d2">
-                <div className="lp-why__icon">
-                  <svg viewBox="0 0 24 24">
-                    <rect x="3" y="3" width="7" height="7" />
-                    <rect x="14" y="3" width="7" height="7" />
-                    <rect x="3" y="14" width="7" height="7" />
-                    <rect x="14" y="14" width="7" height="7" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="lp-why__item-title">{t('landing.why.driverBenefit3')}</div>
-                  <div className="lp-why__item-desc">{t('landing.why.driverBenefit3Desc')}</div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="lp-why__col-title">{t('landing.why.shopTitle')}</div>
-              <div className="lp-why__item lp-rv">
-                <div className="lp-why__icon">
-                  <svg viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M16 12l-4-4-4 4M12 16V8" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="lp-why__item-title">{t('landing.why.shopBenefit1')}</div>
-                  <div className="lp-why__item-desc">{t('landing.why.shopBenefit1Desc')}</div>
-                </div>
-              </div>
-              <div className="lp-why__item lp-rv lp-rv-d1">
-                <div className="lp-why__icon">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="lp-why__item-title">{t('landing.why.shopBenefit2')}</div>
-                  <div className="lp-why__item-desc">{t('landing.why.shopBenefit2Desc')}</div>
-                </div>
-              </div>
-              <div className="lp-why__item lp-rv lp-rv-d2">
-                <div className="lp-why__icon">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="lp-why__item-title">{t('landing.why.shopBenefit3')}</div>
-                  <div className="lp-why__item-desc">{t('landing.why.shopBenefit3Desc')}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ── WORKSHOP CALLOUT ── */}
       <section className="lp-shop-callout">
-        <div className="lp-shop-callout__inner lp-rv">
-          <p className="lp-shop-callout__overline">{t('landing.shopCallout.overline')}</p>
-          <h2 className="lp-shop-callout__headline">{t('landing.shopCallout.headline')}</h2>
-          <p className="lp-shop-callout__subtitle">{t('landing.shopCallout.subtitle')}</p>
-          <div className="lp-shop-callout__actions">
-            <button className="lp-shop-callout__cta" onClick={onJoinAsShop}>
-              {t('landing.shopCallout.cta')}
-            </button>
-            <button className="lp-shop-callout__cta-contact" onClick={() => scrollToSection('lp-contact')}>
-              {t('landing.contact.heroCta')}
-            </button>
+        <div className="lp-shop-callout__inner">
+          {/* Left: pitch */}
+          <div className="lp-shop-callout__content lp-rv">
+            <p className="lp-shop-callout__overline">{t('landing.shopCallout.overline')}</p>
+            <h2 className="lp-shop-callout__headline">{t('landing.shopCallout.headline')}</h2>
+            <p className="lp-shop-callout__desc">{t('landing.shopCallout.desc')}</p>
+            <div className="lp-shop-callout__actions">
+              <button className="lp-shop-callout__cta" onClick={onJoinAsShop}>
+                {t('landing.shopCallout.cta')}
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </button>
+              <button className="lp-shop-callout__cta-secondary" onClick={() => scrollToSection('lp-contact')}>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" />
+                </svg>
+                {t('landing.contact.heroCta')}
+              </button>
+            </div>
+          </div>
+
+          {/* Right: benefits */}
+          <div className="lp-shop-callout__benefits lp-rv">
+            <div className="lp-shop-callout__benefit">
+              <div className="lp-shop-callout__benefit-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M16 12l-4-4-4 4M12 16V8" />
+                </svg>
+              </div>
+              <div>
+                <div className="lp-shop-callout__benefit-title">{t('landing.shopCallout.benefit1Title')}</div>
+                <div className="lp-shop-callout__benefit-desc">{t('landing.shopCallout.benefit1Desc')}</div>
+              </div>
+            </div>
+
+            <div className="lp-shop-callout__divider" />
+
+            <div className="lp-shop-callout__benefit">
+              <div className="lp-shop-callout__benefit-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" />
+                </svg>
+              </div>
+              <div>
+                <div className="lp-shop-callout__benefit-title">{t('landing.shopCallout.benefit2Title')}</div>
+                <div className="lp-shop-callout__benefit-desc">{t('landing.shopCallout.benefit2Desc')}</div>
+              </div>
+            </div>
+
+            <div className="lp-shop-callout__divider" />
+
+            <div className="lp-shop-callout__benefit">
+              <div className="lp-shop-callout__benefit-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </div>
+              <div>
+                <div className="lp-shop-callout__benefit-title">{t('landing.shopCallout.benefit3Title')}</div>
+                <div className="lp-shop-callout__benefit-desc">{t('landing.shopCallout.benefit3Desc')}</div>
+              </div>
+            </div>
+
+            <div className="lp-shop-callout__divider" />
+
+            <div className="lp-shop-callout__benefit">
+              <div className="lp-shop-callout__benefit-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                </svg>
+              </div>
+              <div>
+                <div className="lp-shop-callout__benefit-title">{t('landing.shopCallout.benefit4Title')}</div>
+                <div className="lp-shop-callout__benefit-desc">{t('landing.shopCallout.benefit4Desc')}</div>
+              </div>
+            </div>
+
+            <div className="lp-shop-callout__note">
+              <strong>{t('landing.shopCallout.noteHighlight')}</strong> {t('landing.shopCallout.noteText')}
+            </div>
           </div>
         </div>
       </section>
