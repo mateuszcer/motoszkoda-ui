@@ -591,7 +591,14 @@
     "mockBrakesIssue": "Hamulce piszczą przy hamowaniu...",
     "mockInbox": "Skrzynka odbiorcza",
     "mockNewRequest": "Nowe Zlecenie",
-    "mockInterested": "Zainteresowany"
+    "mockInterested": "Zainteresowany",
+    "mockQuoting": "Wycena",
+    "mockLineItem1": "Klocki hamulcowe (przód)",
+    "mockLineItem2": "Toczenie tarcz hamulcowych",
+    "mockEstDays": "Czas realizacji",
+    "mockEstDaysValue": "2–3 dni",
+    "mockNoteToDriver": "Tarcze przednie w tolerancji — polecam na razie wymianę samych klocków.",
+    "mockSendQuote": "Wyślij wycenę"
   },
 
   "shopRegister": {

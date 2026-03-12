@@ -587,7 +587,14 @@
     "mockBrakesIssue": "Brakes squeal when stopping...",
     "mockInbox": "Inbox",
     "mockNewRequest": "New Request",
-    "mockInterested": "Interested"
+    "mockInterested": "Interested",
+    "mockQuoting": "Quoting",
+    "mockLineItem1": "Brake pads (front)",
+    "mockLineItem2": "Brake disc machining",
+    "mockEstDays": "Est. time",
+    "mockEstDaysValue": "2–3 days",
+    "mockNoteToDriver": "Front discs still within tolerance — recommend pads only for now.",
+    "mockSendQuote": "Send quote"
   },
 
   "shopRegister": {

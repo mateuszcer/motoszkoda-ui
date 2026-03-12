@@ -817,16 +817,34 @@ function FeatureMockup3({ t }: { t: (key: string) => string }) {
     <div className="lp-fcard">
       <div className="lp-fcard__head">
         <div className="lp-fcard__title">Audi A3 &middot; {t('tags.brakes')}</div>
-        <span className="lp-fcard__badge lp-fcard__badge--amber">{t('landing.mockNewRequest')}</span>
+        <span className="lp-fcard__badge lp-fcard__badge--blue">{t('landing.mockQuoting')}</span>
       </div>
-      <div className="lp-fw-order">
-        <div className="lp-fw-order__desc">{t('landing.mockBrakesIssue')}</div>
-        <div className="lp-fw-order__dist">2.4 km</div>
+      <div className="lp-fw-items">
+        <div className="lp-fw-item lp-fw-item--anim1">
+          <span className="lp-fw-item__num">1.</span>
+          <span className="lp-fw-item__desc">{t('landing.mockLineItem1')}</span>
+          <span className="lp-fw-item__price">280 PLN</span>
+        </div>
+        <div className="lp-fw-item lp-fw-item--anim2">
+          <span className="lp-fw-item__num">2.</span>
+          <span className="lp-fw-item__desc">{t('landing.mockLineItem2')}</span>
+          <span className="lp-fw-item__price">180 PLN</span>
+        </div>
       </div>
-      <div className="lp-fw-accept">{t('shopInbox.acknowledge')}</div>
-      <div className="lp-fw-input">
-        <div className="lp-fw-input__field">{t('shopDetail.questionPlaceholder')}</div>
+      <div className="lp-fw-total">
+        <span>{t('quoteDetail.total')}</span>
+        <span>460 PLN</span>
       </div>
+      <div className="lp-fw-meta-row">
+        <span className="lp-fw-meta-row__icon">&#128197;</span>
+        <span>{t('landing.mockEstDays')}</span>
+        <span className="lp-fw-meta-row__value">{t('landing.mockEstDaysValue')}</span>
+      </div>
+      <div className="lp-fw-note">
+        {t('landing.mockNoteToDriver')}
+        <span className="lp-fw-note__cursor">|</span>
+      </div>
+      <div className="lp-fw-submit">{t('landing.mockSendQuote')}</div>
     </div>
   )
 }
