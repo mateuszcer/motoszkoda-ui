@@ -121,11 +121,8 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
             <button className="lp-lang" onClick={toggleLang}>
               {isPolish ? 'EN' : 'PL'}
             </button>
-            <button className="lp-nav__btn-sec" onClick={onJoinAsShop}>
-              {t('landing.nav.ctaShop')}
-            </button>
             <button className="lp-nav__btn-pri" onClick={onGetStarted}>
-              {t('landing.nav.cta')}
+              {t('landing.hero.cta')}
             </button>
           </div>
         </div>
@@ -149,9 +146,6 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
             <div>
               <button className="lp-hero__cta-primary" onClick={onGetStarted}>
                 {t('landing.hero.cta')}
-              </button>
-              <button className="lp-hero__cta-link" onClick={onJoinAsShop}>
-                {t('landing.hero.ctaSecondary')}
               </button>
             </div>
           </div>

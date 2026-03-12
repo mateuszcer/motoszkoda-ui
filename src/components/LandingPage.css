@@ -41,6 +41,7 @@
   font-family: var(--lp-font-b);
   color: var(--n900);
   line-height: 1.6;
+  letter-spacing: -0.04em;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -96,17 +97,17 @@
   font-size: 11px;
   font-weight: 500;
   padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--n100);
+  color: var(--n600);
+  border: 1px solid var(--n200);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s;
   letter-spacing: 0.05em;
 }
 .lp-lang:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.8);
+  background: var(--n200);
+  color: var(--n900);
 }
 
 /* ══════════ NAV ══════════ */
@@ -169,7 +170,7 @@
 
 .lp-nav__links button {
   font: 500 15px/1 var(--lp-font-b);
-  color: var(--n500);
+  color: var(--n900);
   background: none;
   border: none;
   cursor: pointer;
@@ -177,7 +178,7 @@
   transition: color 0.2s;
 }
 .lp-nav__links button:hover {
-  color: var(--teal-900);
+  color: var(--mint-dark);
 }
 
 .lp-nav__actions {
@@ -186,20 +187,20 @@
   align-items: center;
 }
 
-/* Nav: secondary solid teal (workshops), primary mint (drivers) */
+/* Nav: secondary text link, primary green pill */
 .lp-nav__btn-sec {
   height: 38px;
   padding: 0 20px;
   border-radius: 999px;
-  background: var(--teal-500);
-  border: none;
-  color: var(--white);
+  background: transparent;
+  border: 1.5px solid var(--n200);
+  color: var(--n900);
   font: 500 14px/1 var(--lp-font-b);
   cursor: pointer;
   transition: all 0.2s;
 }
 .lp-nav__btn-sec:hover {
-  background: var(--teal-600);
+  border-color: var(--n300);
 }
 
 .lp-nav__btn-pri {
@@ -207,21 +208,21 @@
   padding: 0 20px;
   border-radius: 999px;
   border: none;
-  background: var(--mint);
-  color: var(--teal-900);
+  background: var(--teal-700);
+  color: var(--white);
   font: 600 14px/1 var(--lp-font-b);
   cursor: pointer;
   transition: all 0.2s;
 }
 .lp-nav__btn-pri:hover {
-  background: var(--mint-light);
+  background: var(--teal-600);
 }
 
 /* ══════════ HERO ══════════ */
 .lp-hero {
   position: relative;
   min-height: 100vh;
-  background: var(--teal-700);
+  background: var(--n50);
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -235,7 +236,7 @@
   right: 0%;
   width: 50%;
   height: 120%;
-  background: radial-gradient(ellipse at center, rgba(141, 232, 196, 0.03) 0%, transparent 65%);
+  background: radial-gradient(ellipse at center, rgba(110, 207, 171, 0.06) 0%, transparent 65%);
 }
 
 .lp-hero__content {
@@ -264,17 +265,18 @@
 .lp-hero__headline {
   font-family: var(--lp-font-h);
   font-weight: 700;
-  font-size: clamp(48px, 5.2vw, 72px);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  color: var(--mint-head);
-  margin: 0 0 24px;
+  font-size: clamp(40px, 4.5vw, 60px);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  color: var(--n900);
+  margin: 0 0 20px;
 }
 
 .lp-hero__sub {
-  font: 500 16px/1.7 var(--lp-font-b);
-  color: rgba(255, 255, 255, 0.45);
-  max-width: 380px;
+  font: 400 16px/1.5 var(--lp-font-b);
+  letter-spacing: -0.01em;
+  color: var(--n700);
+  max-width: 400px;
   margin: 0 0 36px;
 }
 
@@ -287,33 +289,34 @@
   padding: 0 28px;
   border-radius: 999px;
   border: none;
-  background: var(--white);
-  color: var(--teal-700);
+  background: var(--teal-700);
+  color: var(--white);
   font: 600 15px/1 var(--lp-font-b);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba(27, 53, 51, 0.15);
   cursor: pointer;
   transition: all 0.25s ease;
 }
 .lp-hero__cta-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14);
+  background: var(--teal-600);
+  box-shadow: 0 4px 20px rgba(27, 53, 51, 0.2);
 }
 
 .lp-hero__cta-link {
   display: inline-block;
   margin-left: 28px;
   font: 500 14px/1 var(--lp-font-b);
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--n500);
   background: none;
   border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid var(--n300);
   padding: 0 0 2px;
   cursor: pointer;
   transition: all 0.2s;
 }
 .lp-hero__cta-link:hover {
-  color: rgba(255, 255, 255, 0.65);
-  border-color: rgba(255, 255, 255, 0.4);
+  color: var(--n900);
+  border-color: var(--n500);
 }
 
 .lp-hero__visual {
@@ -340,7 +343,7 @@
 .lp-hero__scroll svg {
   width: 18px;
   height: 18px;
-  stroke: rgba(255, 255, 255, 0.2);
+  stroke: var(--n400);
   fill: none;
   stroke-width: 2;
   animation: lp-scroll-bounce 2.5s ease-in-out infinite;
@@ -398,7 +401,7 @@
 }
 
 .lp-app__header {
-  background: linear-gradient(145deg, #070707 0%, #0c4e4e 100%);
+  background: linear-gradient(145deg, #0e5e5e 0%, #1a8a7a 100%);
   padding: 34px 20px 16px;
   color: #fff;
   position: relative;
@@ -1153,8 +1156,8 @@
   margin: 0 0 12px;
 }
 .lp-shop-callout__subtitle {
-  font: 500 15px/1.7 var(--lp-font-b);
-  color: rgba(255, 255, 255, 0.45);
+  font: 400 16px/1.7 var(--lp-font-b);
+  color: rgba(255, 255, 255, 0.65);
   margin: 0 0 28px;
 }
 .lp-shop-callout__cta {
@@ -1519,13 +1522,14 @@
   font-weight: 700;
   font-size: clamp(28px, 3.5vw, 44px);
   line-height: 1.12;
-  color: var(--mint-head);
+  letter-spacing: -0.03em;
+  color: #f0fdf8;
   margin: 0 0 14px;
 }
 
 .lp-bottom-cta__body {
-  font: 500 15px/1.7 var(--lp-font-b);
-  color: rgba(255, 255, 255, 0.45);
+  font: 400 16px/1.7 var(--lp-font-b);
+  color: rgba(255, 255, 255, 0.65);
   margin: 0 0 32px;
 }
 
