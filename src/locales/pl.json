@@ -472,7 +472,7 @@
       "overline": "Krok 2",
       "headline": "Porównaj wyceny obok siebie",
       "body": "Warsztaty wysyłają wyceny z komentarzem. Porównaj ceny, odległości i opinie w jednym widoku.",
-      "cta": "Zobacz jak to wygląda"
+      "cta": "Stwórz zlecenie"
     },
     "feature3": {
       "overline": "Krok 3",
@@ -481,7 +481,7 @@
       "cta": "Dołącz jako warsztat"
     },
     "shopCallout": {
-      "overline": "DLA WARSZTATÓW",
+      "overline": "KROK 3 · DLA WARSZTATÓW",
       "headline": "Zdobywaj klientów w swojej okolicy",
       "desc": "Otrzymuj zlecenia napraw od kierowców w Twoim promieniu. Wyceniaj bezpośrednio w aplikacji — bez pośredników, bez prowizji od wyceny.",
       "cta": "Dołącz jako warsztat",

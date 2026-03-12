@@ -244,27 +244,10 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
         </div>
       </section>
 
-      {/* ── FEATURE 3 ── */}
-      <section className="lp-feature lp-feature--a">
-        <div className="lp-feature__inner">
-          <div className="lp-rv">
-            <p className="lp-feature__overline">{t('landing.feature3.overline')}</p>
-            <h2 className="lp-feature__headline">{t('landing.feature3.headline')}</h2>
-            <p className="lp-feature__body">{t('landing.feature3.body')}</p>
-            <button className="lp-feature__btn" onClick={onJoinAsShop}>
-              {t('landing.feature3.cta')}
-            </button>
-          </div>
-          <div className="lp-feature__visual lp-rv lp-rv-d1">
-            <FeatureMockup3 t={t} />
-          </div>
-        </div>
-      </section>
-
-      {/* ── WORKSHOP CALLOUT ── */}
+      {/* ── WORKSHOP CALLOUT (Step 3) ── */}
       <section className="lp-shop-callout">
         <div className="lp-shop-callout__inner">
-          {/* Left: pitch */}
+          {/* Left: pitch + CTAs */}
           <div className="lp-shop-callout__content lp-rv">
             <p className="lp-shop-callout__overline">{t('landing.shopCallout.overline')}</p>
             <h2 className="lp-shop-callout__headline">{t('landing.shopCallout.headline')}</h2>
@@ -285,67 +268,9 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
             </div>
           </div>
 
-          {/* Right: benefits */}
-          <div className="lp-shop-callout__benefits lp-rv">
-            <div className="lp-shop-callout__benefit">
-              <div className="lp-shop-callout__benefit-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M16 12l-4-4-4 4M12 16V8" />
-                </svg>
-              </div>
-              <div>
-                <div className="lp-shop-callout__benefit-title">{t('landing.shopCallout.benefit1Title')}</div>
-                <div className="lp-shop-callout__benefit-desc">{t('landing.shopCallout.benefit1Desc')}</div>
-              </div>
-            </div>
-
-            <div className="lp-shop-callout__divider" />
-
-            <div className="lp-shop-callout__benefit">
-              <div className="lp-shop-callout__benefit-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" />
-                </svg>
-              </div>
-              <div>
-                <div className="lp-shop-callout__benefit-title">{t('landing.shopCallout.benefit2Title')}</div>
-                <div className="lp-shop-callout__benefit-desc">{t('landing.shopCallout.benefit2Desc')}</div>
-              </div>
-            </div>
-
-            <div className="lp-shop-callout__divider" />
-
-            <div className="lp-shop-callout__benefit">
-              <div className="lp-shop-callout__benefit-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-              </div>
-              <div>
-                <div className="lp-shop-callout__benefit-title">{t('landing.shopCallout.benefit3Title')}</div>
-                <div className="lp-shop-callout__benefit-desc">{t('landing.shopCallout.benefit3Desc')}</div>
-              </div>
-            </div>
-
-            <div className="lp-shop-callout__divider" />
-
-            <div className="lp-shop-callout__benefit">
-              <div className="lp-shop-callout__benefit-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-                </svg>
-              </div>
-              <div>
-                <div className="lp-shop-callout__benefit-title">{t('landing.shopCallout.benefit4Title')}</div>
-                <div className="lp-shop-callout__benefit-desc">{t('landing.shopCallout.benefit4Desc')}</div>
-              </div>
-            </div>
-
-            <div className="lp-shop-callout__note">
-              <strong>{t('landing.shopCallout.noteHighlight')}</strong> {t('landing.shopCallout.noteText')}
-            </div>
+          {/* Right: mockup card */}
+          <div className="lp-shop-callout__visual lp-rv lp-rv-d1">
+            <FeatureMockup3 t={t} />
           </div>
         </div>
       </section>
@@ -889,7 +814,7 @@ function FeatureMockup2({ t }: { t: (key: string) => string }) {
 
 function FeatureMockup3({ t }: { t: (key: string) => string }) {
   return (
-    <div className="lp-fcard" style={{ padding: 18 }}>
+    <div className="lp-fcard">
       <div className="lp-fcard__head">
         <div className="lp-fcard__title">Audi A3 &middot; {t('tags.brakes')}</div>
         <span className="lp-fcard__badge lp-fcard__badge--amber">{t('landing.mockNewRequest')}</span>

@@ -878,17 +878,17 @@
 
 /* ══════════ FEATURE SECTIONS ══════════ */
 .lp-feature {
-  padding: var(--section-pad) 40px;
+  padding: clamp(56px, 7vw, 96px) 40px;
 }
 .lp-feature--a {
   background:
     radial-gradient(circle, rgba(27, 53, 51, 0.08) 1px, transparent 1px) 0 0 / 24px 24px,
-    var(--n50);
+    #f5f5f3;
 }
 .lp-feature--b {
   background:
     radial-gradient(circle, rgba(27, 53, 51, 0.08) 1px, transparent 1px) 0 0 / 24px 24px,
-    var(--n75);
+    #ffffff;
 }
 
 .lp-feature__inner {
@@ -961,7 +961,7 @@
   padding: 22px;
   width: 100%;
   max-width: 380px;
-  box-shadow: 0 2px 20px rgba(27, 53, 51, 0.05);
+  box-shadow: 0 4px 24px rgba(26, 63, 58, 0.08);
 }
 
 .lp-fcard__head {
@@ -1288,57 +1288,11 @@
   background: rgba(255, 255, 255, 0.14);
 }
 
-/* Benefits list */
-.lp-shop-callout__benefits {
+/* Visual (mockup card in right column) */
+.lp-shop-callout__visual {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.lp-shop-callout__benefit {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-.lp-shop-callout__benefit-icon {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  background: rgba(52, 211, 153, 0.1);
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-}
-.lp-shop-callout__benefit-icon svg {
-  width: 20px;
-  height: 20px;
-  stroke: var(--mint);
-  fill: none;
-  stroke-width: 1.5;
-}
-.lp-shop-callout__benefit-title {
-  font: 600 15px/1.4 var(--lp-font-b);
-  color: var(--white);
-  margin-bottom: 3px;
-}
-.lp-shop-callout__benefit-desc {
-  font: 400 13px/1.6 var(--lp-font-b);
-  color: rgba(255, 255, 255, 0.6);
-}
-.lp-shop-callout__divider {
-  width: 100%;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.06);
-}
-.lp-shop-callout__note {
-  margin-top: 12px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  font: 400 13px/1.5 var(--lp-font-b);
-  color: rgba(255, 255, 255, 0.5);
-}
-.lp-shop-callout__note strong {
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 600;
+  justify-content: center;
+  align-items: center;
 }
 
 @media (max-width: 900px) {
