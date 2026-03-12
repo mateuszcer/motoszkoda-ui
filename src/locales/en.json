@@ -443,6 +443,7 @@
       "howItWorks": "How it works",
       "pricing": "Pricing",
       "faq": "FAQ",
+      "contact": "Contact",
       "cta": "Create request",
       "ctaShop": "Join as a workshop"
     },
@@ -568,6 +569,21 @@
       "a9": "Click 'Join as a Shop', fill in your business details, and activate your account. The process takes just a few minutes.",
       "q10": "Is my personal data safe?",
       "a10": "Yes. Your contact details are never shared with shops without your consent. Shops only see the issue description, car details, and location."
+    },
+    "contact": {
+      "heroCta": "Let's talk",
+      "overline": "Get in touch",
+      "headline": "Have questions? Reach out",
+      "subtitle": "Our team is here to help you get started.",
+      "phoneLabel": "Phone",
+      "phoneValue": "+48 XXX XXX XXX",
+      "phoneHint": "Mon\u2013Fri, 9:00\u201317:00",
+      "emailLabel": "Email",
+      "emailValue": "kontakt@autoceny.pl",
+      "emailHint": "We reply within 24 hours",
+      "igLabel": "Instagram",
+      "igValue": "@autoceny",
+      "igHint": "Follow us"
     },
     "footer": {
       "copy": "\u00a9 2026 Autoceny. All rights reserved."

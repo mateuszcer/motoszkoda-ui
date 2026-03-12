@@ -115,6 +115,9 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
             <li>
               <button onClick={() => scrollToSection('lp-faq')}>{t('landing.nav.faq')}</button>
             </li>
+            <li>
+              <button onClick={() => scrollToSection('lp-contact')}>{t('landing.nav.contact')}</button>
+            </li>
           </ul>
 
           <div className="lp-nav__actions">
@@ -347,9 +350,14 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
           <p className="lp-shop-callout__overline">{t('landing.shopCallout.overline')}</p>
           <h2 className="lp-shop-callout__headline">{t('landing.shopCallout.headline')}</h2>
           <p className="lp-shop-callout__subtitle">{t('landing.shopCallout.subtitle')}</p>
-          <button className="lp-shop-callout__cta" onClick={onJoinAsShop}>
-            {t('landing.shopCallout.cta')}
-          </button>
+          <div className="lp-shop-callout__actions">
+            <button className="lp-shop-callout__cta" onClick={onJoinAsShop}>
+              {t('landing.shopCallout.cta')}
+            </button>
+            <button className="lp-shop-callout__cta-contact" onClick={() => scrollToSection('lp-contact')}>
+              {t('landing.contact.heroCta')}
+            </button>
+          </div>
         </div>
       </section>
 
@@ -559,6 +567,58 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
         </div>
       </section>
 
+      {/* ── CONTACT ── */}
+      <section className="lp-contact" id="lp-contact">
+        <div className="lp-contact__inner">
+          <p className="lp-contact__overline lp-rv">{t('landing.contact.overline')}</p>
+          <h2 className="lp-contact__headline lp-rv">{t('landing.contact.headline')}</h2>
+
+          <div className="lp-contact__grid lp-rv">
+            <a className="lp-contact__item" href="tel:+48XXXXXXXXX">
+              <div className="lp-contact__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.12.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0122 16.92z" />
+                </svg>
+              </div>
+              <div className="lp-contact__value">{t('landing.contact.phoneValue')}</div>
+              <div className="lp-contact__hint">{t('landing.contact.phoneHint')}</div>
+            </a>
+
+            <div className="lp-contact__divider" />
+
+            <a className="lp-contact__item" href="mailto:kontakt@autoceny.pl">
+              <div className="lp-contact__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="M22 7l-10 7L2 7" />
+                </svg>
+              </div>
+              <div className="lp-contact__value">{t('landing.contact.emailValue')}</div>
+              <div className="lp-contact__hint">{t('landing.contact.emailHint')}</div>
+            </a>
+
+            <div className="lp-contact__divider" />
+
+            <a
+              className="lp-contact__item"
+              href="https://instagram.com/autoceny"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="lp-contact__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="2" y="2" width="20" height="20" rx="5" />
+                  <circle cx="12" cy="12" r="5" />
+                  <circle cx="17.5" cy="6.5" r="1.5" />
+                </svg>
+              </div>
+              <div className="lp-contact__value">{t('landing.contact.igValue')}</div>
+              <div className="lp-contact__hint">{t('landing.contact.igHint')}</div>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ── BOTTOM CTA ── */}
       <section className="lp-bottom-cta">
         <div className="lp-bottom-cta__inner lp-rv">
@@ -588,6 +648,9 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
             </li>
             <li>
               <button onClick={() => scrollToSection('lp-faq')}>{t('landing.nav.faq')}</button>
+            </li>
+            <li>
+              <button onClick={() => scrollToSection('lp-contact')}>{t('landing.nav.contact')}</button>
             </li>
           </ul>
           <p className="lp-footer__copy">{t('landing.footer.copy')}</p>
