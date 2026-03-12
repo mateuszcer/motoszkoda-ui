@@ -1,4 +1,4 @@
-import { memo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Entitlements, UserPlanInfo } from '../domain/apiTypes'
 import type { RepairRequest } from '../domain/types'
@@ -28,8 +28,8 @@ export const HomeView = memo(function HomeView({
   const { t, i18n } = useTranslation()
   const [activeTab, setActiveTab] = useState<HomeTab>('open')
 
-  const openRequests = requests.filter((r) => r.status === 'open')
-  const closedRequests = requests.filter((r) => r.status === 'closed')
+  const openRequests = useMemo(() => requests.filter((r) => r.status === 'open'), [requests])
+  const closedRequests = useMemo(() => requests.filter((r) => r.status === 'closed'), [requests])
   const isFree = planInfo?.planCode === 'FREE'
   const atOpenLimit = isFree && openRequests.length >= freeEntitlements.maxOpenRepairRequests
 

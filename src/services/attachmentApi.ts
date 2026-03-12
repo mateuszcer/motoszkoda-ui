@@ -63,25 +63,37 @@ export async function uploadAttachments(
   const toUpload = attachments.filter((att) => files.has(att.id))
   const total = toUpload.length
 
-  for (let i = 0; i < toUpload.length; i++) {
-    const att = toUpload[i]
-    const file = files.get(att.id)!
-    onProgress?.(i + 1, total)
+  const CONCURRENCY = 3
+  let completed = 0
 
-    try {
-      const { attachmentId, uploadUrl, contentType } = await requestUploadUrl({
-        targetType,
-        repairRequestId,
-        fileName: att.name,
-        contentType: file.type as UploadUrlRequest['contentType'],
-        sizeBytes: file.size,
-        shopId,
-      })
-      await uploadFile(uploadUrl, file, contentType)
-      const confirmed = await confirmUpload(attachmentId)
-      result.successes.push(confirmed)
-    } catch (error) {
-      result.errors.push({ attachmentId: att.id, error })
+  // Process uploads in concurrent batches
+  for (let i = 0; i < toUpload.length; i += CONCURRENCY) {
+    const batch = toUpload.slice(i, i + CONCURRENCY)
+    const batchResults = await Promise.allSettled(
+      batch.map(async (att) => {
+        const file = files.get(att.id)!
+        const { attachmentId, uploadUrl, contentType } = await requestUploadUrl({
+          targetType,
+          repairRequestId,
+          fileName: att.name,
+          contentType: file.type as UploadUrlRequest['contentType'],
+          sizeBytes: file.size,
+          shopId,
+        })
+        await uploadFile(uploadUrl, file, contentType)
+        return confirmUpload(attachmentId)
+      }),
+    )
+
+    for (let j = 0; j < batchResults.length; j++) {
+      completed++
+      onProgress?.(completed, total)
+      const settled = batchResults[j]
+      if (settled.status === 'fulfilled') {
+        result.successes.push(settled.value)
+      } else {
+        result.errors.push({ attachmentId: batch[j].id, error: settled.reason })
+      }
     }
   }
 

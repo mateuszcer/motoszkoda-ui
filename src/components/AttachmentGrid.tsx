@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Attachment } from '../domain/types'
 import { formatBytes } from '../utils/attachments'
@@ -8,7 +9,11 @@ interface AttachmentGridProps {
   onRemove?: (attachmentId: string) => void
 }
 
-export function AttachmentGrid({ attachments, removable = false, onRemove }: AttachmentGridProps) {
+export const AttachmentGrid = memo(function AttachmentGrid({
+  attachments,
+  removable = false,
+  onRemove,
+}: AttachmentGridProps) {
   const { t } = useTranslation()
 
   if (!attachments.length) {
@@ -45,4 +50,4 @@ export function AttachmentGrid({ attachments, removable = false, onRemove }: Att
       ))}
     </div>
   )
-}
+})

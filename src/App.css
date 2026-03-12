@@ -4014,3 +4014,59 @@ label small {
 .u-gap-3 {
   gap: var(--space-3);
 }
+.u-mt-2 {
+  margin-top: var(--space-2);
+}
+
+/* Compact button variants */
+.btn-compact {
+  padding: var(--space-1) var(--space-2);
+}
+.btn-compact-sm {
+  padding: var(--space-1) var(--space-2);
+  min-height: 32px;
+  font-size: 13px;
+}
+.btn-compact-xs {
+  padding: var(--space-1) var(--space-2);
+  font-size: 12px;
+}
+
+/* Detail header layout */
+.detail-header-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-1);
+}
+.detail-collapsed-title {
+  font-size: 15px;
+  margin: 0;
+}
+.request-header--collapsed {
+  padding: var(--space-3) var(--space-5);
+}
+
+/* Dialog actions alignment */
+.split-actions--end {
+  justify-content: flex-end;
+}
+
+/* Section header title */
+.section-header__title {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Thread needs-answer banner */
+.thread-needs-answer {
+  padding: var(--space-2) var(--space-3);
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--warning-600);
+  text-align: center;
+}

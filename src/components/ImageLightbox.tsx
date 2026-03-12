@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 
 interface ImageLightboxProps {
   src: string
@@ -6,7 +6,7 @@ interface ImageLightboxProps {
   onClose: () => void
 }
 
-export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
+export const ImageLightbox = memo(function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -35,4 +35,4 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
       <img className="lightbox-img" src={src} alt={alt} onClick={(e) => e.stopPropagation()} />
     </div>
   )
-}
+})

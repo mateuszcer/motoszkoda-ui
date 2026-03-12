@@ -1,19 +1,17 @@
 import i18n from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
+import HttpBackend from 'i18next-http-backend'
 import { initReactI18next } from 'react-i18next'
 
-import en from './locales/en.json'
-import pl from './locales/pl.json'
-
 i18n
+  .use(HttpBackend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: {
-      pl: { translation: pl },
-      en: { translation: en },
-    },
     fallbackLng: 'pl',
+    backend: {
+      loadPath: '/locales/{{lng}}.json',
+    },
     detection: {
       order: ['localStorage', 'navigator'],
       lookupLocalStorage: 'i18nextLng',

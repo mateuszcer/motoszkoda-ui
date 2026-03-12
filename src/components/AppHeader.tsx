@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { memo, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -27,7 +27,7 @@ interface AppHeaderProps {
 
 const defaultBrandMark = <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
 
-export function AppHeader({ brandMark, brandMarkClass, onBrandClick, navSlot }: AppHeaderProps) {
+export const AppHeader = memo(function AppHeader({ brandMark, brandMarkClass, onBrandClick, navSlot }: AppHeaderProps) {
   const mark = brandMark ?? defaultBrandMark
   return (
     <header className="app-header">
@@ -49,4 +49,4 @@ export function AppHeader({ brandMark, brandMarkClass, onBrandClick, navSlot }: 
       </div>
     </header>
   )
-}
+})

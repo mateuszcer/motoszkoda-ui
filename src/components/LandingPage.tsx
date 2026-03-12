@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { EnrollmentPlanCatalog, UserPlanCatalog } from '../domain/apiTypes'
 import { formatMinorCurrency } from '../utils/format'
@@ -86,10 +86,14 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
     [],
   )
 
-  const faqItems = Array.from({ length: 10 }, (_, i) => ({
-    q: t(`landing.faq.q${i + 1}`),
-    a: t(`landing.faq.a${i + 1}`),
-  }))
+  const faqItems = useMemo(
+    () =>
+      Array.from({ length: 10 }, (_, i) => ({
+        q: t(`landing.faq.q${i + 1}`),
+        a: t(`landing.faq.a${i + 1}`),
+      })),
+    [t],
+  )
 
   return (
     <div className="lp">
@@ -387,8 +391,8 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
               </div>
             </div>
           ) : (
-            <div className="lp-pricing__grid lp-rv" style={{ gridTemplateColumns: '1fr' }}>
-              <div className="lp-pcard lp-pcard--feat" style={{ maxWidth: 420, margin: '0 auto' }}>
+            <div className="lp-pricing__grid lp-pricing__grid--single lp-rv">
+              <div className="lp-pcard lp-pcard--feat lp-pcard--centered">
                 <div className="lp-pcard__plan">{t('landing.pricing.shopPlanName')}</div>
                 <div className="lp-pricing__billing">
                   <button
@@ -608,8 +612,8 @@ function PhoneMockup() {
           <div className="lp-float-card__name">Audi A3 &middot; hamulce</div>
         </div>
         <div className="lp-float-card__row">
-          <span style={{ fontSize: 10, color: '#868A86' }}>3 wyceny otrzymane</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#2D7A56' }}>od 520 zł</span>
+          <span className="lp-demo-meta">3 wyceny otrzymane</span>
+          <span className="lp-demo-price">od 520 zł</span>
         </div>
         <div className="lp-float-card__bar">
           <div className="lp-float-card__fill" />
@@ -708,9 +712,7 @@ function PhoneMockup() {
                 <div className="lp-app__order lp-app__order--dim">
                   <div className="lp-app__order-top">
                     <div className="lp-app__order-car">BMW 320d &middot; klimatyzacja</div>
-                    <div className="lp-app__order-badge" style={{ background: '#FDF6E3', color: '#8B6914' }}>
-                      Oczekuje
-                    </div>
+                    <div className="lp-app__order-badge lp-app__order-badge--pending">Oczekuje</div>
                   </div>
                   <div className="lp-app__order-desc">Klima nie chłodzi, dziwny zapach</div>
                   <div className="lp-app__order-meta">Zasięg 10 km &middot; Utworzono wczoraj</div>
@@ -785,7 +787,7 @@ function FeatureMockup1({ t }: { t: (key: string) => string }) {
 
 function FeatureMockup2({ t }: { t: (key: string) => string }) {
   return (
-    <div className="lp-fcard" style={{ padding: 18 }}>
+    <div className="lp-fcard lp-fcard--compact">
       <div className="lp-fcard__head">
         <div className="lp-fcard__title">Audi A3 &middot; {t('tags.brakes')}</div>
         <span className="lp-fcard__badge lp-fcard__badge--green">{t('status.open')}</span>

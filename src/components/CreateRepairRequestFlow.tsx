@@ -238,7 +238,7 @@ export function CreateRepairRequestFlow({ onCancel, onSubmitRequest, onViewReque
         <button className="btn btn-ghost" onClick={onCancel}>
           {t('common.back')}
         </button>
-        <h2 style={{ fontSize: '17px', fontWeight: 600, margin: 0 }}>{t('form.newRequest')}</h2>
+        <h2 className="section-header__title">{t('form.newRequest')}</h2>
         <span className="step-pill">{step < 4 ? `${step}/3` : t('form.done')}</span>
       </div>
 

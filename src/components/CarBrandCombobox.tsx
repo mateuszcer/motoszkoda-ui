@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { CAR_BRANDS } from '../domain/constants'
 
 interface CarBrandComboboxProps {
@@ -7,7 +7,11 @@ interface CarBrandComboboxProps {
   placeholder?: string
 }
 
-export function CarBrandCombobox({ value, onChange, placeholder = 'Audi' }: CarBrandComboboxProps) {
+export const CarBrandCombobox = memo(function CarBrandCombobox({
+  value,
+  onChange,
+  placeholder = 'Audi',
+}: CarBrandComboboxProps) {
   const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -130,4 +134,4 @@ export function CarBrandCombobox({ value, onChange, placeholder = 'Audi' }: CarB
       )}
     </div>
   )
-}
+})

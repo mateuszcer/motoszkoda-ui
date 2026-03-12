@@ -99,22 +99,7 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
         </header>
 
         <div className="thread-messages">
-          {hasNeedsAnswer && !readOnly ? (
-            <div
-              style={{
-                padding: 'var(--space-2) var(--space-3)',
-                background: 'var(--warning-50)',
-                border: '1px solid var(--warning-100)',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: 'var(--warning-600)',
-                textAlign: 'center',
-              }}
-            >
-              {t('thread.needsAnswer')}
-            </div>
-          ) : null}
+          {hasNeedsAnswer && !readOnly ? <div className="thread-needs-answer">{t('thread.needsAnswer')}</div> : null}
 
           {thread.messages.map((message) => (
             <article className={`thread-message thread-message-${message.author}`} key={message.id}>

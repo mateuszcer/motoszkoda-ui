@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { COUNTRY_LIST, parseE164 } from '../utils/phoneCountries'
 
 interface PhoneInputProps {
@@ -8,7 +9,13 @@ interface PhoneInputProps {
   className?: string
 }
 
-export function PhoneInput({ value, onChange, placeholder, disabled, className }: PhoneInputProps) {
+export const PhoneInput = memo(function PhoneInput({
+  value,
+  onChange,
+  placeholder,
+  disabled,
+  className,
+}: PhoneInputProps) {
   const { country, localNumber } = parseE164(value)
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -45,4 +52,4 @@ export function PhoneInput({ value, onChange, placeholder, disabled, className }
       />
     </div>
   )
-}
+})

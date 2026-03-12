@@ -27,8 +27,30 @@ import type {
 import { api } from './apiClient'
 import * as prefs from './localPreferences'
 
-// In-memory detail cache keyed by requestId
+// In-memory detail cache keyed by requestId (bounded LRU)
+const CACHE_MAX_SIZE = 50
 const detailCache = new Map<string, RepairRequest>()
+
+function cacheSet(key: string, value: RepairRequest) {
+  // Delete first to move to end (Map preserves insertion order)
+  detailCache.delete(key)
+  detailCache.set(key, value)
+  // Evict oldest entries if over limit
+  if (detailCache.size > CACHE_MAX_SIZE) {
+    const oldest = detailCache.keys().next().value!
+    detailCache.delete(oldest)
+  }
+}
+
+function cacheGet(key: string): RepairRequest | undefined {
+  const value = detailCache.get(key)
+  if (value !== undefined) {
+    // Move to end (most recently used)
+    detailCache.delete(key)
+    detailCache.set(key, value)
+  }
+  return value
+}
 
 function toApiCreatePayload(p: CreateRepairRequestPayload): CreateRepairRequestRequest {
   return {
@@ -54,7 +76,7 @@ const repairRequestApiImpl: RepairRequestApi = {
     // List view returns skeleton requests (no shopQuotes/threads populated)
     // Previously visited details are served from cache
     return rawList.map((raw) => {
-      const cached = detailCache.get(raw.id)
+      const cached = cacheGet(raw.id)
       if (cached) {
         // Merge latest status from API with cached detail data
         return {
@@ -136,7 +158,7 @@ const repairRequestApiImpl: RepairRequestApi = {
     const result = mapRepairRequest(rawRequest, shopQuotes, threads, attachments)
 
     // Cache it
-    detailCache.set(requestId, result)
+    cacheSet(requestId, result)
 
     return result
   },

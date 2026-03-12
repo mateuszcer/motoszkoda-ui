@@ -233,13 +233,10 @@ export function RepairRequestDetail({
   return (
     <section className="screen request-detail-screen">
       {/* Collapsible request summary */}
-      <header
-        className="request-header"
-        style={summaryCollapsed ? { padding: 'var(--space-3) var(--space-5)' } : undefined}
-      >
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center', marginBottom: 'var(--space-1)' }}>
-            <button className="btn btn-ghost" onClick={onBackHome} style={{ padding: 'var(--space-1) var(--space-2)' }}>
+      <header className={`request-header${summaryCollapsed ? ' request-header--collapsed' : ''}`}>
+        <div className="u-flex-1">
+          <div className="detail-header-row">
+            <button className="btn btn-ghost btn-compact" onClick={onBackHome}>
               <svg
                 width="16"
                 height="16"
@@ -263,7 +260,7 @@ export function RepairRequestDetail({
               </h2>
               <p>{request.issue.description}</p>
               {request.issue.attachments.length > 0 ? (
-                <div className="attachment-grid" style={{ marginTop: 'var(--space-2)' }}>
+                <div className="attachment-grid u-mt-2">
                   {request.issue.attachments.map((att) => {
                     const url = att.previewUrl ?? attachmentUrls[att.id]
                     const loaded = loadedImages[att.id]
@@ -292,18 +289,14 @@ export function RepairRequestDetail({
               </small>
             </>
           ) : (
-            <h2 style={{ fontSize: '15px', margin: 0 }}>
+            <h2 className="detail-collapsed-title">
               {request.car.make} {request.car.model}
             </h2>
           )}
         </div>
 
         <div className="request-header-actions">
-          <button
-            className="btn btn-ghost"
-            onClick={() => setSummaryCollapsed((prev) => !prev)}
-            style={{ padding: 'var(--space-1) var(--space-2)', fontSize: '12px' }}
-          >
+          <button className="btn btn-ghost btn-compact-xs" onClick={() => setSummaryCollapsed((prev) => !prev)}>
             {summaryCollapsed ? t('common.show') : t('common.hide')}
           </button>
           {!isReadOnly ? (
@@ -395,11 +388,10 @@ export function RepairRequestDetail({
                       ) : null}
                       {shop.ignored ? <span className="pill pill-muted">{t('detail.ignored')}</span> : null}
                       <button
-                        className="btn btn-ghost"
+                        className="btn btn-ghost btn-compact-sm"
                         onClick={() => {
                           toggleExpanded(shop.shopId)
                         }}
-                        style={{ padding: 'var(--space-1) var(--space-2)', minHeight: '32px', fontSize: '13px' }}
                       >
                         {expanded ? t('detail.less') : t('detail.more')}
                       </button>
@@ -570,11 +562,10 @@ export function RepairRequestDetail({
 
                       {thread && thread.unreadCount > 0 ? (
                         <button
-                          className="btn btn-secondary"
+                          className="btn btn-secondary u-mt-3"
                           onClick={() => {
                             openThread(shop.shopId)
                           }}
-                          style={{ marginTop: 'var(--space-3)' }}
                         >
                           {t('detail.viewThread', { count: thread.unreadCount })}
                         </button>
@@ -649,7 +640,7 @@ export function RepairRequestDetail({
           <div className="dialog" role="dialog" aria-modal="true">
             <h3>{t('detail.closeDialogTitle')}</h3>
             <p>{t('detail.closeDialogMessage')}</p>
-            <div className="split-actions" style={{ justifyContent: 'flex-end' }}>
+            <div className="split-actions split-actions--end">
               <button
                 className="btn btn-ghost"
                 onClick={() => {

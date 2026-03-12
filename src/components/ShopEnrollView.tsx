@@ -266,12 +266,7 @@ export function ShopEnrollView({
           </button>
         ) : null}
 
-        <button
-          className="btn btn-ghost auth-submit"
-          type="button"
-          onClick={onLogout}
-          style={{ marginTop: 'var(--space-4)' }}
-        >
+        <button className="btn btn-ghost auth-submit u-mt-4" type="button" onClick={onLogout}>
           {t('auth.logout')}
         </button>
       </div>

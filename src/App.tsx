@@ -1,18 +1,29 @@
-import { lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './App.css'
 import { AppHeader } from './components/AppHeader'
 import { ErrorBoundary } from './components/ErrorBoundary'
-import { EnrollmentGate } from './components/EnrollmentGate'
-import { LoginView } from './components/LoginView'
-import { RegisterView } from './components/RegisterView'
-import { CheckEmailView } from './components/CheckEmailView'
-import { SignupConfirmationView } from './components/SignupConfirmationView'
-import { ForgotPasswordView } from './components/ForgotPasswordView'
-import { ResetPasswordView } from './components/ResetPasswordView'
-import { AdminLoginView } from './components/AdminLoginView'
-import { ShopRegisterView } from './components/ShopRegisterView'
-import { UpgradeLimitModal } from './components/UpgradeLimitModal'
+// Lazy-loaded auth & gate components
+const EnrollmentGate = lazy(() => import('./components/EnrollmentGate').then((m) => ({ default: m.EnrollmentGate })))
+const LoginView = lazy(() => import('./components/LoginView').then((m) => ({ default: m.LoginView })))
+const RegisterView = lazy(() => import('./components/RegisterView').then((m) => ({ default: m.RegisterView })))
+const CheckEmailView = lazy(() => import('./components/CheckEmailView').then((m) => ({ default: m.CheckEmailView })))
+const SignupConfirmationView = lazy(() =>
+  import('./components/SignupConfirmationView').then((m) => ({ default: m.SignupConfirmationView })),
+)
+const ForgotPasswordView = lazy(() =>
+  import('./components/ForgotPasswordView').then((m) => ({ default: m.ForgotPasswordView })),
+)
+const ResetPasswordView = lazy(() =>
+  import('./components/ResetPasswordView').then((m) => ({ default: m.ResetPasswordView })),
+)
+const AdminLoginView = lazy(() => import('./components/AdminLoginView').then((m) => ({ default: m.AdminLoginView })))
+const ShopRegisterView = lazy(() =>
+  import('./components/ShopRegisterView').then((m) => ({ default: m.ShopRegisterView })),
+)
+const UpgradeLimitModal = lazy(() =>
+  import('./components/UpgradeLimitModal').then((m) => ({ default: m.UpgradeLimitModal })),
+)
 import type { BillingInterval, ShopRegistrationRequest, UserPlanInfo } from './domain/apiTypes'
 import type { AuthState } from './domain/auth-types'
 import type {
@@ -226,57 +237,72 @@ function App() {
     }
   }, [auth.isAuthenticated, isAdmin, isShop, enrollmentStatus, loadRequests, loadShopQueue])
 
-  const handleLogin = async (email: string, password: string, captchaToken?: string) => {
-    const result = await authApi.login(email, password, captchaToken)
-    setAuth({ user: result.user, token: result.token, isAuthenticated: true })
-    navigate('home', { replace: true })
-  }
+  const handleLogin = useCallback(
+    async (email: string, password: string, captchaToken?: string) => {
+      const result = await authApi.login(email, password, captchaToken)
+      setAuth({ user: result.user, token: result.token, isAuthenticated: true })
+      navigate('home', { replace: true })
+    },
+    [navigate],
+  )
 
-  const handleRegister = async (email: string, password: string, captchaToken?: string) => {
-    await authApi.register(email, password, captchaToken)
-    setPendingEmail(email)
-    navigate('check-email', { replace: true })
-  }
+  const handleRegister = useCallback(
+    async (email: string, password: string, captchaToken?: string) => {
+      await authApi.register(email, password, captchaToken)
+      setPendingEmail(email)
+      navigate('check-email', { replace: true })
+    },
+    [navigate],
+  )
 
-  const handleShopLogin = async (email: string, password: string, captchaToken?: string) => {
-    const result = await authApi.shopLogin(email, password, captchaToken)
-    setAuth({ user: result.user, token: result.token, isAuthenticated: true })
-    setEnrollmentLoading(true)
-    try {
-      const status = await enrollmentApi.getStatus()
-      setEnrollmentStatus(status.status)
-      setEnrollmentCancelAt(status.cancelAt ?? null)
-    } catch {
-      setEnrollmentStatus(null)
-    } finally {
-      setEnrollmentLoading(false)
-    }
-    navigate('shop-inbox', { replace: true })
-  }
+  const handleShopLogin = useCallback(
+    async (email: string, password: string, captchaToken?: string) => {
+      const result = await authApi.shopLogin(email, password, captchaToken)
+      setAuth({ user: result.user, token: result.token, isAuthenticated: true })
+      setEnrollmentLoading(true)
+      try {
+        const status = await enrollmentApi.getStatus()
+        setEnrollmentStatus(status.status)
+        setEnrollmentCancelAt(status.cancelAt ?? null)
+      } catch {
+        setEnrollmentStatus(null)
+      } finally {
+        setEnrollmentLoading(false)
+      }
+      navigate('shop-inbox', { replace: true })
+    },
+    [navigate],
+  )
 
-  const handleShopRegister = async (payload: ShopRegistrationRequest) => {
-    await enrollmentApi.register(payload)
-    setPendingEmail(payload.email)
-    navigate('check-email', { replace: true })
-  }
+  const handleShopRegister = useCallback(
+    async (payload: ShopRegistrationRequest) => {
+      await enrollmentApi.register(payload)
+      setPendingEmail(payload.email)
+      navigate('check-email', { replace: true })
+    },
+    [navigate],
+  )
 
-  const handleAdminLogin = async (email: string, password: string, captchaToken?: string) => {
-    const result = await authApi.adminLogin(email, password, captchaToken)
-    setAuth({ user: result.user, token: result.token, isAuthenticated: true })
-    navigate('admin-vouchers', { replace: true })
-  }
+  const handleAdminLogin = useCallback(
+    async (email: string, password: string, captchaToken?: string) => {
+      const result = await authApi.adminLogin(email, password, captchaToken)
+      setAuth({ user: result.user, token: result.token, isAuthenticated: true })
+      navigate('admin-vouchers', { replace: true })
+    },
+    [navigate],
+  )
 
-  const handleRequestPasswordReset = async (email: string, captchaToken?: string) => {
+  const handleRequestPasswordReset = useCallback(async (email: string, captchaToken?: string) => {
     await authApi.requestPasswordReset(email, captchaToken)
-  }
+  }, [])
 
-  const handleResendConfirmation = async (email: string) => {
+  const handleResendConfirmation = useCallback(async (email: string) => {
     await authApi.resendConfirmation(email)
-  }
+  }, [])
 
-  const handleResetPassword = async (accessToken: string, newPassword: string) => {
+  const handleResetPassword = useCallback(async (accessToken: string, newPassword: string) => {
     await authApi.resetPassword(accessToken, newPassword)
-  }
+  }, [])
 
   const upsertRequest = useCallback((updatedRequest: RepairRequest) => {
     setRequests((previous) => {
@@ -285,17 +311,20 @@ function App() {
     })
   }, [])
 
-  const openRequestDetail = async (requestId: string) => {
-    setSelectedRequestId(requestId)
-    navigate('request-detail')
+  const openRequestDetail = useCallback(
+    async (requestId: string) => {
+      setSelectedRequestId(requestId)
+      navigate('request-detail')
 
-    if (!auth.user) return
+      if (!auth.user) return
 
-    const detail = await repairRequestApi.fetchRequestDetail(requestId, auth.user.id)
-    if (detail) {
-      upsertRequest(detail)
-    }
-  }
+      const detail = await repairRequestApi.fetchRequestDetail(requestId, auth.user.id)
+      if (detail) {
+        upsertRequest(detail)
+      }
+    },
+    [navigate, auth.user, upsertRequest],
+  )
 
   const handleCreateRequest = async (
     payload: CreateRepairRequestPayload,
@@ -503,11 +532,13 @@ function App() {
     return (
       <main className="app-shell">
         <AppHeader onBrandClick={() => navigate('landing')} />
-        <CheckEmailView
-          email={pendingEmail}
-          onGoToLogin={() => navigate('login')}
-          onResendConfirmation={handleResendConfirmation}
-        />
+        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
+          <CheckEmailView
+            email={pendingEmail}
+            onGoToLogin={() => navigate('login')}
+            onResendConfirmation={handleResendConfirmation}
+          />
+        </Suspense>
       </main>
     )
   }
@@ -517,7 +548,9 @@ function App() {
     return (
       <main className="app-shell">
         <AppHeader onBrandClick={() => navigate('landing')} />
-        <SignupConfirmationView onGoToLogin={() => navigate('login')} />
+        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
+          <SignupConfirmationView onGoToLogin={() => navigate('login')} />
+        </Suspense>
       </main>
     )
   }
@@ -527,7 +560,9 @@ function App() {
     return (
       <main className="app-shell">
         <AppHeader onBrandClick={() => navigate('landing')} />
-        <ForgotPasswordView onSubmit={handleRequestPasswordReset} onBackToLogin={() => navigate('login')} />
+        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
+          <ForgotPasswordView onSubmit={handleRequestPasswordReset} onBackToLogin={() => navigate('login')} />
+        </Suspense>
       </main>
     )
   }
@@ -537,11 +572,13 @@ function App() {
     return (
       <main className="app-shell">
         <AppHeader onBrandClick={() => navigate('landing')} />
-        <ResetPasswordView
-          accessToken={resetToken}
-          onSubmit={handleResetPassword}
-          onGoToLogin={() => navigate('login')}
-        />
+        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
+          <ResetPasswordView
+            accessToken={resetToken}
+            onSubmit={handleResetPassword}
+            onGoToLogin={() => navigate('login')}
+          />
+        </Suspense>
       </main>
     )
   }
@@ -551,7 +588,9 @@ function App() {
     return (
       <main className="app-shell admin-shell">
         <AppHeader brandMarkClass="admin-brand-mark" />
-        <AdminLoginView onLogin={handleAdminLogin} />
+        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
+          <AdminLoginView onLogin={handleAdminLogin} />
+        </Suspense>
       </main>
     )
   }
@@ -561,27 +600,28 @@ function App() {
     return (
       <main className="app-shell">
         <AppHeader onBrandClick={() => navigate('landing')} />
-
-        {screen === 'shop-register' ? (
-          <ShopRegisterView
-            onRegister={handleShopRegister}
-            onSwitchToLogin={() => {
-              setLoginMode('workshop')
-              navigate('login')
-            }}
-          />
-        ) : screen === 'register' ? (
-          <RegisterView onRegister={handleRegister} onSwitchToLogin={() => navigate('login')} />
-        ) : (
-          <LoginView
-            onDriverLogin={handleLogin}
-            onShopLogin={handleShopLogin}
-            onSwitchToDriverRegister={() => navigate('register')}
-            onSwitchToShopRegister={() => navigate('shop-register')}
-            onForgotPassword={() => navigate('forgot-password')}
-            initialMode={loginMode}
-          />
-        )}
+        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
+          {screen === 'shop-register' ? (
+            <ShopRegisterView
+              onRegister={handleShopRegister}
+              onSwitchToLogin={() => {
+                setLoginMode('workshop')
+                navigate('login')
+              }}
+            />
+          ) : screen === 'register' ? (
+            <RegisterView onRegister={handleRegister} onSwitchToLogin={() => navigate('login')} />
+          ) : (
+            <LoginView
+              onDriverLogin={handleLogin}
+              onShopLogin={handleShopLogin}
+              onSwitchToDriverRegister={() => navigate('register')}
+              onSwitchToShopRegister={() => navigate('shop-register')}
+              onForgotPassword={() => navigate('forgot-password')}
+              initialMode={loginMode}
+            />
+          )}
+        </Suspense>
       </main>
     )
   }
@@ -647,145 +687,153 @@ function App() {
     }
 
     return (
-      <EnrollmentGate
-        enrollmentStatus={enrollmentStatus}
-        enrollmentLoading={enrollmentLoading}
-        onVoucherRedeem={handleVoucherRedeem}
-        onPayment={handleEnrollmentPayment}
-        onStatusRefresh={handleEnrollmentStatusRefresh}
-        onLogout={doLogout}
-        enrollmentCatalog={catalog.enrollmentCatalog}
+      <Suspense
+        fallback={
+          <main className="app-shell">
+            <p className="loading">{t('app.loading')}</p>
+          </main>
+        }
       >
-        <main className="app-shell">
-          <AppHeader
-            onBrandClick={() => navigate('shop-inbox')}
-            navSlot={
-              <>
-                {screen !== 'shop-inbox' ? (
-                  <button className="btn btn-ghost" onClick={() => navigate('shop-inbox')}>
-                    {t('shopNav.inbox')}
+        <EnrollmentGate
+          enrollmentStatus={enrollmentStatus}
+          enrollmentLoading={enrollmentLoading}
+          onVoucherRedeem={handleVoucherRedeem}
+          onPayment={handleEnrollmentPayment}
+          onStatusRefresh={handleEnrollmentStatusRefresh}
+          onLogout={doLogout}
+          enrollmentCatalog={catalog.enrollmentCatalog}
+        >
+          <main className="app-shell">
+            <AppHeader
+              onBrandClick={() => navigate('shop-inbox')}
+              navSlot={
+                <>
+                  {screen !== 'shop-inbox' ? (
+                    <button className="btn btn-ghost" onClick={() => navigate('shop-inbox')}>
+                      {t('shopNav.inbox')}
+                    </button>
+                  ) : null}
+                  <button
+                    className="btn btn-ghost"
+                    onClick={() => {
+                      void shop.loadShopProfile()
+                      navigate('shop-profile')
+                    }}
+                  >
+                    {t('shopNav.profile')}
                   </button>
-                ) : null}
-                <button
-                  className="btn btn-ghost"
-                  onClick={() => {
+                  <button className="btn btn-ghost" onClick={() => navigate('shop-plan')}>
+                    {t('shopNav.plan')}
+                  </button>
+                  <button className="btn btn-ghost" onClick={doLogout}>
+                    {t('auth.logout')}
+                  </button>
+                </>
+              }
+            />
+
+            <BannerStack banners={banners} />
+
+            {shop.shopLoading ? <p className="loading">{t('app.loading')}</p> : null}
+            {shop.shopError ? <p className="field-error">{t(shop.shopError as 'app.loadError')}</p> : null}
+
+            <ErrorBoundary>
+              {!shop.shopLoading && !shop.shopError && screen === 'shop-inbox' ? (
+                <ShopInboxView
+                  queueItems={shop.shopQueue}
+                  onOpenRequest={shopOpenDetail}
+                  onAcknowledge={(requestId) => {
+                    void shop.handleShopAcknowledge(requestId)
+                  }}
+                  onDecline={(requestId) => {
+                    void shop.handleShopDecline(requestId)
+                  }}
+                  onProfile={() => {
                     void shop.loadShopProfile()
                     navigate('shop-profile')
                   }}
-                >
-                  {t('shopNav.profile')}
-                </button>
-                <button className="btn btn-ghost" onClick={() => navigate('shop-plan')}>
-                  {t('shopNav.plan')}
-                </button>
-                <button className="btn btn-ghost" onClick={doLogout}>
-                  {t('auth.logout')}
-                </button>
-              </>
-            }
-          />
+                />
+              ) : null}
 
-          <BannerStack banners={banners} />
+              {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && shop.shopSelectedRequest ? (
+                <ShopRequestDetailView
+                  request={shop.shopSelectedRequest}
+                  shopResponse={shop.shopOwnResponse}
+                  messages={shop.shopMessages}
+                  onBack={() => {
+                    void shop.loadShopQueue()
+                    navigate('shop-inbox')
+                  }}
+                  onAcknowledge={() => {
+                    if (shopSelectedRequestId) {
+                      void shop.handleShopAcknowledge(shopSelectedRequestId).then(() => {
+                        void shop.openShopRequestDetail(shopSelectedRequestId)
+                      })
+                    }
+                  }}
+                  onDecline={() => {
+                    if (shopSelectedRequestId) {
+                      void shop.handleShopDecline(shopSelectedRequestId).then(() => {
+                        void shop.loadShopQueue()
+                        navigate('shop-inbox')
+                      })
+                    }
+                  }}
+                  onSendQuote={() => navigate('shop-send-quote')}
+                  onAskQuestion={async (text) => {
+                    if (shopSelectedRequestId) {
+                      await shop.handleShopAskQuestion(shopSelectedRequestId, text)
+                    }
+                  }}
+                  onSendMessage={async (text) => {
+                    if (shopSelectedRequestId) {
+                      await shop.handleShopSendMessage(shopSelectedRequestId, text)
+                    }
+                  }}
+                  onSharePhone={async (phone) => {
+                    if (shopSelectedRequestId) {
+                      await shop.handleSharePhone(shopSelectedRequestId, phone)
+                    }
+                  }}
+                />
+              ) : null}
 
-          {shop.shopLoading ? <p className="loading">{t('app.loading')}</p> : null}
-          {shop.shopError ? <p className="field-error">{t(shop.shopError as 'app.loadError')}</p> : null}
+              {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && !shop.shopSelectedRequest ? (
+                <article className="empty-state">{t('app.notFound')}</article>
+              ) : null}
 
-          <ErrorBoundary>
-            {!shop.shopLoading && !shop.shopError && screen === 'shop-inbox' ? (
-              <ShopInboxView
-                queueItems={shop.shopQueue}
-                onOpenRequest={shopOpenDetail}
-                onAcknowledge={(requestId) => {
-                  void shop.handleShopAcknowledge(requestId)
-                }}
-                onDecline={(requestId) => {
-                  void shop.handleShopDecline(requestId)
-                }}
-                onProfile={() => {
-                  void shop.loadShopProfile()
-                  navigate('shop-profile')
-                }}
-              />
-            ) : null}
+              {!shop.shopLoading && !shop.shopError && screen === 'shop-send-quote' && shop.shopSelectedRequest ? (
+                <ShopSendQuoteView
+                  request={shop.shopSelectedRequest}
+                  onSubmit={async (payload, phone) => {
+                    if (shopSelectedRequestId) {
+                      await shop.handleSubmitQuote(shopSelectedRequestId, payload, phone)
+                      navigate('shop-request-detail')
+                    }
+                  }}
+                  onBack={() => navigate('shop-request-detail')}
+                />
+              ) : null}
 
-            {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && shop.shopSelectedRequest ? (
-              <ShopRequestDetailView
-                request={shop.shopSelectedRequest}
-                shopResponse={shop.shopOwnResponse}
-                messages={shop.shopMessages}
-                onBack={() => {
-                  void shop.loadShopQueue()
-                  navigate('shop-inbox')
-                }}
-                onAcknowledge={() => {
-                  if (shopSelectedRequestId) {
-                    void shop.handleShopAcknowledge(shopSelectedRequestId).then(() => {
-                      void shop.openShopRequestDetail(shopSelectedRequestId)
-                    })
-                  }
-                }}
-                onDecline={() => {
-                  if (shopSelectedRequestId) {
-                    void shop.handleShopDecline(shopSelectedRequestId).then(() => {
-                      void shop.loadShopQueue()
-                      navigate('shop-inbox')
-                    })
-                  }
-                }}
-                onSendQuote={() => navigate('shop-send-quote')}
-                onAskQuestion={async (text) => {
-                  if (shopSelectedRequestId) {
-                    await shop.handleShopAskQuestion(shopSelectedRequestId, text)
-                  }
-                }}
-                onSendMessage={async (text) => {
-                  if (shopSelectedRequestId) {
-                    await shop.handleShopSendMessage(shopSelectedRequestId, text)
-                  }
-                }}
-                onSharePhone={async (phone) => {
-                  if (shopSelectedRequestId) {
-                    await shop.handleSharePhone(shopSelectedRequestId, phone)
-                  }
-                }}
-              />
-            ) : null}
+              {screen === 'shop-profile' ? (
+                <ShopProfileView
+                  profile={shop.shopProfile}
+                  onSave={shop.handleSaveProfile}
+                  onBack={() => navigate('shop-inbox')}
+                />
+              ) : null}
 
-            {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && !shop.shopSelectedRequest ? (
-              <article className="empty-state">{t('app.notFound')}</article>
-            ) : null}
-
-            {!shop.shopLoading && !shop.shopError && screen === 'shop-send-quote' && shop.shopSelectedRequest ? (
-              <ShopSendQuoteView
-                request={shop.shopSelectedRequest}
-                onSubmit={async (payload, phone) => {
-                  if (shopSelectedRequestId) {
-                    await shop.handleSubmitQuote(shopSelectedRequestId, payload, phone)
-                    navigate('shop-request-detail')
-                  }
-                }}
-                onBack={() => navigate('shop-request-detail')}
-              />
-            ) : null}
-
-            {screen === 'shop-profile' ? (
-              <ShopProfileView
-                profile={shop.shopProfile}
-                onSave={shop.handleSaveProfile}
-                onBack={() => navigate('shop-inbox')}
-              />
-            ) : null}
-
-            {screen === 'shop-plan' && enrollmentStatus ? (
-              <ShopPlanView
-                enrollmentStatus={enrollmentStatus}
-                cancelAt={enrollmentCancelAt}
-                onBack={() => navigate('shop-inbox')}
-              />
-            ) : null}
-          </ErrorBoundary>
-        </main>
-      </EnrollmentGate>
+              {screen === 'shop-plan' && enrollmentStatus ? (
+                <ShopPlanView
+                  enrollmentStatus={enrollmentStatus}
+                  cancelAt={enrollmentCancelAt}
+                  onBack={() => navigate('shop-inbox')}
+                />
+              ) : null}
+            </ErrorBoundary>
+          </main>
+        </EnrollmentGate>
+      </Suspense>
     )
   }
 
@@ -915,18 +963,20 @@ function App() {
       </ErrorBoundary>
 
       {limitModal ? (
-        <UpgradeLimitModal
-          limitType={limitModal}
-          onUpgrade={() => {
-            setLimitModal(null)
-            void handleUpgrade()
-          }}
-          onDismiss={() => setLimitModal(null)}
-          loading={upgradeLoading}
-          freeEntitlements={plan.freeEntitlements}
-          proPriceMonthly={catalog.getPlanPrice('PRO', 'MONTHLY')}
-          currency={catalog.currency}
-        />
+        <Suspense fallback={null}>
+          <UpgradeLimitModal
+            limitType={limitModal}
+            onUpgrade={() => {
+              setLimitModal(null)
+              void handleUpgrade()
+            }}
+            onDismiss={() => setLimitModal(null)}
+            loading={upgradeLoading}
+            freeEntitlements={plan.freeEntitlements}
+            proPriceMonthly={catalog.getPlanPrice('PRO', 'MONTHLY')}
+            currency={catalog.currency}
+          />
+        </Suspense>
       ) : null}
     </main>
   )

@@ -113,7 +113,7 @@ export function PlanView({
 
       {/* PRO management */}
       {isPro && !isCancelScheduled && !isPastDue ? (
-        <button className="btn btn-ghost" onClick={onManageSubscription} style={{ marginTop: 16 }}>
+        <button className="btn btn-ghost u-mt-4" onClick={onManageSubscription}>
           {t('plan.manageSubscription')}
         </button>
       ) : null}
@@ -146,10 +146,9 @@ export function PlanView({
             </button>
           </div>
           <button
-            className="btn btn-primary btn-lg"
+            className="btn btn-primary btn-lg u-mt-4 u-w-full"
             onClick={() => onUpgrade(billingInterval)}
             disabled={upgradeLoading}
-            style={{ marginTop: 16, width: '100%' }}
           >
             {upgradeLoading ? '...' : t('plan.upgradeCta')}
           </button>
