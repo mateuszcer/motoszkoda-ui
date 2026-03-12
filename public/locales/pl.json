@@ -13,13 +13,13 @@
 
   "notification": {
     "requestSubmittedTitle": "Zlecenie wysłane",
-    "requestSubmittedMessage": "Powiadamiamy pobliskie warsztaty.",
+    "requestSubmittedMessage": "Warsztaty z okolicy właśnie dostają powiadomienie.",
     "shopSentQuoteTitle": "Nowa wycena",
-    "shopSentQuoteMessage": "Warsztat przesłał wycenę.",
+    "shopSentQuoteMessage": "Sprawdź ją i porównaj ceny.",
     "shopAcknowledgedTitle": "Warsztat potwierdził",
-    "shopAcknowledgedMessage": "Warsztat potwierdził przyjęcie zlecenia.",
+    "shopAcknowledgedMessage": "Właśnie przeglądają Twoje zlecenie.",
     "shopAskedQuestionTitle": "Nowe pytanie",
-    "shopAskedQuestionMessage": "Warsztat zadał pytanie."
+    "shopAskedQuestionMessage": "Odpowiedz, żeby dostać wycenę."
   },
 
   "errors": {
@@ -57,7 +57,7 @@
   "home": {
     "eyebrow": "Panel kierowcy",
     "headline": "Znajdź najlepszą wycenę naprawy",
-    "subheadline": "Opisz usterkę raz, otrzymaj wyceny z okolicznych warsztatów i wybierz najlepszą ofertę.",
+    "subheadline": "Opisz usterkę raz. Okoliczne warsztaty wyślą Ci wyceny do porównania.",
     "createRequest": "Nowe zlecenie",
     "myRequests": "Moje zlecenia",
     "statOpen": "Otwarte",
@@ -134,8 +134,8 @@
     "fileTypeNotAllowed": "Dozwolone tylko pliki JPEG, PNG i WebP",
     "maxAttachments": "Maksymalnie 5 załączników",
     "submitRequest": "Wyślij zlecenie",
-    "confirmTitle": "Powiadamiamy pobliskie warsztaty",
-    "confirmMessage": "Twoje zlecenie zostało wysłane. Wkrótce otrzymasz wyceny.",
+    "confirmTitle": "Gotowe",
+    "confirmMessage": "Twoje zlecenie jest aktywne. Warsztaty z okolicy zaczną wysyłać wyceny.",
     "viewRequest": "Zobacz zlecenie"
   },
 
@@ -148,7 +148,7 @@
     "sortCheapest": "Najtańsze",
     "sortClosest": "Najbliższe",
     "filterInterested": "Zainteresowane",
-    "noShops": "Brak warsztatów.",
+    "noShops": "Żaden warsztat jeszcze nie odpowiedział.",
     "kmAway": "{{distance}} km",
     "stateDelivered": "Brak odpowiedzi",
     "stateAcknowledged": "Warsztat przygotowuje wycenę",
@@ -177,7 +177,7 @@
     "copyPhone": "Kliknij, aby skopiować",
     "phoneCopied": "Skopiowano!",
     "receivedAt": "Otrzymano {{date}}",
-    "unansweredBanner": "Masz pytanie od warsztatu — odpowiedz, aby dostać wycenę.",
+    "unansweredBanner": "Masz pytanie od warsztatu. Odpowiedz, żeby dostać wycenę.",
     "pendingQuestion": "Oczekuje odpowiedzi"
   },
 
@@ -236,9 +236,9 @@
 
   "auth": {
     "loginTitle": "Witaj ponownie",
-    "loginSubtitle": "Zaloguj się, aby zarządzać zleceniami",
+    "loginSubtitle": "Zaloguj się do konta kierowcy",
     "registerTitle": "Utwórz konto",
-    "registerSubtitle": "Rozpocznij korzystanie z Autoceny",
+    "registerSubtitle": "Załóż darmowe konto kierowcy",
     "email": "Email",
     "emailPlaceholder": "ty@przykład.pl",
     "password": "Hasło",
@@ -318,9 +318,9 @@
 
   "shopAuth": {
     "loginTitle": "Panel Warsztatu",
-    "loginSubtitle": "Zaloguj się, aby zarządzać zleceniami napraw",
+    "loginSubtitle": "Zaloguj się do panelu warsztatu",
     "registerTitle": "Zarejestruj swój warsztat",
-    "registerSubtitle": "Dołącz do Autoceny i otrzymuj zlecenia napraw"
+    "registerSubtitle": "Załóż konto warsztatu"
   },
 
   "shopNav": {
@@ -332,7 +332,7 @@
   "shopInbox": {
     "eyebrow": "Panel Warsztatu",
     "headline": "Twoje zlecenia napraw",
-    "subheadline": "Przeglądaj zlecenia, zadawaj pytania i wysyłaj wyceny.",
+    "subheadline": "Zlecenia napraw od kierowców z Twojej okolicy.",
     "statNew": "Nowe",
     "statInProgress": "W toku",
     "statQuoted": "Wycenione",
@@ -452,9 +452,9 @@
       "ctaShop": "Dołącz jako warsztat"
     },
     "hero": {
-      "headline": "Wycena\u00a0naprawy.\nBez\u00a0stresu.",
-      "subheadline": "Opisz usterkę raz — okoliczne warsztaty wyślą Ci wyceny do porównania.",
-      "cta": "Dołącz teraz"
+      "headline": "Jedno\u00a0zlecenie.\nWiele\u00a0wycen.",
+      "subheadline": "Powiedz, co dolega Twojemu autu. Warsztaty z okolicy wyślą Ci swoje najlepsze ceny.",
+      "cta": "Utwórz pierwsze zlecenie"
     },
     "trustBar": {
       "workshops": "warsztatów w sieci",
@@ -465,40 +465,40 @@
     "feature1": {
       "overline": "Krok 1",
       "headline": "Opisz usterkę, ustaw promień",
-      "body": "Podaj dane auta i opisz problem. Warsztaty w Twoim promieniu dostaną zlecenie automatycznie — bez obdzwaniania.",
+      "body": "Podaj dane auta i opisz problem. Warsztaty w wybranym promieniu dostaną zlecenie natychmiast. Bez obdzwaniania.",
       "cta": "Stwórz zlecenie"
     },
     "feature2": {
       "overline": "Krok 2",
       "headline": "Porównaj wyceny obok siebie",
-      "body": "Warsztaty wysyłają wyceny z komentarzem. Porównaj ceny, odległości i opinie w jednym widoku.",
+      "body": "Każdy warsztat wyśle Ci wycenę prywatnie. Ceny i odległości widzisz na jednym ekranie.",
       "cta": "Stwórz zlecenie"
     },
     "feature3": {
       "overline": "Krok 3",
       "headline": "Zarządzaj zleceniami z panelu",
-      "body": "Jako warsztat przeglądaj zlecenia, zadawaj pytania i wysyłaj wyceny — wszystko w jednej aplikacji.",
+      "body": "Przeglądaj zlecenia, pytaj kierowców i wysyłaj wyceny. Wszystko w jednym miejscu.",
       "cta": "Dołącz jako warsztat"
     },
     "shopCallout": {
       "overline": "KROK 3 · DLA WARSZTATÓW",
       "headline": "Zdobywaj klientów w swojej okolicy",
-      "desc": "Otrzymuj zlecenia napraw od kierowców w Twoim promieniu. Wyceniaj bezpośrednio w aplikacji — bez pośredników, bez prowizji od wyceny.",
+      "desc": "Kierowcy z okolicy wysyłają zlecenia napraw. Wyceniasz bezpośrednio w aplikacji. Bez pośredników, bez prowizji.",
       "cta": "Dołącz jako warsztat",
       "benefit1Title": "Klienci gotowi na naprawę",
-      "benefit1Desc": "Każde zlecenie pochodzi od kierowcy, który aktywnie szuka warsztatu.",
+      "benefit1Desc": "Każde zlecenie to kierowca, który potrzebuje naprawy teraz.",
       "benefit2Title": "Pytania przed wyceną",
-      "benefit2Desc": "Doprecyzuj szczegóły z kierowcą bezpośrednio w aplikacji zanim przygotujesz ofertę.",
+      "benefit2Desc": "Porozmawiaj z kierowcą w aplikacji, zanim podasz cenę.",
       "benefit3Title": "Wygrywaj lokalnie",
-      "benefit3Desc": "Zlecenia trafiają tylko do warsztatów w promieniu ustawionym przez kierowcę.",
+      "benefit3Desc": "Widzisz tylko zlecenia od kierowców z Twojej okolicy.",
       "benefit4Title": "Przejrzyste warunki",
-      "benefit4Desc": "Stała miesięczna opłata. Bez prowizji od wycen. Bez ukrytych kosztów.",
+      "benefit4Desc": "Stała miesięczna opłata. Zero prowizji. Bez niespodzianek.",
       "noteHighlight": "120+ warsztatów",
       "noteText": "już korzysta z Autoceny. Dołącz i zacznij otrzymywać zlecenia dziś."
     },
     "bottomCta": {
-      "headline": "Napraw auto mądrzej",
-      "body": "Dołącz do kierowców, którzy oszczędzają czas i pieniądze dzięki Autoceny.",
+      "headline": "Twoja następna naprawa zaczyna się tutaj",
+      "body": "Jedno zlecenie, wiele wycen, Twój wybór.",
       "cta": "Stwórz zlecenie naprawy"
     },
     "pricing": {
@@ -506,15 +506,15 @@
       "subtitle": "Dla kierowców i warsztatów",
       "driverLabel": "Kierowcy",
       "freePlan": "Darmowy plan",
-      "freeDesc": "Wystarczy do sprawdzenia Autoceny.",
+      "freeDesc": "Wszystko, czego potrzebujesz na start.",
       "limitOpen": "Otwarte zlecenia",
       "limitDaily": "Zlecenia / dzień",
       "limitQuestions": "Pytania / zlecenie",
       "premiumPlan": "Plan Premium",
-      "premiumDesc": "Bez limitów na zlecenia i pytania.",
+      "premiumDesc": "Więcej zleceń, więcej pytań, bez ograniczeń.",
       "premiumBullet1": "Więcej otwartych zleceń",
       "premiumBullet2": "Więcej zleceń dziennie",
-      "premiumBullet3": "Więcej pytań — szybsze doprecyzowanie",
+      "premiumBullet3": "Więcej pytań, szybsze doprecyzowanie",
       "premiumCta": "Zobacz Premium",
       "premiumHide": "Ukryj Premium",
       "driverCta": "Zacznij za darmo",
@@ -547,31 +547,31 @@
     "faq": {
       "title": "Najczęściej zadawane pytania",
       "q1": "Jak obliczany jest promień szukania?",
-      "a1": "Używamy Twojej lokalizacji (lub podanego adresu) jako centrum i znajdujemy każdy warsztat w ustawionym promieniu — w linii prostej, w km.",
+      "a1": "Używamy Twojej lokalizacji lub podanego adresu jako centrum i znajdujemy warsztaty w ustawionym promieniu, mierzonym w linii prostej.",
       "q2": "Czy jest to bezpłatne dla kierowców?",
-      "a2": "Tak, tworzenie zleceń i otrzymywanie wycen jest całkowicie bezpłatne dla kierowców.",
+      "a2": "W pełni za darmo. Tworzysz zlecenia i dostajesz wyceny bez żadnych opłat.",
       "q3": "Czy warsztaty widzą wyceny innych?",
       "a3": "Nie. Wycena każdego warsztatu jest prywatna. Tylko kierowca widzi i porównuje wszystkie wyceny.",
       "q4": "Kiedy zobaczę numer telefonu warsztatu?",
-      "a4": "Po tym, jak warsztat wyśle wycenę i zdecyduje się udostępnić swój numer — pojawi się on na karcie wyceny.",
+      "a4": "Gdy warsztat wyśle wycenę i zdecyduje się udostępnić numer, zobaczysz go na karcie wyceny.",
       "q5": "Czy mogę zamknąć zlecenie wcześniej?",
-      "a5": "Tak, możesz zamknąć zlecenie w dowolnym momencie. Otwarte wyceny pozostaną widoczne, ale nowe nie będą napływać.",
+      "a5": "W każdej chwili. Dotychczasowe wyceny zostają, ale nowe już nie napłyną.",
       "q6": "Co się stanie po oznaczeniu warsztatu jako 'Zainteresowany'?",
-      "a6": "Warsztat zostanie powiadomiony. Jeśli udostępnił numer telefonu, zobaczysz go od razu. Możesz wtedy skontaktować się bezpośrednio.",
+      "a6": "Warsztat dostanie powiadomienie. Jeśli udostępnił numer telefonu, zobaczysz go od razu i możesz się skontaktować.",
       "q7": "Jak szybko otrzymam wyceny?",
-      "a7": "Warsztaty zazwyczaj odpowiadają w ciągu kilku godzin. Czas zależy od liczby warsztatów w Twoim promieniu i rodzaju naprawy.",
+      "a7": "Większość warsztatów odpowiada w ciągu kilku godzin. Czas zależy od dostępności warsztatów w okolicy i rodzaju naprawy.",
       "q8": "Jakie rodzaje napraw mogę wycenić?",
-      "a8": "Dowolne — od hamulców, zawieszenia i silnika po elektronikę, klimatyzację i blacharstwo. Opisz usterkę, a warsztaty ocenią, czy mogą pomóc.",
+      "a8": "Dowolne: hamulce, zawieszenie, silnik, elektronika, klimatyzacja, blacharstwo. Opisz usterkę, a warsztaty ocenią, czy mogą pomóc.",
       "q9": "Jak warsztat może dołączyć do platformy?",
-      "a9": "Wystarczy kliknąć \u201eDołącz jako Warsztat\u201d, wypełnić dane firmy i aktywować konto. Proces zajmuje kilka minut.",
+      "a9": "Kliknij \u201eDołącz jako Warsztat\u201d, podaj dane firmy i aktywuj konto. Zajmie to kilka minut.",
       "q10": "Czy moje dane osobowe są bezpieczne?",
-      "a10": "Tak. Twoje dane kontaktowe nie są udostępniane warsztatom bez Twojej zgody. Warsztaty widzą tylko opis usterki, dane auta i lokalizację."
+      "a10": "Twoje dane kontaktowe nie trafiają do warsztatów bez Twojej zgody. Warsztaty widzą tylko opis usterki, dane auta i lokalizację."
     },
     "contact": {
       "heroCta": "Porozmawiajmy",
       "overline": "Kontakt",
       "headline": "Masz pytania? Napisz do nas",
-      "subtitle": "Nasz zesp\u00f3\u0142 pomo\u017ce Ci zacz\u0105\u0107.",
+      "subtitle": "Odpowiadamy zwykle w ciągu jednego dnia roboczego.",
       "phoneLabel": "Telefon",
       "phoneValue": "+48 XXX XXX XXX",
       "phoneHint": "Pon\u2013Pt, 9:00\u201317:00",
@@ -698,49 +698,49 @@
   },
 
   "plan": {
-    "nav": "Moj plan",
-    "title": "Twoj plan",
+    "nav": "Mój plan",
+    "title": "Twój plan",
     "freePlan": "Plan darmowy",
     "proPlan": "Plan PRO",
     "statusActive": "Aktywny",
-    "statusPastDue": "Zalegla platnosc",
+    "statusPastDue": "Zaległa płatność",
     "statusCancelScheduled": "Anulowanie zaplanowane",
-    "cancelAtNotice": "Twoj plan PRO zostanie anulowany {{date}}.",
-    "pastDueNotice": "Platnosc nieudana. Zaktualizuj dane platnicze, aby zachowac plan PRO.",
-    "restoreSubscription": "Przywroc subskrypcje",
-    "updatePayment": "Zaktualizuj platnosc",
-    "manageSubscription": "Zarzadzaj subskrypcja",
+    "cancelAtNotice": "Twój plan PRO zostanie anulowany {{date}}.",
+    "pastDueNotice": "Płatność nieudana. Zaktualizuj dane płatnicze, aby zachować plan PRO.",
+    "restoreSubscription": "Przywróć subskrypcję",
+    "updatePayment": "Zaktualizuj płatność",
+    "manageSubscription": "Zarządzaj subskrypcją",
     "openOrders": "Otwarte zlecenia",
     "dailyOrders": "Zlecenia dzisiaj",
     "questionsPerOrder": "Pytania / zlecenie",
     "usageOf": "{{used}} z {{max}}",
     "unlimited": "Bez limitu",
-    "upgradeTitle": "Przejdz na PRO",
-    "upgradeDesc": "Usun limity i korzystaj z Autoceny bez ograniczen.",
-    "upgradeBenefit1": "Wiecej otwartych zlecen",
-    "upgradeBenefit2": "Wiecej zlecen dziennie",
-    "upgradeBenefit3": "Bez limitu pytan",
-    "upgradeCta": "Przejdz na PRO",
-    "monthly": "Miesiecznie",
+    "upgradeTitle": "Przejdź na PRO",
+    "upgradeDesc": "Więcej otwartych zleceń, więcej dziennych zgłoszeń i pytania bez limitu.",
+    "upgradeBenefit1": "Więcej otwartych zleceń",
+    "upgradeBenefit2": "Więcej zleceń dziennie",
+    "upgradeBenefit3": "Bez limitu pytań",
+    "upgradeCta": "Przejdź na PRO",
+    "monthly": "Miesięcznie",
     "annual": "Rocznie",
-    "increaseLimit": "Zwieksz limit",
+    "increaseLimit": "Zwiększ limit",
     "usageIndicator": "Otwarte zlecenia: {{used}} z {{max}}",
-    "limitOpenTitle": "Limit otwartych zlecen",
-    "limitOpenMessage": "Na planie darmowym mozesz miec maksymalnie {{max}} otwarte zlecenia. Zamknij jedno z nich lub przejdz na PRO.",
-    "limitDailyTitle": "Limit dziennych zlecen",
-    "limitDailyMessage": "Na planie darmowym mozesz utworzyc {{max}} zlecenie dziennie. Wracaj jutro lub przejdz na PRO.",
-    "limitQuestionsTitle": "Limit pytan",
-    "limitQuestionsMessage": "Na planie darmowym mozesz zadac {{max}} pytania na zlecenie. Przejdz na PRO, aby pytac bez limitu.",
-    "upgradeModalCta": "Przejdz na PRO",
+    "limitOpenTitle": "Limit otwartych zleceń",
+    "limitOpenMessage": "Osiągnięto limit {{max}} otwartych zleceń na planie darmowym. Zamknij zlecenie lub przejdź na PRO.",
+    "limitDailyTitle": "Limit dziennych zleceń",
+    "limitDailyMessage": "Wykorzystano limit {{max}} zleceń dziennie na planie darmowym. Spróbuj jutro lub przejdź na PRO.",
+    "limitQuestionsTitle": "Limit pytań",
+    "limitQuestionsMessage": "Osiągnięto limit {{max}} pytań dla tego zlecenia. Przejdź na PRO, aby pytać bez limitu.",
+    "upgradeModalCta": "Przejdź na PRO",
     "upgradeModalDismiss": "Nie teraz",
     "successTitle": "Witaj w PRO!",
-    "successMessage": "Twoj plan zostal uaktualniony. Korzystaj z Autoceny bez limitow.",
-    "successCta": "Przejdz do panelu",
+    "successMessage": "Wszystkie limity zostały zniesione. Twój plan PRO jest aktywny.",
+    "successCta": "Przejdź do panelu",
     "successPolling": "Aktywowanie planu PRO...",
-    "successTimeout": "Aktywacja trwa dluzej niz oczekiwano. Sprobuj odswiezyc.",
-    "cancelTitle": "Platnosc anulowana",
-    "cancelMessage": "Nie dokonano zadnych zmian w Twoim planie.",
-    "cancelCta": "Wroc do panelu"
+    "successTimeout": "Aktywacja trwa dłużej niż oczekiwano. Spróbuj odświeżyć.",
+    "cancelTitle": "Płatność anulowana",
+    "cancelMessage": "Nie dokonano żadnych zmian w Twoim planie.",
+    "cancelCta": "Wróć do panelu"
   },
 
   "shopPlan": {
@@ -768,7 +768,7 @@
     "redeem": "Wykorzystaj voucher",
     "redeeming": "Realizowanie...",
     "redeemFailed": "Nie udało się zrealizować vouchera. Sprawdź kod i spróbuj ponownie.",
-    "paymentDescription": "Subskrybuj Autoceny, aby aktywować swój warsztat i zacząć otrzymywać zlecenia napraw od pobliskich kierowców.",
+    "paymentDescription": "Aktywuj swój warsztat, aby zacząć otrzymywać zlecenia napraw od kierowców z okolicy.",
     "monthly": "Miesięcznie",
     "annual": "Rocznie",
     "payMonthly": "Zapłać miesięcznie",

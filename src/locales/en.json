@@ -13,13 +13,13 @@
 
   "notification": {
     "requestSubmittedTitle": "Repair Request submitted",
-    "requestSubmittedMessage": "We are notifying nearby shops now.",
+    "requestSubmittedMessage": "Nearby shops are being notified now.",
     "shopSentQuoteTitle": "New quote received",
-    "shopSentQuoteMessage": "A shop has sent you a quote.",
+    "shopSentQuoteMessage": "Check it out and compare prices.",
     "shopAcknowledgedTitle": "Shop acknowledged",
-    "shopAcknowledgedMessage": "A shop has acknowledged your request.",
+    "shopAcknowledgedMessage": "They're reviewing your request now.",
     "shopAskedQuestionTitle": "New question",
-    "shopAskedQuestionMessage": "A shop has asked you a question."
+    "shopAskedQuestionMessage": "Reply so they can prepare a quote."
   },
 
   "errors": {
@@ -57,7 +57,7 @@
   "home": {
     "eyebrow": "Driver Portal",
     "headline": "Find the best repair quote",
-    "subheadline": "Describe your car issue once, get quotes from nearby shops, and choose the best offer.",
+    "subheadline": "Describe your car issue once. Nearby shops send you quotes to compare.",
     "createRequest": "Create Repair Request",
     "myRequests": "My Requests",
     "statOpen": "Open",
@@ -131,8 +131,8 @@
     "fileTypeNotAllowed": "Only JPEG, PNG, and WebP images are allowed",
     "maxAttachments": "Maximum 5 attachments allowed",
     "submitRequest": "Submit Request",
-    "confirmTitle": "We're notifying nearby shops",
-    "confirmMessage": "Your request has been submitted. You'll receive quotes shortly.",
+    "confirmTitle": "You're all set",
+    "confirmMessage": "Your request is live. Shops in your area will start sending quotes.",
     "viewRequest": "View Request"
   },
 
@@ -145,7 +145,7 @@
     "sortCheapest": "Cheapest",
     "sortClosest": "Closest",
     "filterInterested": "Interested",
-    "noShops": "No shops to show.",
+    "noShops": "No shops have responded yet.",
     "kmAway": "{{distance}} km away",
     "stateDelivered": "No response yet",
     "stateAcknowledged": "Shop is preparing a quote",
@@ -173,7 +173,7 @@
     "copyPhone": "Click to copy",
     "phoneCopied": "Copied!",
     "receivedAt": "Received {{date}}",
-    "unansweredBanner": "A shop asked you a question — reply to get a quote.",
+    "unansweredBanner": "A shop asked you a question. Reply to get a quote.",
     "pendingQuestion": "Needs reply"
   },
 
@@ -232,9 +232,9 @@
 
   "auth": {
     "loginTitle": "Welcome back",
-    "loginSubtitle": "Sign in to manage your repair requests",
+    "loginSubtitle": "Sign in to your driver account",
     "registerTitle": "Create account",
-    "registerSubtitle": "Get started with Autoceny",
+    "registerSubtitle": "Create a free driver account",
     "email": "Email",
     "emailPlaceholder": "you@example.com",
     "password": "Password",
@@ -314,9 +314,9 @@
 
   "shopAuth": {
     "loginTitle": "Shop Portal",
-    "loginSubtitle": "Sign in to manage your repair requests",
+    "loginSubtitle": "Sign in to your workshop dashboard",
     "registerTitle": "Register your shop",
-    "registerSubtitle": "Join Autoceny and receive repair requests"
+    "registerSubtitle": "Create your workshop account"
   },
 
   "shopNav": {
@@ -328,7 +328,7 @@
   "shopInbox": {
     "eyebrow": "Shop Portal",
     "headline": "Your Repair Requests",
-    "subheadline": "Review incoming requests, ask questions, and send quotes.",
+    "subheadline": "Incoming repair requests from drivers in your area.",
     "statNew": "New",
     "statInProgress": "In Progress",
     "statQuoted": "Quoted",
@@ -448,9 +448,9 @@
       "ctaShop": "Join as a workshop"
     },
     "hero": {
-      "headline": "Repair\u00a0quotes.\nNo\u00a0stress.",
-      "subheadline": "Describe the issue once — nearby shops will send you quotes to compare.",
-      "cta": "Join now"
+      "headline": "One\u00a0request.\nMultiple\u00a0quotes.",
+      "subheadline": "Tell us what's wrong with your car. Nearby shops compete to give you their best price.",
+      "cta": "Get your first quote"
     },
     "trustBar": {
       "workshops": "workshops in the network",
@@ -461,40 +461,40 @@
     "feature1": {
       "overline": "Step 1",
       "headline": "Describe the issue, set your radius",
-      "body": "Enter your car details and describe the problem. Shops within your radius receive the request automatically — no calling around.",
+      "body": "Enter your car details and describe the problem. Shops within your chosen radius get notified instantly. No phone calls needed.",
       "cta": "Create a request"
     },
     "feature2": {
       "overline": "Step 2",
       "headline": "Compare quotes side by side",
-      "body": "Shops send quotes with comments. Compare prices, distances, and reviews in a single view.",
+      "body": "Each shop sends a detailed quote privately. You see every price and distance on one screen.",
       "cta": "Create a request"
     },
     "feature3": {
       "overline": "Step 3",
       "headline": "Manage requests from your dashboard",
-      "body": "As a shop, browse incoming requests, ask questions, and send quotes — all in one app.",
+      "body": "Browse incoming requests, ask drivers questions, and send quotes. Everything in one place.",
       "cta": "Join as a shop"
     },
     "shopCallout": {
       "overline": "STEP 3 · FOR WORKSHOPS",
       "headline": "Win customers in your area",
-      "desc": "Receive repair requests from drivers in your radius. Quote directly in the app — no middlemen, no commission on quotes.",
+      "desc": "Drivers nearby send repair requests. You quote directly in the app. No middlemen, no commission.",
       "cta": "Join as a workshop",
       "benefit1Title": "Repair-ready customers",
-      "benefit1Desc": "Every request comes from a driver actively looking for a workshop.",
+      "benefit1Desc": "Every request is from a driver who needs a repair now.",
       "benefit2Title": "Questions before quoting",
-      "benefit2Desc": "Clarify details with the driver directly in the app before preparing your offer.",
+      "benefit2Desc": "Chat with the driver in-app before you commit to a price.",
       "benefit3Title": "Win locally",
-      "benefit3Desc": "Requests only reach workshops within the radius set by the driver.",
+      "benefit3Desc": "You only see requests from drivers within your service area.",
       "benefit4Title": "Transparent terms",
-      "benefit4Desc": "Flat monthly fee. No commission on quotes. No hidden costs.",
+      "benefit4Desc": "Flat monthly fee. Zero commission. No surprises.",
       "noteHighlight": "120+ workshops",
       "noteText": "already use Autoceny. Join and start receiving requests today."
     },
     "bottomCta": {
-      "headline": "Fix your car smarter",
-      "body": "Join drivers who save time and money with Autoceny.",
+      "headline": "Your next repair starts here",
+      "body": "One request, multiple quotes, your choice.",
       "cta": "Create repair request"
     },
     "pricing": {
@@ -502,15 +502,15 @@
       "subtitle": "For drivers and shops",
       "driverLabel": "Drivers",
       "freePlan": "Free plan",
-      "freeDesc": "Enough to try out Autoceny.",
+      "freeDesc": "Everything you need to get started.",
       "limitOpen": "Open requests",
       "limitDaily": "Requests / day",
       "limitQuestions": "Questions / request",
       "premiumPlan": "Premium Plan",
-      "premiumDesc": "Unlimited requests and questions without any limits.",
+      "premiumDesc": "More requests, more questions, no ceilings.",
       "premiumBullet1": "More open requests",
       "premiumBullet2": "More requests per day",
-      "premiumBullet3": "More questions — faster clarification",
+      "premiumBullet3": "More questions for faster clarification",
       "premiumCta": "See Premium",
       "premiumHide": "Hide Premium",
       "driverCta": "Start for free",
@@ -543,31 +543,31 @@
     "faq": {
       "title": "Frequently Asked Questions",
       "q1": "How is the search radius calculated?",
-      "a1": "We use your location (or entered address) as the center and find every shop within the distance you set — straight-line radius in km.",
+      "a1": "We use your location or entered address as the center and find every shop within the distance you set, measured as a straight-line radius in kilometers.",
       "q2": "Is it free for drivers?",
-      "a2": "Yes, creating repair requests and receiving quotes is completely free for drivers.",
+      "a2": "Completely free. You can create requests and receive quotes at no cost.",
       "q3": "Do shops see each other's quotes?",
       "a3": "No. Each shop's quote is private. Only the driver can see and compare all quotes.",
       "q4": "When do I see a shop's phone number?",
-      "a4": "After a shop sends a quote and chooses to share their phone number, it becomes visible on their quote card.",
+      "a4": "Once a shop sends a quote and opts to share their number, you'll see it on their quote card.",
       "q5": "Can I close a request early?",
-      "a5": "Yes, you can close a request at any time. Open quotes remain visible but no new ones will arrive.",
+      "a5": "Anytime. Existing quotes stay visible, but no new ones will come in.",
       "q6": "What happens after I mark a shop as 'Interested'?",
-      "a6": "The shop is notified. If they shared their phone number, you'll see it immediately. You can then contact them directly.",
+      "a6": "The shop gets notified. If they shared their phone number, you'll see it right away and can contact them directly.",
       "q7": "How quickly will I receive quotes?",
-      "a7": "Shops typically respond within a few hours. Timing depends on the number of shops in your radius and the type of repair.",
+      "a7": "Most shops respond within a few hours. Timing depends on shop availability in your area and the type of repair.",
       "q8": "What types of repairs can I get quotes for?",
-      "a8": "Any type — from brakes, suspension, and engine work to electronics, air conditioning, and bodywork. Describe the issue and shops will assess if they can help.",
+      "a8": "Anything from brakes and suspension to electronics and bodywork. Describe the issue and shops will let you know if they can help.",
       "q9": "How can a shop join the platform?",
-      "a9": "Click 'Join as a Shop', fill in your business details, and activate your account. The process takes just a few minutes.",
+      "a9": "Click 'Join as a Shop', fill in your details, and activate your account. Takes a few minutes.",
       "q10": "Is my personal data safe?",
-      "a10": "Yes. Your contact details are never shared with shops without your consent. Shops only see the issue description, car details, and location."
+      "a10": "Your contact details are never shared without your consent. Shops only see the issue description, car details, and location."
     },
     "contact": {
       "heroCta": "Let's talk",
       "overline": "Get in touch",
       "headline": "Have questions? Reach out",
-      "subtitle": "Our team is here to help you get started.",
+      "subtitle": "We typically reply within one business day.",
       "phoneLabel": "Phone",
       "phoneValue": "+48 XXX XXX XXX",
       "phoneHint": "Mon\u2013Fri, 9:00\u201317:00",
@@ -712,7 +712,7 @@
     "usageOf": "{{used}} of {{max}}",
     "unlimited": "Unlimited",
     "upgradeTitle": "Upgrade to PRO",
-    "upgradeDesc": "Remove limits and use Autoceny without restrictions.",
+    "upgradeDesc": "Get more open requests, more daily submissions, and unlimited questions.",
     "upgradeBenefit1": "More open requests",
     "upgradeBenefit2": "More requests per day",
     "upgradeBenefit3": "Unlimited questions",
@@ -722,15 +722,15 @@
     "increaseLimit": "Increase limit",
     "usageIndicator": "Open requests: {{used}} of {{max}}",
     "limitOpenTitle": "Open request limit",
-    "limitOpenMessage": "On the free plan you can have up to {{max}} open requests. Close one or upgrade to PRO.",
+    "limitOpenMessage": "You've reached the {{max}} open request limit on the free plan. Close a request or upgrade to PRO.",
     "limitDailyTitle": "Daily request limit",
-    "limitDailyMessage": "On the free plan you can create {{max}} request per day. Come back tomorrow or upgrade to PRO.",
+    "limitDailyMessage": "You've used your {{max}} daily request on the free plan. Try again tomorrow or upgrade to PRO.",
     "limitQuestionsTitle": "Question limit",
-    "limitQuestionsMessage": "On the free plan you can ask {{max}} questions per request. Upgrade to PRO for unlimited questions.",
+    "limitQuestionsMessage": "You've reached the {{max}} question limit for this request. Upgrade to PRO for unlimited questions.",
     "upgradeModalCta": "Upgrade to PRO",
     "upgradeModalDismiss": "Not now",
     "successTitle": "Welcome to PRO!",
-    "successMessage": "Your plan has been upgraded. Enjoy Autoceny without limits.",
+    "successMessage": "All limits have been lifted. Your PRO plan is active.",
     "successCta": "Go to dashboard",
     "successPolling": "Activating your PRO plan...",
     "successTimeout": "Activation is taking longer than expected. Try refreshing.",
@@ -764,7 +764,7 @@
     "redeem": "Redeem Voucher",
     "redeeming": "Redeeming...",
     "redeemFailed": "Failed to redeem voucher. Please check the code and try again.",
-    "paymentDescription": "Subscribe to Autoceny to activate your shop and start receiving repair requests from nearby drivers.",
+    "paymentDescription": "Activate your shop to start receiving repair requests from nearby drivers.",
     "monthly": "Monthly",
     "annual": "Annually",
     "payMonthly": "Pay Monthly",
