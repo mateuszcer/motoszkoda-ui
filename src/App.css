@@ -2174,6 +2174,111 @@ label small {
   animation: fadeUp var(--duration-slow) var(--ease-out);
 }
 
+/* Login mode toggle */
+.auth-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--neutral-100);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: var(--space-5);
+}
+
+.auth-toggle__btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  border-radius: calc(var(--radius-md) - 2px);
+  background: transparent;
+  color: var(--neutral-600);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.auth-toggle__btn:hover {
+  color: var(--neutral-800);
+}
+
+.auth-toggle__btn--active {
+  background: var(--white);
+  color: var(--teal-700);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+.auth-toggle__btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Role badge */
+.auth-role-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  width: fit-content;
+  margin: 0 auto var(--space-5);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.auth-role-badge svg {
+  flex-shrink: 0;
+}
+
+.auth-role-badge--driver {
+  background: var(--mint-100);
+  color: var(--mint-700);
+}
+
+.auth-role-badge--workshop {
+  background: var(--mint-50);
+  color: var(--teal-700);
+}
+
+/* Dark mode overrides for toggle + badge */
+[data-theme='dark'] .auth-toggle {
+  background: var(--neutral-200);
+}
+
+[data-theme='dark'] .auth-toggle__btn--active {
+  background: var(--neutral-300);
+}
+
+[data-theme='dark'] .auth-role-badge--driver {
+  background: var(--mint-200);
+  color: var(--mint-500);
+}
+
+[data-theme='dark'] .auth-role-badge--workshop {
+  background: var(--mint-100);
+  color: var(--mint-500);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-toggle__btn {
+    transition: none;
+  }
+
+  .auth-card {
+    animation: none;
+  }
+}
+
 .auth-brand {
   text-align: center;
   margin-bottom: var(--space-6);

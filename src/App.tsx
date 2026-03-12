@@ -97,6 +97,7 @@ function App() {
   })
   const [authLoading, setAuthLoading] = useState(true)
 
+  const [loginMode, setLoginMode] = useState<'driver' | 'workshop'>('driver')
   const [pendingEmail, setPendingEmail] = useState<string | null>(null)
 
   const [enrollmentStatus, setEnrollmentStatus] = useState<EnrollmentStatus | null>(null)
@@ -199,6 +200,14 @@ function App() {
     }
     void restore()
   }, [navigate])
+
+  // Redirect shop-login to unified login in workshop mode
+  useEffect(() => {
+    if (screen === 'shop-login') {
+      setLoginMode('workshop')
+      navigate('login', { replace: true })
+    }
+  }, [screen, navigate])
 
   const isAdmin = auth.user?.role === 'ADMIN'
   const { loadShopQueue } = shop
@@ -478,7 +487,10 @@ function App() {
       <ErrorBoundary>
         <LandingPage
           onGetStarted={() => navigate('login')}
-          onJoinAsShop={() => navigate('shop-login')}
+          onJoinAsShop={() => {
+            setLoginMode('workshop')
+            navigate('login')
+          }}
           billingCatalog={catalog.billingCatalog}
           enrollmentCatalog={catalog.enrollmentCatalog}
         />
@@ -551,22 +563,23 @@ function App() {
         <AppHeader onBrandClick={() => navigate('landing')} />
 
         {screen === 'shop-register' ? (
-          <ShopRegisterView onRegister={handleShopRegister} onSwitchToLogin={() => navigate('shop-login')} />
-        ) : screen === 'shop-login' ? (
-          <LoginView
-            onLogin={handleShopLogin}
-            onSwitchToRegister={() => navigate('shop-register')}
-            onForgotPassword={() => navigate('forgot-password')}
-            titleKey="shopAuth.loginTitle"
-            subtitleKey="shopAuth.loginSubtitle"
+          <ShopRegisterView
+            onRegister={handleShopRegister}
+            onSwitchToLogin={() => {
+              setLoginMode('workshop')
+              navigate('login')
+            }}
           />
         ) : screen === 'register' ? (
           <RegisterView onRegister={handleRegister} onSwitchToLogin={() => navigate('login')} />
         ) : (
           <LoginView
-            onLogin={handleLogin}
-            onSwitchToRegister={() => navigate('register')}
+            onDriverLogin={handleLogin}
+            onShopLogin={handleShopLogin}
+            onSwitchToDriverRegister={() => navigate('register')}
+            onSwitchToShopRegister={() => navigate('shop-register')}
             onForgotPassword={() => navigate('forgot-password')}
+            initialMode={loginMode}
           />
         )}
       </main>
