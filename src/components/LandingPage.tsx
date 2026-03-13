@@ -385,6 +385,22 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
                     {t('landing.pricing.freeBullet3')}
                   </li>
                 </ul>
+                <div className="lp-pcard__limits">
+                  <div className="lp-pcard__limit">
+                    <span className="lp-pcard__limit-label">{t('landing.pricing.limitOpen')}</span>
+                    <span className="lp-pcard__limit-val">{proPlan?.entitlements.maxOpenRepairRequests ?? 10}</span>
+                  </div>
+                  <div className="lp-pcard__limit">
+                    <span className="lp-pcard__limit-label">{t('landing.pricing.limitDaily')}</span>
+                    <span className="lp-pcard__limit-val">{proPlan?.entitlements.maxRepairRequestsPerDay ?? 5}</span>
+                  </div>
+                  <div className="lp-pcard__limit">
+                    <span className="lp-pcard__limit-label">{t('landing.pricing.limitQuestions')}</span>
+                    <span className="lp-pcard__limit-val">
+                      {proPlan?.entitlements.maxQuestionsPerRepairRequest ?? 10}
+                    </span>
+                  </div>
+                </div>
                 <button className="lp-pcard__cta lp-pcard__cta--pri" onClick={onGetStarted}>
                   {t('landing.pricing.driverCtaPremium')}
                 </button>
