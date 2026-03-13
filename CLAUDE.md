@@ -80,7 +80,7 @@ src/
 
 ### i18n
 - All user-facing text must use `t('key')` from `react-i18next`
-- Translation files: `src/locales/en.json`, `src/locales/pl.json`
+- Translation files: `src/locales/en.json`, `src/locales/pl.json` (single source of truth; served by Vite plugin in dev, emitted to `dist/locales/` on build)
 - Landing page keys under `landing.*` namespace
 - Never hardcode Polish or English strings in components
 
