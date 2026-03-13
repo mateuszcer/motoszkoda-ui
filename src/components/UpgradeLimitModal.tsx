@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { Entitlements } from '../domain/apiTypes'
 import { formatMinorCurrency } from '../utils/format'
+import { formatLimit } from '../utils/plan'
 
 type LimitType = 'open_orders' | 'daily_orders' | 'questions'
 
@@ -51,7 +52,7 @@ export function UpgradeLimitModal({
     <div className="dialog-backdrop" onClick={onDismiss}>
       <div className="dialog" onClick={(e) => e.stopPropagation()}>
         <h3>{t(title)}</h3>
-        <p>{t(message, { max })}</p>
+        <p>{t(message, { max: formatLimit(max, t) })}</p>
         <p className="upgrade-modal-price">{priceLabel}</p>
         <div className="dialog-actions">
           <button className="btn btn-primary" onClick={onUpgrade} disabled={loading}>

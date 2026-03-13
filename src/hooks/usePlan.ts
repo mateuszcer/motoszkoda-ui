@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { Entitlements, UserPlanInfo } from '../domain/apiTypes'
 import type { RepairRequest } from '../domain/types'
 import { billingApi } from '../services/billingApi'
+import { isUnlimited } from '../utils/plan'
 
 export function usePlan(isAuthenticated: boolean, isDriver: boolean, freeEntitlements: Entitlements) {
   const [planInfo, setPlanInfo] = useState<UserPlanInfo | null>(null)
@@ -57,6 +58,7 @@ export function usePlan(isAuthenticated: boolean, isDriver: boolean, freeEntitle
   const isAtOpenLimit = useCallback(
     (requests: RepairRequest[]) => {
       if (!isFree) return false
+      if (isUnlimited(freeEntitlements.maxOpenRepairRequests)) return false
       return getOpenCount(requests) >= freeEntitlements.maxOpenRepairRequests
     },
     [isFree, getOpenCount, freeEntitlements.maxOpenRepairRequests],
@@ -65,6 +67,7 @@ export function usePlan(isAuthenticated: boolean, isDriver: boolean, freeEntitle
   const isAtDailyLimit = useCallback(
     (requests: RepairRequest[]) => {
       if (!isFree) return false
+      if (isUnlimited(freeEntitlements.maxRepairRequestsPerDay)) return false
       const today = new Date().toISOString().slice(0, 10)
       const todayCount = requests.filter((r) => r.createdAt.slice(0, 10) === today).length
       return todayCount >= freeEntitlements.maxRepairRequestsPerDay
@@ -75,6 +78,7 @@ export function usePlan(isAuthenticated: boolean, isDriver: boolean, freeEntitle
   const isAtQuestionLimit = useCallback(
     (request: RepairRequest, shopId: string) => {
       if (!isFree) return false
+      if (isUnlimited(freeEntitlements.maxQuestionsPerRepairRequest)) return false
       const thread = request.threads[shopId]
       if (!thread) return false
       const driverMessages = thread.messages.filter((m) => m.author === 'driver').length

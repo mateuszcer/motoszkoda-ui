@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { BillingInterval, Entitlements, UserPlanInfo } from '../domain/apiTypes'
 import type { RepairRequest } from '../domain/types'
 import { formatMinorCurrency } from '../utils/format'
+import { formatLimit, isUnlimited } from '../utils/plan'
 
 interface PlanViewProps {
   planInfo: UserPlanInfo | null
@@ -91,7 +92,7 @@ export function PlanView({
           <div className="plan-stat-row">
             <span>{t('plan.openOrders')}</span>
             <span>
-              {isFree
+              {isFree && !isUnlimited(freeEntitlements.maxOpenRepairRequests)
                 ? t('plan.usageOf', { used: openCount, max: freeEntitlements.maxOpenRepairRequests })
                 : t('plan.unlimited')}
             </span>
@@ -99,14 +100,14 @@ export function PlanView({
           <div className="plan-stat-row">
             <span>{t('plan.dailyOrders')}</span>
             <span>
-              {isFree
+              {isFree && !isUnlimited(freeEntitlements.maxRepairRequestsPerDay)
                 ? t('plan.usageOf', { used: dailyCount, max: freeEntitlements.maxRepairRequestsPerDay })
                 : t('plan.unlimited')}
             </span>
           </div>
           <div className="plan-stat-row">
             <span>{t('plan.questionsPerOrder')}</span>
-            <span>{isFree ? freeEntitlements.maxQuestionsPerRepairRequest : t('plan.unlimited')}</span>
+            <span>{isFree ? formatLimit(freeEntitlements.maxQuestionsPerRepairRequest, t) : t('plan.unlimited')}</span>
           </div>
         </div>
       </div>

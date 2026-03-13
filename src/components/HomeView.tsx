@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { Entitlements, UserPlanInfo } from '../domain/apiTypes'
 import type { RepairRequest } from '../domain/types'
 import { formatDateTime } from '../utils/format'
+import { formatLimit, isUnlimited } from '../utils/plan'
 
 interface HomeViewProps {
   requests: RepairRequest[]
@@ -31,7 +32,10 @@ export const HomeView = memo(function HomeView({
   const openRequests = useMemo(() => requests.filter((r) => r.status === 'open'), [requests])
   const closedRequests = useMemo(() => requests.filter((r) => r.status === 'closed'), [requests])
   const isFree = planInfo?.planCode === 'FREE'
-  const atOpenLimit = isFree && openRequests.length >= freeEntitlements.maxOpenRepairRequests
+  const atOpenLimit =
+    isFree &&
+    !isUnlimited(freeEntitlements.maxOpenRepairRequests) &&
+    openRequests.length >= freeEntitlements.maxOpenRepairRequests
 
   const filteredRequests = activeTab === 'open' ? openRequests : activeTab === 'closed' ? closedRequests : requests
 
@@ -74,7 +78,10 @@ export const HomeView = memo(function HomeView({
 
       {isFree ? (
         <p className="usage-indicator">
-          {t('plan.usageIndicator', { used: openRequests.length, max: freeEntitlements.maxOpenRepairRequests })}
+          {t('plan.usageIndicator', {
+            used: openRequests.length,
+            max: formatLimit(freeEntitlements.maxOpenRepairRequests, t),
+          })}
           {' · '}
           <a className="usage-indicator-link" onClick={onNavigatePlan}>
             {atOpenLimit ? t('plan.increaseLimit') : t('plan.freePlan')}

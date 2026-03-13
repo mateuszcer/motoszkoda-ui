@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { EnrollmentPlanCatalog, UserPlanCatalog } from '../domain/apiTypes'
 import { formatMinorCurrency } from '../utils/format'
+import { formatLimit } from '../utils/plan'
 import { SeoSchema } from './SeoSchema'
 import './LandingPage.css'
 
@@ -339,16 +340,20 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
                 <div className="lp-pcard__limits">
                   <div className="lp-pcard__limit">
                     <span className="lp-pcard__limit-label">{t('landing.pricing.limitOpen')}</span>
-                    <span className="lp-pcard__limit-val">{freePlan?.entitlements.maxOpenRepairRequests ?? 3}</span>
+                    <span className="lp-pcard__limit-val">
+                      {formatLimit(freePlan?.entitlements.maxOpenRepairRequests ?? 3, t)}
+                    </span>
                   </div>
                   <div className="lp-pcard__limit">
                     <span className="lp-pcard__limit-label">{t('landing.pricing.limitDaily')}</span>
-                    <span className="lp-pcard__limit-val">{freePlan?.entitlements.maxRepairRequestsPerDay ?? 1}</span>
+                    <span className="lp-pcard__limit-val">
+                      {formatLimit(freePlan?.entitlements.maxRepairRequestsPerDay ?? 1, t)}
+                    </span>
                   </div>
                   <div className="lp-pcard__limit">
                     <span className="lp-pcard__limit-label">{t('landing.pricing.limitQuestions')}</span>
                     <span className="lp-pcard__limit-val">
-                      {freePlan?.entitlements.maxQuestionsPerRepairRequest ?? 2}
+                      {formatLimit(freePlan?.entitlements.maxQuestionsPerRepairRequest ?? 2, t)}
                     </span>
                   </div>
                 </div>
@@ -388,16 +393,20 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
                 <div className="lp-pcard__limits">
                   <div className="lp-pcard__limit">
                     <span className="lp-pcard__limit-label">{t('landing.pricing.limitOpen')}</span>
-                    <span className="lp-pcard__limit-val">{proPlan?.entitlements.maxOpenRepairRequests ?? 10}</span>
+                    <span className="lp-pcard__limit-val">
+                      {formatLimit(proPlan?.entitlements.maxOpenRepairRequests ?? 10, t)}
+                    </span>
                   </div>
                   <div className="lp-pcard__limit">
                     <span className="lp-pcard__limit-label">{t('landing.pricing.limitDaily')}</span>
-                    <span className="lp-pcard__limit-val">{proPlan?.entitlements.maxRepairRequestsPerDay ?? 5}</span>
+                    <span className="lp-pcard__limit-val">
+                      {formatLimit(proPlan?.entitlements.maxRepairRequestsPerDay ?? 5, t)}
+                    </span>
                   </div>
                   <div className="lp-pcard__limit">
                     <span className="lp-pcard__limit-label">{t('landing.pricing.limitQuestions')}</span>
                     <span className="lp-pcard__limit-val">
-                      {proPlan?.entitlements.maxQuestionsPerRepairRequest ?? 10}
+                      {formatLimit(proPlan?.entitlements.maxQuestionsPerRepairRequest ?? 10, t)}
                     </span>
                   </div>
                 </div>
