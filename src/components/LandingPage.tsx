@@ -602,7 +602,23 @@ function TrustStat({
   )
 }
 
+function useClockTime() {
+  const [time, setTime] = useState(() => {
+    const d = new Date()
+    return `${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`
+  })
+  useEffect(() => {
+    const id = setInterval(() => {
+      const d = new Date()
+      setTime(`${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`)
+    }, 10_000)
+    return () => clearInterval(id)
+  }, [])
+  return time
+}
+
 function PhoneMockup() {
+  const clockTime = useClockTime()
   return (
     <>
       {/* Floating card: savings summary */}
@@ -644,7 +660,7 @@ function PhoneMockup() {
               {/* Header */}
               <div className="lp-app__header">
                 <div className="lp-app__header-top">
-                  <span>9:41</span>
+                  <span>{clockTime}</span>
                   <div className="lp-app__status-bar">
                     <svg
                       width="12"
@@ -654,7 +670,7 @@ function PhoneMockup() {
                       stroke="rgba(255,255,255,.5)"
                       strokeWidth="2"
                     >
-                      <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01" />
+                      <path d="M5 12.55a11 11 0 0114.08 0M1.42 9a16 16 0 0121.16 0M8.53 16.11a6 6 0 016.95 0M12 20h.01" />
                     </svg>
                     <svg
                       width="12"

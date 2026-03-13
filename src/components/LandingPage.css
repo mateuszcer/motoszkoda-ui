@@ -470,32 +470,32 @@
   animation: lp-scroll-bounce 2.5s ease-in-out infinite;
 }
 
-/* ── 3D Phone Mockup ──────────────────────────────────── */
+/* ── Phone Mockup ─────────────────────────────────────── */
 .lp-phone {
   position: relative;
-  width: 300px;
+  width: 280px;
   overflow: visible;
-  transform: perspective(800px) rotateY(-18deg) rotateX(3deg);
+  transform: perspective(1000px) rotateY(-15deg) rotateX(2.5deg);
   transform-style: preserve-3d;
   transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .lp-phone:hover {
-  transform: perspective(800px) rotateY(-6deg) rotateX(1deg);
+  transform: perspective(1000px) rotateY(-5deg) rotateX(1deg);
 }
 
 /* Power button — right side */
 .lp-phone::before {
   content: '';
   position: absolute;
-  right: -3px;
-  top: 125px;
-  width: 3px;
-  height: 38px;
-  background: linear-gradient(180deg, #484c4e, #363a3c, #484c4e);
-  border-radius: 0 2px 2px 0;
+  right: -2.5px;
+  top: 128px;
+  width: 2.5px;
+  height: 34px;
+  background: linear-gradient(180deg, #505458, #3e4244, #505458);
+  border-radius: 0 1.5px 1.5px 0;
   box-shadow:
-    1px 0 3px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0.5px 0 2px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   z-index: 1;
 }
 
@@ -503,147 +503,144 @@
 .lp-phone::after {
   content: '';
   position: absolute;
-  left: -3px;
-  top: 105px;
-  width: 3px;
-  height: 26px;
-  background: linear-gradient(180deg, #484c4e, #363a3c, #484c4e);
-  border-radius: 2px 0 0 2px;
+  left: -2.5px;
+  top: 100px;
+  width: 2.5px;
+  height: 22px;
+  background: linear-gradient(180deg, #505458, #3e4244, #505458);
+  border-radius: 1.5px 0 0 1.5px;
   box-shadow:
-    -1px 0 3px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    0 34px 0 #3c4042,
-    -1px 34px 3px rgba(0, 0, 0, 0.3);
+    -0.5px 0 2px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 32px 0 #444749,
+    -0.5px 32px 2px rgba(0, 0, 0, 0.2);
   z-index: 1;
 }
 
 .lp-phone__frame {
   background:
-    /* Sharp specular highlight — the metallic light reflection streak */
+    /* Subtle grain */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E"),
+    /* Soft specular — broad, diffused like a photo studio light */
     linear-gradient(
-      168deg,
-      transparent 0%,
-      transparent 24%,
-      rgba(255, 255, 255, 0.12) 29%,
-      rgba(255, 255, 255, 0.3) 34%,
-      rgba(255, 255, 255, 0.4) 36%,
-      rgba(255, 255, 255, 0.3) 38%,
-      rgba(255, 255, 255, 0.08) 43%,
-      transparent 50%,
-      transparent 100%
-    ),
-    /* Secondary softer reflection lower on the body */
-    linear-gradient(
-        172deg,
+        165deg,
         transparent 0%,
-        transparent 58%,
-        rgba(255, 255, 255, 0.06) 63%,
-        rgba(255, 255, 255, 0.1) 67%,
-        rgba(255, 255, 255, 0.06) 71%,
-        transparent 78%,
+        transparent 28%,
+        rgba(255, 255, 255, 0.06) 33%,
+        rgba(255, 255, 255, 0.14) 37%,
+        rgba(255, 255, 255, 0.06) 41%,
+        transparent 48%,
         transparent 100%
       ),
-    /* Top edge sheen — light catching the rounded top */
-    radial-gradient(ellipse at 45% 5%, rgba(255, 255, 255, 0.15), transparent 40%),
-    /* Left edge highlight — side light catch */
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, transparent 8%, transparent 92%, rgba(0, 0, 0, 0.05) 100%),
-    /* Base dark metallic gradient */
-    linear-gradient(170deg, #434850 0%, #4a5058 12%, #505660 28%, #474c54 48%, #414650 68%, #3c4148 88%, #383d44 100%);
-  border-radius: 40px;
-  padding: 8px;
+    /* Base titanium — less stepped, more continuous */
+    linear-gradient(172deg, #484d53 0%, #4d5258 20%, #505660 40%, #4a4f56 60%, #45494f 80%, #41454b 100%);
+  border-radius: 38px;
+  padding: 5px;
   position: relative;
   box-shadow:
-    /* Top-left chamfer — polished aluminum edge catch */
-    inset 1px 1px 0 rgba(255, 255, 255, 0.28),
-    inset 0 2px 2px rgba(255, 255, 255, 0.08),
-    /* Bottom-right edge darkening */ inset 0 -1px 0 rgba(0, 0, 0, 0.4),
-    inset -1px 0 0 rgba(0, 0, 0, 0.15),
-    /* Inner depth rim */ inset 0 0 12px rgba(0, 0, 0, 0.1),
-    /* Tight close shadow (contact) */ 3px 5px 10px rgba(0, 0, 0, 0.35),
-    /* Medium shadow */ 10px 18px 36px rgba(0, 0, 0, 0.25),
-    /* Large diffuse shadow */ 24px 40px 70px rgba(27, 53, 51, 0.2),
-    /* Ambient far shadow */ 0 60px 100px rgba(27, 53, 51, 0.12);
+    /* Subtle edge catch — not a full chamfer line */
+    inset 0.5px 0.5px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -0.5px 0 rgba(0, 0, 0, 0.25),
+    /* Soft inner depth */ inset 0 0 6px rgba(0, 0, 0, 0.06),
+    /* Contact shadow — tight, slightly offset */ 2px 4px 8px rgba(0, 0, 0, 0.3),
+    /* Mid shadow — softer, shifted down-right to feel directional */ 8px 16px 32px rgba(0, 0, 0, 0.18),
+    /* Far diffuse — large, faint */ 20px 36px 64px rgba(27, 53, 51, 0.12);
 }
 
 /* Dynamic Island */
 .lp-phone__island {
   position: absolute;
-  top: 18px;
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
-  width: 76px;
-  height: 20px;
-  background: #000;
-  border-radius: 14px;
+  width: 72px;
+  height: 18px;
+  background: #0a0a0a;
+  border-radius: 12px;
   z-index: 10;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 0.5px 1px rgba(0, 0, 0, 0.5),
+    0 0 0 0.5px rgba(255, 255, 255, 0.03);
 }
-/* Camera lens inside Dynamic Island */
+/* Camera lens */
 .lp-phone__island::after {
   content: '';
   position: absolute;
-  right: 16px;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #2a3040, #080a12);
+  background: radial-gradient(circle at 40% 35%, #1e2430 30%, #060810 100%);
   box-shadow:
-    inset 0 0.5px 1px rgba(255, 255, 255, 0.12),
-    0 0 0 0.5px rgba(255, 255, 255, 0.06);
+    inset 0 0.5px 0.5px rgba(255, 255, 255, 0.08),
+    0 0 0 0.5px rgba(50, 60, 80, 0.3),
+    0 0 2px rgba(60, 100, 180, 0.08);
 }
 
 .lp-phone__screen {
   background: #fff;
-  border-radius: 32px;
+  border-radius: 34px;
   overflow: hidden;
   position: relative;
-  max-height: 560px;
-  /* Bezel + glass edge */
+  max-height: 540px;
   box-shadow:
-    0 0 0 2px #000,
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.2),
-    inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    0 0 0 1.5px #111,
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
 }
-/* Viewing-angle gradient — far side (right) dims slightly like a real screen */
+/* Screen dimming — uneven like ambient room light hitting at an angle */
 .lp-phone__screen::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 32px;
-  background: linear-gradient(to right, transparent 30%, rgba(0, 0, 0, 0.07) 100%);
+  border-radius: 34px;
+  background:
+    /* Corner vignette — screens are never uniformly lit in photos */
+    radial-gradient(ellipse at 20% 15%, transparent 50%, rgba(0, 0, 0, 0.03) 100%),
+    /* Right-side falloff — viewing angle */
+    linear-gradient(100deg, transparent 35%, rgba(0, 0, 0, 0.035) 65%, rgba(0, 0, 0, 0.07) 100%),
+    /* Bottom dim — slight brightness drop toward the bottom */
+    linear-gradient(to bottom, transparent 60%, rgba(0, 0, 0, 0.025) 100%);
   pointer-events: none;
   z-index: 5;
 }
-/* Glass glare — faint diagonal gradient simulating reflection */
+/* Glass reflection — like a window or overhead light catching the screen */
 .lp-phone__screen::after {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 32px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(255, 255, 255, 0.025) 35%,
-    transparent 55%,
-    transparent 100%
-  );
+  border-radius: 34px;
+  background:
+    /* Main glare — off-center, irregular shape via radial */
+    radial-gradient(ellipse at 25% 12%, rgba(255, 255, 255, 0.07), transparent 50%),
+    /* Faint streak across the middle */
+    linear-gradient(
+        155deg,
+        transparent 0%,
+        transparent 20%,
+        rgba(255, 255, 255, 0.025) 30%,
+        rgba(255, 255, 255, 0.01) 40%,
+        transparent 50%,
+        transparent 100%
+      );
   pointer-events: none;
   z-index: 5;
 }
 
-/* Floor shadow — faux surface reflection beneath phone */
+/* Floor shadow — irregular, like a phone resting on a slightly uneven surface */
 .lp-phone__shadow {
   position: absolute;
-  bottom: -24px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 220px;
-  height: 50px;
-  background: radial-gradient(ellipse at top, rgba(27, 53, 51, 0.1), transparent 75%);
+  bottom: -18px;
+  left: 54%;
+  transform: translateX(-50%) scaleX(1.05);
+  width: 190px;
+  height: 36px;
+  background:
+    radial-gradient(ellipse at 45% top, rgba(27, 53, 51, 0.1), transparent 65%),
+    radial-gradient(ellipse at 60% top, rgba(0, 0, 0, 0.04), transparent 50%);
   pointer-events: none;
-  filter: blur(10px);
+  filter: blur(14px);
 }
 
 /* ── App UI inside phone ── */
@@ -653,7 +650,7 @@
 
 .lp-app__header {
   background: linear-gradient(145deg, #0e5e5e 0%, #1a8a7a 100%);
-  padding: 34px 20px 16px;
+  padding: 30px 20px 10px;
   color: #fff;
   position: relative;
 }
@@ -833,7 +830,7 @@
 .lp-app__nav {
   display: flex;
   background: #fff;
-  padding: 10px 0 14px;
+  padding: 8px 0 10px;
   border-top: 1px solid #edeeed;
 }
 .lp-app__nav-item {
@@ -861,14 +858,14 @@
 .lp-float-card {
   position: absolute;
   left: 0;
-  bottom: 60px;
+  bottom: 30px;
   background: #fff;
-  border-radius: 14px;
-  padding: 14px 18px;
+  border-radius: 12px;
+  padding: 10px 14px;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.18),
     0 2px 8px rgba(0, 0, 0, 0.1);
-  width: 210px;
+  width: 185px;
   z-index: 20;
   transform: perspective(800px) rotateY(-5deg);
   animation: lp-float-card 5s ease-in-out infinite;
