@@ -796,6 +796,7 @@ function FeatureMockup2({ t }: { t: (key: string) => string }) {
       <div className="lp-fquote">
         <div className="lp-fq-name">Auto Serwis Kowalski</div>
         <div className="lp-fq-meta">2.4 km</div>
+        <div className="lp-fq-desc">{t('landing.mockQuoteDesc')}</div>
         <div className="lp-fq-price">
           520–680 <span>PLN</span>
         </div>
@@ -807,6 +808,21 @@ function FeatureMockup2({ t }: { t: (key: string) => string }) {
       <div className="lp-fquote lp-fquote--dim">
         <div className="lp-fq-name">Quick Fix Garage</div>
         <div className="lp-fq-meta">7.8 km</div>
+        <div className="lp-fq-thread">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <span>{t('landing.mockQuoteThread')}</span>
+        </div>
         <div className="lp-fq-price">
           550–700 <span>PLN</span>
         </div>

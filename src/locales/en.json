@@ -588,6 +588,8 @@
     "mockInbox": "Inbox",
     "mockNewRequest": "New Request",
     "mockInterested": "Interested",
+    "mockQuoteDesc": "Front pads worn, discs still OK. Recommend pads only for now.",
+    "mockQuoteThread": "Asked a question",
     "mockEstDays": "Est. time",
     "mockEstDaysValue": "2–3 days",
     "mockSendQuote": "Send quote",
