@@ -308,7 +308,7 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
           </div>
 
           {pricingAudience === 'driver' ? (
-            <div className="lp-pricing__grid lp-rv">
+            <div className="lp-pricing__grid">
               {/* Free card */}
               <div className="lp-pcard">
                 <div className="lp-pcard__plan">{t('landing.pricing.freePlan')}</div>
@@ -391,7 +391,7 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
               </div>
             </div>
           ) : (
-            <div className="lp-pricing__grid lp-pricing__grid--single lp-rv">
+            <div className="lp-pricing__grid lp-pricing__grid--single">
               <div className="lp-pcard lp-pcard--feat lp-pcard--centered">
                 <div className="lp-pcard__plan">{t('landing.pricing.shopPlanName')}</div>
                 <div className="lp-pricing__billing">
