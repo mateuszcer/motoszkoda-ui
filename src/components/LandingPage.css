@@ -573,6 +573,16 @@
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.2),
     inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
+/* Viewing-angle gradient — far side (right) dims slightly like a real screen */
+.lp-phone__screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 32px;
+  background: linear-gradient(to right, transparent 30%, rgba(0, 0, 0, 0.035) 100%);
+  pointer-events: none;
+  z-index: 5;
+}
 /* Glass glare — faint diagonal gradient simulating reflection */
 .lp-phone__screen::after {
   content: '';
