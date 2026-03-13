@@ -798,6 +798,9 @@ function PhoneMockup() {
 }
 
 function FeatureMockup1({ t }: { t: (key: string) => string }) {
+  const [radius, setRadius] = useState(15)
+  const pct = ((radius - 5) / (50 - 5)) * 100
+
   return (
     <div className="lp-fcard">
       <div className="lp-fcard__form">
@@ -816,10 +819,19 @@ function FeatureMockup1({ t }: { t: (key: string) => string }) {
         </div>
         <div className="lp-fslider">
           <div className="lp-fslider__track">
-            <div className="lp-fslider__fill" />
-            <div className="lp-fslider__thumb" />
+            <div className="lp-fslider__fill" style={{ width: `${pct}%` }} />
+            <div className="lp-fslider__thumb" style={{ left: `${pct}%` }} />
+            <input
+              className="lp-fslider__input"
+              type="range"
+              min={5}
+              max={50}
+              value={radius}
+              onChange={(e) => setRadius(Number(e.target.value))}
+              aria-label="Radius km"
+            />
           </div>
-          <div className="lp-fslider__val">15 km</div>
+          <div className="lp-fslider__val">{radius} km</div>
         </div>
         <div className="lp-ff-btn">{t('landing.mockSubmit')}</div>
       </div>
@@ -872,7 +884,45 @@ function FeatureMockup2({ t }: { t: (key: string) => string }) {
   )
 }
 
+const PARTS_DATA = [
+  {
+    suppliers: [
+      { name: 'Inter Cars', price: 280 },
+      { name: 'Hart', price: 305 },
+      { name: 'Gordon', price: 295 },
+    ],
+  },
+  {
+    suppliers: [
+      { name: 'Inter Cars', price: 410 },
+      { name: 'Hart', price: 365 },
+      { name: 'Gordon', price: 350 },
+    ],
+  },
+] as const
+
 function FeatureMockup3({ t }: { t: (key: string) => string }) {
+  const [selected, setSelected] = useState([0, 2])
+  const [labor, setLabor] = useState('180')
+  const laborRef = useRef<HTMLInputElement>(null)
+
+  const partsCost = PARTS_DATA.reduce((sum, group, gi) => sum + group.suppliers[selected[gi]].price, 0)
+  const laborNum = parseInt(labor, 10) || 0
+  const total = partsCost + laborNum
+
+  const handleSelect = useCallback((groupIndex: number, supplierIndex: number) => {
+    setSelected((prev) => {
+      const next = [...prev]
+      next[groupIndex] = supplierIndex
+      return next
+    })
+  }, [])
+
+  const handleLaborChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/[^0-9]/g, '')
+    if (val.length <= 5) setLabor(val)
+  }, [])
+
   return (
     <div className="lp-fcard">
       <div className="lp-fw-stats">
@@ -919,77 +969,61 @@ function FeatureMockup3({ t }: { t: (key: string) => string }) {
       </div>
       <div className="lp-fw-quote lp-fw-quote--anim">
         <div className="lp-fw-quote__label">{t('landing.mockShopYourQuote')}</div>
-        <div className="lp-fw-parts-label lp-fw-parts--anim">
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-          </svg>
-          <span>{t('landing.mockPartsName')}</span>
-        </div>
-        <div className="lp-fw-parts lp-fw-parts--anim">
-          <div className="lp-fw-parts__card lp-fw-parts__card--best">
-            <span className="lp-fw-parts__name">Inter Cars</span>
-            <span className="lp-fw-parts__price">280 PLN</span>
+        {PARTS_DATA.map((group, gi) => (
+          <div key={gi}>
+            <div className={`lp-fw-parts-label ${gi === 0 ? 'lp-fw-parts--anim' : 'lp-fw-parts--anim2'}`}>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+              <span>{t(gi === 0 ? 'landing.mockPartsName' : 'landing.mockPartsName2')}</span>
+            </div>
+            <div className={`lp-fw-parts ${gi === 0 ? 'lp-fw-parts--anim' : 'lp-fw-parts--anim2'}`}>
+              {group.suppliers.map((s, si) => (
+                <button
+                  key={si}
+                  className={`lp-fw-parts__card ${selected[gi] === si ? 'lp-fw-parts__card--best' : ''}`}
+                  onClick={() => handleSelect(gi, si)}
+                  type="button"
+                >
+                  <span className="lp-fw-parts__name">{s.name}</span>
+                  <span className="lp-fw-parts__price">{s.price} PLN</span>
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="lp-fw-parts__card">
-            <span className="lp-fw-parts__name">Hart</span>
-            <span className="lp-fw-parts__price">305 PLN</span>
-          </div>
-          <div className="lp-fw-parts__card">
-            <span className="lp-fw-parts__name">Gordon</span>
-            <span className="lp-fw-parts__price">295 PLN</span>
-          </div>
-        </div>
-        <div className="lp-fw-parts-label lp-fw-parts--anim2">
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-          </svg>
-          <span>{t('landing.mockPartsName2')}</span>
-        </div>
-        <div className="lp-fw-parts lp-fw-parts--anim2">
-          <div className="lp-fw-parts__card">
-            <span className="lp-fw-parts__name">Inter Cars</span>
-            <span className="lp-fw-parts__price">410 PLN</span>
-          </div>
-          <div className="lp-fw-parts__card">
-            <span className="lp-fw-parts__name">Hart</span>
-            <span className="lp-fw-parts__price">365 PLN</span>
-          </div>
-          <div className="lp-fw-parts__card lp-fw-parts__card--best">
-            <span className="lp-fw-parts__name">Gordon</span>
-            <span className="lp-fw-parts__price">350 PLN</span>
-          </div>
-        </div>
-        <div className="lp-fw-input">
-          <span className="lp-fw-input__label">{t('landing.mockLaborPrice')}</span>
-          <span className="lp-fw-input__val">180</span>
+        ))}
+        <div className="lp-fw-input lp-fw-input--interactive" onClick={() => laborRef.current?.focus()}>
+          <label className="lp-fw-input__label" htmlFor="lp-labor-input">
+            {t('landing.mockLaborPrice')}
+          </label>
+          <input
+            id="lp-labor-input"
+            ref={laborRef}
+            className="lp-fw-input__real"
+            type="text"
+            inputMode="numeric"
+            value={labor}
+            onChange={handleLaborChange}
+          />
           <span className="lp-fw-input__sfx">PLN</span>
         </div>
         <div className="lp-fw-total">
           <div className="lp-fw-total__breakdown">
             <span>{t('landing.mockPartsCost')}</span>
-            <span>630 PLN</span>
+            <span>{partsCost} PLN</span>
           </div>
           <div className="lp-fw-total__sum">
             <span>{t('quoteDetail.total')}</span>
-            <span>810 PLN</span>
+            <span>{total} PLN</span>
           </div>
         </div>
         <div className="lp-fw-meta">
