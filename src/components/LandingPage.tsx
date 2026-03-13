@@ -638,7 +638,7 @@ function PhoneMockup() {
       {/* 3D Phone */}
       <div className="lp-phone">
         <div className="lp-phone__frame">
-          <div className="lp-phone__notch" />
+          <div className="lp-phone__island" />
           <div className="lp-phone__screen">
             <div className="lp-app">
               {/* Header */}
@@ -750,6 +750,7 @@ function PhoneMockup() {
             </div>
           </div>
         </div>
+        <div className="lp-phone__shadow" aria-hidden="true" />
       </div>
     </>
   )
