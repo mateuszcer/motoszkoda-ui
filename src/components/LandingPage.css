@@ -487,14 +487,14 @@
 .lp-phone::before {
   content: '';
   position: absolute;
-  right: -2.5px;
+  right: -2px;
   top: 128px;
-  width: 2.5px;
-  height: 34px;
+  width: 2px;
+  height: 24px;
   background: linear-gradient(180deg, #505458, #3e4244, #505458);
-  border-radius: 0 1.5px 1.5px 0;
+  border-radius: 0 1px 1px 0;
   box-shadow:
-    0.5px 0 2px rgba(0, 0, 0, 0.3),
+    0.5px 0 1.5px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   z-index: 1;
 }
@@ -503,17 +503,17 @@
 .lp-phone::after {
   content: '';
   position: absolute;
-  left: -2.5px;
-  top: 100px;
-  width: 2.5px;
-  height: 22px;
+  left: -2px;
+  top: 104px;
+  width: 2px;
+  height: 16px;
   background: linear-gradient(180deg, #505458, #3e4244, #505458);
-  border-radius: 1.5px 0 0 1.5px;
+  border-radius: 1px 0 0 1px;
   box-shadow:
-    -0.5px 0 2px rgba(0, 0, 0, 0.25),
+    -0.5px 0 1.5px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 32px 0 #444749,
-    -0.5px 32px 2px rgba(0, 0, 0, 0.2);
+    0 24px 0 #444749,
+    -0.5px 24px 1.5px rgba(0, 0, 0, 0.15);
   z-index: 1;
 }
 
