@@ -475,12 +475,12 @@
   position: relative;
   width: 300px;
   overflow: visible;
-  transform: perspective(1200px) rotateY(-8deg) rotateX(2deg);
+  transform: perspective(800px) rotateY(-18deg) rotateX(3deg);
   transform-style: preserve-3d;
   transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .lp-phone:hover {
-  transform: perspective(1200px) rotateY(-3deg) rotateX(1deg);
+  transform: perspective(800px) rotateY(-6deg) rotateX(1deg);
 }
 
 /* Power button — right side */
@@ -516,8 +516,9 @@
 
 .lp-phone__frame {
   background:
-    linear-gradient(165deg, rgba(255, 255, 255, 0.08) 0%, transparent 60%, rgba(0, 0, 0, 0.015) 100%),
-    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.05), transparent 50%), #2a2c2a;
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E"),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.08) 0%, transparent 50%, rgba(0, 0, 0, 0.06) 100%),
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.05), transparent 50%), #222422;
   border-radius: 44px;
   padding: 12px;
   position: relative;
@@ -568,8 +569,9 @@
   overflow: hidden;
   position: relative;
   max-height: 560px;
-  /* Glass edge — 1px semi-transparent white inner border */
+  /* Bezel + glass edge */
   box-shadow:
+    0 0 0 4px #000,
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.2),
     inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
@@ -579,7 +581,7 @@
   position: absolute;
   inset: 0;
   border-radius: 32px;
-  background: linear-gradient(to right, transparent 30%, rgba(0, 0, 0, 0.035) 100%);
+  background: linear-gradient(to right, transparent 30%, rgba(0, 0, 0, 0.07) 100%);
   pointer-events: none;
   z-index: 5;
 }
