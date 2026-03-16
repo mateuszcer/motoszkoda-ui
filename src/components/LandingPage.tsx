@@ -643,23 +643,24 @@ function useClockTime() {
 }
 
 function PhoneMockup() {
+  const { t } = useTranslation()
   const clockTime = useClockTime()
   return (
     <>
       {/* Floating card: savings summary */}
       <div className="lp-float-card">
-        <div className="lp-float-card__label">Twoje zlecenie</div>
+        <div className="lp-float-card__label">{t('landing.phoneYourRequest')}</div>
         <div className="lp-float-card__row">
-          <div className="lp-float-card__name">Audi A3 &middot; hamulce</div>
+          <div className="lp-float-card__name">{t('landing.phoneCarBrakes')}</div>
         </div>
         <div className="lp-float-card__row">
-          <span className="lp-demo-meta">3 wyceny otrzymane</span>
-          <span className="lp-demo-price">od 520 zł</span>
+          <span className="lp-demo-meta">{t('landing.phoneQuotesReceived')}</span>
+          <span className="lp-demo-price">{t('landing.phonePriceFrom')}</span>
         </div>
         <div className="lp-float-card__bar">
           <div className="lp-float-card__fill" />
         </div>
-        <div className="lp-float-card__sub">3 z 5 warsztatów odpowiedziało</div>
+        <div className="lp-float-card__sub">{t('landing.phoneShopsResponded')}</div>
       </div>
 
       {/* Floating badge: notification */}
@@ -671,8 +672,8 @@ function PhoneMockup() {
           </svg>
         </div>
         <div>
-          <div className="lp-float-badge__text">Nowa wycena!</div>
-          <div className="lp-float-badge__sub">Auto Serwis &middot; 520 zł</div>
+          <div className="lp-float-badge__text">{t('landing.phoneNewQuote')}</div>
+          <div className="lp-float-badge__sub">{t('landing.phoneNotifShop')}</div>
         </div>
       </div>
 
@@ -710,16 +711,16 @@ function PhoneMockup() {
                     </svg>
                   </div>
                 </div>
-                <div className="lp-app__balance-label">Twoje zlecenia</div>
-                <div className="lp-app__balance">3 aktywne</div>
-                <div className="lp-app__balance-sub">7 wycen łącznie &middot; 2 nowe</div>
+                <div className="lp-app__balance-label">{t('landing.phoneYourRequests')}</div>
+                <div className="lp-app__balance">{t('landing.phoneActiveCount')}</div>
+                <div className="lp-app__balance-sub">{t('landing.phoneQuoteSummary')}</div>
               </div>
 
               {/* Tabs */}
               <div className="lp-app__tabs">
-                <div className="lp-app__tab lp-app__tab--active">Otwarte (3)</div>
-                <div className="lp-app__tab">Zamknięte (5)</div>
-                <div className="lp-app__tab">Wszystkie</div>
+                <div className="lp-app__tab lp-app__tab--active">{t('landing.phoneTabOpen')}</div>
+                <div className="lp-app__tab">{t('landing.phoneTabClosed')}</div>
+                <div className="lp-app__tab">{t('landing.phoneTabAll')}</div>
               </div>
 
               {/* Content */}
@@ -727,24 +728,26 @@ function PhoneMockup() {
                 {/* Order 1: with quote */}
                 <div className="lp-app__order">
                   <div className="lp-app__order-top">
-                    <div className="lp-app__order-car">Audi A3 &middot; hamulce</div>
-                    <div className="lp-app__order-badge">3 wyceny</div>
+                    <div className="lp-app__order-car">{t('landing.phoneCarBrakes')}</div>
+                    <div className="lp-app__order-badge">{t('landing.phoneQuoteCount')}</div>
                   </div>
-                  <div className="lp-app__order-desc">Hamulce piszczą przy hamowaniu</div>
-                  <div className="lp-app__order-meta">Zasięg 15 km &middot; Utworzono dziś</div>
+                  <div className="lp-app__order-desc">{t('landing.phoneBrakesDesc')}</div>
+                  <div className="lp-app__order-meta">{t('landing.phoneRange15')}</div>
 
                   <div className="lp-app__quote">
                     <div className="lp-app__quote-head">
-                      <div className="lp-app__quote-name">Auto Serwis Kowalski</div>
-                      <div className="lp-app__quote-dist">2.4 km</div>
+                      <div className="lp-app__quote-name">{t('landing.phoneShopName')}</div>
+                      <div className="lp-app__quote-dist">{t('landing.phoneDist')}</div>
                     </div>
                     <div className="lp-app__quote-price">
-                      520–680 <span>PLN</span>
+                      {t('landing.phoneQuoteRange')} <span>{t('landing.phoneCurrency')}</span>
                     </div>
-                    <div className="lp-app__quote-comment">Klocki + tarcze, 2-3 dni robocze</div>
+                    <div className="lp-app__quote-comment">{t('landing.phoneQuoteComment')}</div>
                     <div className="lp-app__quote-actions">
-                      <button className="lp-app__quote-btn lp-app__quote-btn--pri">Zainteresowany</button>
-                      <button className="lp-app__quote-btn lp-app__quote-btn--sec">Ignoruj</button>
+                      <button className="lp-app__quote-btn lp-app__quote-btn--pri">
+                        {t('landing.phoneInterested')}
+                      </button>
+                      <button className="lp-app__quote-btn lp-app__quote-btn--sec">{t('landing.phoneIgnore')}</button>
                     </div>
                   </div>
                 </div>
@@ -752,11 +755,11 @@ function PhoneMockup() {
                 {/* Order 2: dimmed */}
                 <div className="lp-app__order lp-app__order--dim">
                   <div className="lp-app__order-top">
-                    <div className="lp-app__order-car">BMW 320d &middot; klimatyzacja</div>
-                    <div className="lp-app__order-badge lp-app__order-badge--pending">Oczekuje</div>
+                    <div className="lp-app__order-car">{t('landing.phoneCarAC')}</div>
+                    <div className="lp-app__order-badge lp-app__order-badge--pending">{t('landing.phonePending')}</div>
                   </div>
-                  <div className="lp-app__order-desc">Klima nie chłodzi, dziwny zapach</div>
-                  <div className="lp-app__order-meta">Zasięg 10 km &middot; Utworzono wczoraj</div>
+                  <div className="lp-app__order-desc">{t('landing.phoneACDesc')}</div>
+                  <div className="lp-app__order-meta">{t('landing.phoneRange10')}</div>
                 </div>
               </div>
 
@@ -766,26 +769,26 @@ function PhoneMockup() {
                   <svg className="lp-app__nav-icon" viewBox="0 0 24 24">
                     <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                   </svg>
-                  Zlecenia
+                  {t('landing.phoneNavRequests')}
                 </div>
                 <div className="lp-app__nav-item">
                   <svg className="lp-app__nav-icon" viewBox="0 0 24 24">
                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
                   </svg>
-                  Wyceny
+                  {t('landing.phoneNavQuotes')}
                 </div>
                 <div className="lp-app__nav-item">
                   <svg className="lp-app__nav-icon" viewBox="0 0 24 24">
                     <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" />
                   </svg>
-                  Pytania
+                  {t('landing.phoneNavQuestions')}
                 </div>
                 <div className="lp-app__nav-item">
                   <svg className="lp-app__nav-icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="3" />
                     <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
                   </svg>
-                  Ustawienia
+                  {t('landing.phoneNavSettings')}
                 </div>
               </div>
             </div>

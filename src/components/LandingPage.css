@@ -2463,6 +2463,7 @@
 .lp-pcard--centered {
   max-width: 420px;
   margin: 0 auto;
+  min-height: 480px;
 }
 .lp-demo-meta {
   font-size: 10px;
