@@ -2322,8 +2322,10 @@
   }
 
   .lp-hero {
-    min-height: auto;
+    min-height: 85vh;
+    min-height: 85dvh;
     padding: 110px 0 70px;
+    justify-content: center;
   }
   .lp-hero__visual {
     display: none;
@@ -2331,6 +2333,20 @@
 
   .lp-hero__content {
     padding: 0 24px;
+    justify-items: center;
+  }
+  .lp-hero__text {
+    text-align: center;
+    padding-top: 0;
+  }
+  .lp-hero__sub {
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 40px;
+  }
+  .lp-hero__scroll {
+    bottom: 20px;
   }
   .lp-nav {
     padding: 0 24px;
@@ -2382,11 +2398,43 @@
     width: 160px;
     height: 160px;
   }
+  .lp-feature__visual {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .lp-hero {
+    min-height: 88vh;
+    min-height: 88dvh;
+  }
+  .lp-trust-bar__inner {
+    gap: 20px;
+  }
+  .lp-feature__inner {
+    gap: 32px;
+  }
 }
 
 @media (max-width: 480px) {
   .lp-hero {
-    padding: 100px 0 50px;
+    min-height: 90vh;
+    min-height: 90dvh;
+    padding: 90px 0 60px;
+  }
+  .lp-hero__headline {
+    font-size: clamp(28px, 9vw, 40px);
+    line-height: 1.12;
+  }
+  .lp-hero__sub {
+    font-size: 15px;
+    max-width: none;
+  }
+  .lp-hero__cta-primary {
+    height: 52px;
+    padding: 0 32px;
+    font-size: 16px;
   }
   .lp-hero__content {
     padding: 0 16px;
@@ -2410,6 +2458,10 @@
   }
   .lp-nav {
     padding: 0 16px;
+    height: 56px;
+  }
+  .lp-nav__brand-name {
+    display: none;
   }
   .lp-nav__actions .lp-nav__btn-sec {
     display: none;
@@ -2453,6 +2505,121 @@
   .lp-hero__shape--3 {
     width: 120px;
     height: 120px;
+  }
+
+  /* Trust bar */
+  .lp-trust-bar__inner {
+    gap: 20px 16px;
+  }
+  .lp-trust-bar__number {
+    font-size: 18px;
+  }
+  .lp-trust-bar__label {
+    font-size: 10px;
+  }
+  .lp-trust-bar__icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 8px;
+  }
+
+  /* Feature mockup cards */
+  .lp-fcard {
+    max-width: 100%;
+    padding: 18px;
+    border-radius: 14px;
+  }
+  .lp-fcard__head {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+  }
+  .lp-fcard__title {
+    font-size: 13px;
+  }
+  .lp-ff {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .lp-fquote {
+    padding: 12px;
+  }
+  .lp-fq-price {
+    font-size: 18px;
+  }
+  .lp-fw-parts__card {
+    min-width: 0;
+  }
+
+  /* FAQ */
+  .lp-faq__title {
+    margin-bottom: 32px;
+  }
+  .lp-faq__q {
+    padding: 16px 0;
+    font-size: 14px;
+    gap: 12px;
+  }
+  .lp-faq__a p {
+    font-size: 13px;
+    padding-bottom: 16px;
+  }
+
+  /* Shop callout */
+  .lp-shop-callout__content {
+    text-align: center;
+  }
+  .lp-shop-callout__desc {
+    max-width: none;
+  }
+  .lp-shop-callout__actions {
+    justify-content: center;
+  }
+  .lp-shop-callout__cta,
+  .lp-shop-callout__cta-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Pricing cards */
+  .lp-pcard {
+    padding: 22px 18px;
+  }
+  .lp-pcard__price {
+    font-size: 28px;
+  }
+  .lp-pcard--centered {
+    max-width: none;
+    min-height: auto;
+  }
+  .lp-pricing__tabs {
+    width: 100%;
+  }
+  .lp-pricing__tab {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Contact */
+  .lp-contact__grid {
+    gap: 24px;
+  }
+  .lp-contact__headline {
+    margin-bottom: 32px;
+  }
+
+  /* Bottom CTA */
+  .lp-bottom-cta__inner {
+    max-width: none;
+  }
+  .lp-bottom-cta__headline {
+    font-size: clamp(24px, 7vw, 36px);
+  }
+  .lp-bottom-cta__body {
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+  .lp-bottom-cta__btn {
+    width: 100%;
   }
 }
 
