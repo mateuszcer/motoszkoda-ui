@@ -32,6 +32,7 @@ export interface RegisterPayload {
 
 export interface StoredSession {
   accessToken: string
+  refreshToken?: string
   expiresAt: number // epoch ms
   user: User
 }
@@ -43,7 +44,7 @@ export interface AuthApi {
   shopRegister(email: string, password: string, captchaToken?: string): Promise<AuthResult>
   adminLogin(email: string, password: string, captchaToken?: string): Promise<AuthResult>
   logout(): Promise<void>
-  restoreSession(): StoredSession | null
+  restoreSession(): Promise<StoredSession | null>
   resendConfirmation(email: string, captchaToken?: string): Promise<void>
   requestPasswordReset(email: string, captchaToken?: string): Promise<void>
   resetPassword(accessToken: string, newPassword: string): Promise<void>

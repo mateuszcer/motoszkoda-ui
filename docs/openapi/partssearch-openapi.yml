@@ -1,0 +1,316 @@
+openapi: 3.1.0
+info:
+  title: MotoSzkoda Parts Search API
+  description: |
+    Wholesaler price lookup with VIN support. Two search modes:
+    1. VIN + description (shop staff): search parts by description for a specific vehicle
+    2. VIN-only browsing (mechanics): browse assembly groups then search parts by group
+
+    All endpoints require SHOP_USER role and an active enrollment.
+  version: 1.0.0
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/parts/search:
+    get:
+      operationId: searchParts
+      summary: Search parts by VIN with optional description/group filter
+      description: |
+        Search for available parts from all enabled wholesalers. At least one of `q` or `groupId` must be provided.
+
+        **Mode 1 — VIN + description** (`q` only): auto-matches description against TecDoc assembly group names,
+        fetches compatible parts for matched groups (max 3), then queries wholesalers for pricing and availability.
+        If no group matches, returns `resultCode: NO_GROUP_MATCH` with the assembly group tree so the frontend
+        can prompt the user to pick a category.
+
+        **Mode 2 — VIN + group** (`groupId` only): fetches compatible parts for the specified group.
+
+        **Mode 3 — VIN + group + description** (`groupId` + `q`): fetches parts for the group, filtered by description.
+      tags: [Parts Search]
+      security:
+        - bearerAuth: [ROLE_SHOP_USER]
+      parameters:
+        - name: vin
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 17
+            maxLength: 17
+          description: Vehicle Identification Number (exactly 17 characters)
+          example: WAUZZZ8K5BA012345
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 3
+          description: Part description to search for (min 3 chars). Matched against assembly group names.
+          example: klocki hamulcowe
+        - name: groupId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: TecDoc assembly group ID (from GET /api/parts/groups)
+          example: "1001"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+          description: Max number of results to return
+      responses:
+        "200":
+          description: Search results (or NO_GROUP_MATCH with group tree)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PartsSearchResponse"
+        "400":
+          description: Invalid VIN, query too short, or missing q+groupId
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Not SHOP_USER role, or shop not enrolled / suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: All wholesalers unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/parts/groups:
+    get:
+      operationId: getAssemblyGroups
+      summary: Get assembly group tree for a vehicle
+      description: |
+        Returns the TecDoc assembly group tree for the decoded VIN. Used for VIN-only browsing (mechanic flow):
+        1. Call this endpoint to get the group tree
+        2. User picks a group
+        3. Call GET /api/parts/search with `vin` + `groupId`
+      tags: [Parts Search]
+      security:
+        - bearerAuth: [ROLE_SHOP_USER]
+      parameters:
+        - name: vin
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 17
+            maxLength: 17
+          description: Vehicle Identification Number (exactly 17 characters)
+          example: WAUZZZ8K5BA012345
+      responses:
+        "200":
+          description: Assembly group tree for the vehicle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssemblyGroupsResponse"
+        "400":
+          description: Invalid VIN
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Not SHOP_USER role, or shop not enrolled / suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    PartsSearchResponse:
+      type: object
+      required: [resultCode, vin, vehicle, offers, totalFound, queriedSources, failedSources]
+      properties:
+        resultCode:
+          type: string
+          enum: [OK, NO_GROUP_MATCH]
+          description: OK for normal results, NO_GROUP_MATCH when description didn't match any group
+        vin:
+          type: string
+        vehicle:
+          $ref: "#/components/schemas/VehicleResponse"
+        offers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PartOfferResponse"
+        totalFound:
+          type: integer
+          description: Total matching offers (before limit applied)
+        queriedSources:
+          type: array
+          items:
+            $ref: "#/components/schemas/WholesalerSourceResponse"
+        failedSources:
+          type: array
+          items:
+            $ref: "#/components/schemas/WholesalerErrorResponse"
+        groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/AssemblyGroupResponse"
+          description: Present only when resultCode is NO_GROUP_MATCH
+
+    AssemblyGroupsResponse:
+      type: object
+      required: [vin, vehicle, groups]
+      properties:
+        vin:
+          type: string
+        vehicle:
+          $ref: "#/components/schemas/VehicleResponse"
+        groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/AssemblyGroupResponse"
+
+    VehicleResponse:
+      type: object
+      required: [ktypeId, make, model, type]
+      properties:
+        ktypeId:
+          type: string
+        make:
+          type: string
+          example: Volkswagen
+        model:
+          type: string
+          example: Golf
+        type:
+          type: string
+          example: VII 2.0 TDI
+        yearFrom:
+          type: integer
+          example: 2017
+        yearTo:
+          type: integer
+          example: 2024
+
+    PartOfferResponse:
+      type: object
+      required: [sku, articleNumber, name, brand, priceMinorUnits, currency, availability, source]
+      properties:
+        sku:
+          type: string
+          description: Wholesaler-specific SKU
+          example: TOW-12345
+        articleNumber:
+          type: string
+          description: TecDoc article number
+          example: P 85 020
+        name:
+          type: string
+          example: Brake pad set, disc brake, front
+        brand:
+          type: string
+          example: Brembo
+        priceMinorUnits:
+          type: integer
+          format: int64
+          description: Price in minor units (e.g. grosze for PLN)
+          example: 15000
+        currency:
+          type: string
+          example: PLN
+        availability:
+          type: string
+          enum: [IN_STOCK, LOW_STOCK, ON_ORDER, UNAVAILABLE]
+        quantityAvailable:
+          type: integer
+          description: Available quantity (if known)
+        leadTimeDays:
+          type: integer
+          description: Estimated delivery time in days (if known)
+        source:
+          type: string
+          description: Wholesaler source code
+          example: INTER_CARS
+
+    WholesalerSourceResponse:
+      type: object
+      required: [code, name]
+      properties:
+        code:
+          type: string
+          example: INTER_CARS
+        name:
+          type: string
+          example: Inter Cars
+
+    WholesalerErrorResponse:
+      type: object
+      required: [sourceCode, errorCode]
+      properties:
+        sourceCode:
+          type: string
+          example: INTER_CARS
+        errorCode:
+          type: string
+          example: TIMEOUT
+
+    AssemblyGroupResponse:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          example: "1001"
+        name:
+          type: string
+          example: Brake system
+        parentId:
+          type: string
+          description: Parent group ID (null for top-level groups)
+          example: "1000"
+
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          example: INVALID_VIN
+        message:
+          type: string
+          example: "Unable to decode VIN: ABC"
+        details:
+          type: array
+          items:
+            type: string
+        correlationId:
+          type: string
+          format: uuid

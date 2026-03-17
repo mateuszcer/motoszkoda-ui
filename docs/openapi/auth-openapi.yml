@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: MotoSzkoda Auth API
   description: Authentication endpoints proxying Supabase Auth. All endpoints are public (no JWT required).
-  version: 1.2.0
+  version: 1.3.0
 
 paths:
   /api/auth/users/signup:
@@ -326,6 +326,93 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /api/auth/token/refresh:
+    post:
+      operationId: refreshToken
+      summary: Exchange a refresh token for new access and refresh tokens
+      description: |
+        Proxies the Firebase Secure Token API to exchange a refresh token for a new
+        access token (JWT) and possibly-rotated refresh token. Keeps the auth provider
+        abstracted behind the backend API.
+      tags: [Auth - Token]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: Tokens refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefreshResult"
+        "400":
+          description: Validation error (missing or blank refresh token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: VALIDATION_ERROR
+                message: Validation failed
+                details:
+                  - Refresh token is required
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "401":
+          description: Invalid, expired, or revoked refresh token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalid:
+                  summary: Invalid refresh token
+                  value:
+                    code: INVALID_REFRESH_TOKEN
+                    message: Invalid refresh token
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+                expired:
+                  summary: Refresh token expired
+                  value:
+                    code: REFRESH_TOKEN_EXPIRED
+                    message: Refresh token has expired
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+                revoked:
+                  summary: Refresh token revoked
+                  value:
+                    code: REFRESH_TOKEN_REVOKED
+                    message: Refresh token has been revoked
+                    details: []
+                    correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "403":
+          description: Account banned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: USER_BANNED
+                message: Account is banned or pending approval
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "502":
+          description: Auth provider error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: AUTH_PROVIDER_ERROR
+                message: Authentication service unavailable
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+
   /api/auth/account/resend-confirmation:
     post:
       operationId: resendConfirmation
@@ -560,6 +647,32 @@ components:
         refreshToken:
           type: string
           description: Token used to obtain a new access token after expiry
+          example: v1.MjQ1NjM4...
+        expiresIn:
+          type: integer
+          format: int64
+          description: Access token lifetime in seconds
+          example: 3600
+
+    RefreshTokenRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+          description: The refresh token obtained from a previous signin response
+          example: v1.MjQ1NjM4...
+
+    RefreshResult:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: New JWT access token for authenticating subsequent API calls
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refreshToken:
+          type: string
+          description: Possibly-rotated refresh token — always store and use the latest value
           example: v1.MjQ1NjM4...
         expiresIn:
           type: integer

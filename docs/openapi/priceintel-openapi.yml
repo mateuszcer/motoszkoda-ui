@@ -1,0 +1,190 @@
+openapi: 3.0.3
+info:
+  title: MotoSzkoda Price Intelligence API
+  description: |
+    Price Intelligence endpoints for comparing repair quotes against market data.
+    Gives PRO drivers market context by showing typical price ranges for a city+category
+    bucket and flagging individual quotes as HIGH/LOW/NORMAL outliers.
+  version: 1.0.0
+
+paths:
+  /api/repair-requests/{id}/price-intel:
+    get:
+      operationId: getPriceIntel
+      summary: Get price intelligence for a repair request
+      description: |
+        Returns market price context for the given repair request. Requires PRO plan
+        entitlement (`priceIntelAccess`). FREE users receive `eligible: false`.
+        When eligible but insufficient market data exists, `typicalRange` and `quotes`
+        are omitted (Jackson `non_absent`).
+      tags:
+        - Price Intelligence
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Repair request UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Price intelligence result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceIntelResponse"
+              examples:
+                proUserWithData:
+                  summary: PRO user with sufficient market data
+                  value:
+                    eligible: true
+                    bucket:
+                      cityName: "Warszawa"
+                      categoryKey: "brakes"
+                    typicalRange:
+                      p25: 35000
+                      p75: 85000
+                      currency: "PLN"
+                    quotes:
+                      - priceMinMinor: 30000
+                        priceMaxMinor: 40000
+                        midpointMinor: 35000
+                        label: "NORMAL"
+                      - priceMinMinor: 120000
+                        priceMaxMinor: 150000
+                        midpointMinor: 135000
+                        label: "HIGH"
+                freeUser:
+                  summary: FREE user — not eligible
+                  value:
+                    eligible: false
+                    quotes: []
+                insufficientData:
+                  summary: PRO user, insufficient market data
+                  value:
+                    eligible: true
+                    bucket:
+                      cityName: "Kraków"
+                      categoryKey: "suspension"
+                    quotes: []
+        "403":
+          description: Caller is not the owner of the repair request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Repair request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    PriceIntelResponse:
+      type: object
+      required:
+        - eligible
+        - quotes
+      properties:
+        eligible:
+          type: boolean
+          description: Whether the user's plan includes price intelligence access
+        bucket:
+          $ref: "#/components/schemas/BucketInfo"
+        typicalRange:
+          $ref: "#/components/schemas/TypicalRange"
+        quotes:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuoteOutlier"
+
+    BucketInfo:
+      type: object
+      required:
+        - cityName
+        - categoryKey
+      properties:
+        cityName:
+          type: string
+          example: "Warszawa"
+        categoryKey:
+          type: string
+          example: "brakes"
+
+    TypicalRange:
+      type: object
+      required:
+        - p25
+        - p75
+        - currency
+      properties:
+        p25:
+          type: integer
+          format: int64
+          description: 25th percentile price in minor units
+          example: 35000
+        p75:
+          type: integer
+          format: int64
+          description: 75th percentile price in minor units
+          example: 85000
+        currency:
+          type: string
+          example: "PLN"
+
+    QuoteOutlier:
+      type: object
+      required:
+        - priceMinMinor
+        - priceMaxMinor
+        - midpointMinor
+        - label
+      properties:
+        priceMinMinor:
+          type: integer
+          format: int64
+          description: Minimum price in minor units
+        priceMaxMinor:
+          type: integer
+          format: int64
+          description: Maximum price in minor units
+        midpointMinor:
+          type: integer
+          format: int64
+          description: Midpoint of min/max in minor units
+        label:
+          type: string
+          enum:
+            - LOW
+            - NORMAL
+            - HIGH
+            - INSUFFICIENT_DATA
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+        correlationId:
+          type: string
+          format: uuid

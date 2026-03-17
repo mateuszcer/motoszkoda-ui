@@ -37,7 +37,7 @@ import { useRouting } from './hooks/useRouting'
 import { usePlan } from './hooks/usePlan'
 import { usePlanCatalog } from './hooks/usePlanCatalog'
 import { useShopPortal } from './hooks/useShopPortal'
-import { clearApiCache, setOnUnauthorized } from './services/apiClient'
+import { cancelProactiveRefresh, clearApiCache, setOnUnauthorized } from './services/apiClient'
 import { authApi } from './services/authApi'
 import { billingApi } from './services/billingApi'
 import { enrollmentApi } from './services/enrollmentApi'
@@ -140,6 +140,7 @@ function App() {
 
   const doLogout = useCallback(() => {
     const wasAdmin = auth.user?.role === 'ADMIN'
+    cancelProactiveRefresh()
     void authApi.logout()
     clearApiCache()
     setAuth({ user: null, token: null, isAuthenticated: false })
@@ -190,7 +191,7 @@ function App() {
   // Restore session on mount
   useEffect(() => {
     const restore = async () => {
-      const session = authApi.restoreSession()
+      const session = await authApi.restoreSession()
       if (session) {
         setAuth({
           user: session.user,

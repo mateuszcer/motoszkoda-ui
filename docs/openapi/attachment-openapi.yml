@@ -257,6 +257,9 @@ components:
           type: string
           format: uri
           description: Signed URL for direct file upload
+        contentType:
+          type: string
+          description: The Content-Type the upload URL was signed with. The PUT request must use this exact value.
 
     DownloadUrlResponse:
       type: object

@@ -1,6 +1,6 @@
 import type { SigninResponse, SignupResponse } from '../domain/apiTypes'
 import type { AuthApi, AuthResult, StoredSession, User } from '../domain/auth-types'
-import { api } from './apiClient'
+import { api, attemptTokenRefresh, cancelProactiveRefresh, scheduleProactiveRefresh } from './apiClient'
 
 const AUTH_STORAGE_KEY = 'autoceny_auth'
 
@@ -27,10 +27,12 @@ function signinToResult(res: SigninResponse): AuthResult {
 
   const session: StoredSession = {
     accessToken: res.accessToken,
+    refreshToken: res.refreshToken,
     expiresAt: Date.now() + res.expiresIn * 1000,
     user,
   }
   storeSession(session)
+  scheduleProactiveRefresh()
 
   return { user, token: res.accessToken }
 }
@@ -76,6 +78,7 @@ const authApiImpl: AuthApi = {
   },
 
   async logout(): Promise<void> {
+    cancelProactiveRefresh()
     clearSession()
     await Promise.resolve()
   },
@@ -101,17 +104,30 @@ const authApiImpl: AuthApi = {
     })
   },
 
-  restoreSession(): StoredSession | null {
+  async restoreSession(): Promise<StoredSession | null> {
     try {
       const raw = localStorage.getItem(AUTH_STORAGE_KEY)
       if (!raw) return null
 
       const session = JSON.parse(raw) as StoredSession
-      // If token expired, clear it
+
       if (session.expiresAt < Date.now()) {
+        // Token expired — try refreshing if we have a refresh token
+        if (session.refreshToken) {
+          const ok = await attemptTokenRefresh()
+          if (ok) {
+            const updatedRaw = localStorage.getItem(AUTH_STORAGE_KEY)
+            if (!updatedRaw) return null
+            const updated = JSON.parse(updatedRaw) as StoredSession
+            scheduleProactiveRefresh()
+            return updated
+          }
+        }
         clearSession()
         return null
       }
+
+      scheduleProactiveRefresh()
       return session
     } catch {
       clearSession()

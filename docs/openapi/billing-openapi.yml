@@ -192,13 +192,19 @@ components:
       properties:
         maxRepairRequestsPerDay:
           type: integer
-          example: 15
+          minimum: -1
+          description: "Maximum repair requests per day. -1 means unlimited."
+          example: -1
         maxOpenRepairRequests:
           type: integer
-          example: 5
+          minimum: -1
+          description: "Maximum concurrent open repair requests. -1 means unlimited."
+          example: -1
         maxQuestionsPerRepairRequest:
           type: integer
-          example: 20
+          minimum: -1
+          description: "Maximum questions per repair request. -1 means unlimited."
+          example: -1
 
     UserPlanInfo:
       type: object

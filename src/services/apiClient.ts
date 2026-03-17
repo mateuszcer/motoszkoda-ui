@@ -1,4 +1,5 @@
-import type { ApiErrorResponse } from '../domain/apiTypes'
+import type { ApiErrorResponse, RefreshTokenResponse } from '../domain/apiTypes'
+import type { StoredSession } from '../domain/auth-types'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
 const AUTH_STORAGE_KEY = 'autoceny_auth'
@@ -39,19 +40,120 @@ function getAccessToken(): string | null {
   }
 }
 
+// ── Refresh Token Orchestrator ──────────────────────────────────────
+
+let refreshPromise: Promise<boolean> | null = null
+
+async function doRefresh(): Promise<boolean> {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY)
+    if (!raw) return false
+
+    const session = JSON.parse(raw) as StoredSession
+    if (!session.refreshToken) return false
+
+    const response = await fetch(buildUrl('/api/auth/token/refresh'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: session.refreshToken }),
+    })
+
+    if (!response.ok) return false
+
+    const data = (await response.json()) as RefreshTokenResponse
+    const updated: StoredSession = {
+      ...session,
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      expiresAt: Date.now() + data.expiresIn * 1000,
+    }
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updated))
+    return true
+  } catch {
+    return false
+  }
+}
+
+export function attemptTokenRefresh(): Promise<boolean> {
+  if (!refreshPromise) {
+    refreshPromise = doRefresh().finally(() => {
+      refreshPromise = null
+    })
+  }
+  return refreshPromise
+}
+
+// ── Proactive Refresh Timer ─────────────────────────────────────────
+
+const PROACTIVE_REFRESH_BUFFER_MS = 60_000
+
+let proactiveTimer: ReturnType<typeof setTimeout> | null = null
+
+export function scheduleProactiveRefresh(): void {
+  cancelProactiveRefresh()
+
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY)
+    if (!raw) return
+
+    const session = JSON.parse(raw) as StoredSession
+    if (!session.refreshToken) return
+
+    const delay = session.expiresAt - Date.now() - PROACTIVE_REFRESH_BUFFER_MS
+    if (delay <= 0) {
+      // Already within the buffer — refresh immediately
+      void attemptTokenRefresh().then((ok) => {
+        if (ok) {
+          scheduleProactiveRefresh()
+        } else {
+          onUnauthorized?.()
+        }
+      })
+      return
+    }
+
+    proactiveTimer = setTimeout(() => {
+      void attemptTokenRefresh().then((ok) => {
+        if (ok) {
+          scheduleProactiveRefresh()
+        } else {
+          onUnauthorized?.()
+        }
+      })
+    }, delay)
+  } catch {
+    // corrupt session — ignore
+  }
+}
+
+export function cancelProactiveRefresh(): void {
+  if (proactiveTimer !== null) {
+    clearTimeout(proactiveTimer)
+    proactiveTimer = null
+  }
+}
+
+// ── Response handling ───────────────────────────────────────────────
+
+function parseErrorResponse(response: Response, body: ApiErrorResponse | undefined): ApiError {
+  const retryAfterRaw = response.headers.get('Retry-After')
+  const retryAfterSeconds = retryAfterRaw ? parseInt(retryAfterRaw, 10) : undefined
+
+  return new ApiError(
+    response.status,
+    body?.code ?? `HTTP_${response.status}`,
+    body?.details,
+    body?.correlationId,
+    Number.isFinite(retryAfterSeconds) ? retryAfterSeconds : undefined,
+  )
+}
+
 async function handleResponse<T>(response: Response): Promise<T> {
   if (response.status === 204) {
     return undefined as T
   }
 
   if (!response.ok) {
-    if (response.status === 401) {
-      onUnauthorized?.()
-    }
-
-    const retryAfterRaw = response.headers.get('Retry-After')
-    const retryAfterSeconds = retryAfterRaw ? parseInt(retryAfterRaw, 10) : undefined
-
     let body: ApiErrorResponse | undefined
     try {
       body = (await response.json()) as ApiErrorResponse
@@ -59,17 +161,13 @@ async function handleResponse<T>(response: Response): Promise<T> {
       // non-JSON error body
     }
 
-    throw new ApiError(
-      response.status,
-      body?.code ?? `HTTP_${response.status}`,
-      body?.details,
-      body?.correlationId,
-      Number.isFinite(retryAfterSeconds) ? retryAfterSeconds : undefined,
-    )
+    throw parseErrorResponse(response, body)
   }
 
   return (await response.json()) as T
 }
+
+// ── Request execution with retry-on-401 ─────────────────────────────
 
 interface RequestOptions {
   auth?: boolean
@@ -102,6 +200,43 @@ function buildHeaders(auth: boolean, hasBody: boolean): HeadersInit {
   }
   return headers
 }
+
+interface FetchArgs {
+  method: string
+  path: string
+  auth: boolean
+  body?: unknown
+  params?: Record<string, string | number | undefined>
+}
+
+async function executeRequest<T>(args: FetchArgs): Promise<T> {
+  const { method, path, auth, body, params } = args
+  const hasBody = body !== undefined
+
+  const response = await fetch(buildUrl(path, params), {
+    method,
+    headers: buildHeaders(auth, hasBody),
+    body: hasBody ? JSON.stringify(body) : undefined,
+  })
+
+  if (response.status === 401 && auth) {
+    const refreshed = await attemptTokenRefresh()
+    if (refreshed) {
+      // Retry once with new token
+      const retry = await fetch(buildUrl(path, params), {
+        method,
+        headers: buildHeaders(auth, hasBody),
+        body: hasBody ? JSON.stringify(body) : undefined,
+      })
+      return handleResponse<T>(retry)
+    }
+    onUnauthorized?.()
+  }
+
+  return handleResponse<T>(response)
+}
+
+// ── Cache ───────────────────────────────────────────────────────────
 
 interface CachedEntry<T> {
   data: T
@@ -157,49 +292,26 @@ export async function cachedGet<T>(
 export const api = {
   async get<T>(path: string, opts: RequestOptions = {}): Promise<T> {
     const { auth = true, params } = opts
-    const response = await fetch(buildUrl(path, params), {
-      method: 'GET',
-      headers: buildHeaders(auth, false),
-    })
-    return handleResponse<T>(response)
+    return executeRequest<T>({ method: 'GET', path, auth, params })
   },
 
   async post<T>(path: string, opts: RequestOptions = {}): Promise<T> {
     const { auth = true, body } = opts
-    const response = await fetch(buildUrl(path), {
-      method: 'POST',
-      headers: buildHeaders(auth, body !== undefined),
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    })
-    return handleResponse<T>(response)
+    return executeRequest<T>({ method: 'POST', path, auth, body })
   },
 
   async put<T>(path: string, opts: RequestOptions = {}): Promise<T> {
     const { auth = true, body } = opts
-    const response = await fetch(buildUrl(path), {
-      method: 'PUT',
-      headers: buildHeaders(auth, body !== undefined),
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    })
-    return handleResponse<T>(response)
+    return executeRequest<T>({ method: 'PUT', path, auth, body })
   },
 
   async patch<T>(path: string, opts: RequestOptions = {}): Promise<T> {
     const { auth = true, body } = opts
-    const response = await fetch(buildUrl(path), {
-      method: 'PATCH',
-      headers: buildHeaders(auth, body !== undefined),
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    })
-    return handleResponse<T>(response)
+    return executeRequest<T>({ method: 'PATCH', path, auth, body })
   },
 
   async delete<T>(path: string, opts: RequestOptions = {}): Promise<T> {
     const { auth = true } = opts
-    const response = await fetch(buildUrl(path), {
-      method: 'DELETE',
-      headers: buildHeaders(auth, false),
-    })
-    return handleResponse<T>(response)
+    return executeRequest<T>({ method: 'DELETE', path, auth })
   },
 }

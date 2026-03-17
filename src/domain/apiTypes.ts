@@ -387,6 +387,14 @@ export interface PortalResponse {
   portalUrl: string
 }
 
+// ── Token Refresh ───────────────────────────────────────────────────
+
+export interface RefreshTokenResponse {
+  accessToken: string
+  refreshToken: string
+  expiresIn: number
+}
+
 // ── Common Error ─────────────────────────────────────────────────────
 
 export interface ApiErrorResponse {
