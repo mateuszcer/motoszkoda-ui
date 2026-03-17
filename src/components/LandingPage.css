@@ -177,12 +177,12 @@
 }
 
 .lp-nav__logo {
-  width: 34px;
+  width: 38px;
   height: auto;
 }
 
 .lp-nav__brand-name {
-  font: 600 22px/1 var(--lp-font-brand);
+  font: 700 26px/1 var(--lp-font-brand);
   color: var(--teal-900);
 }
 
@@ -2232,12 +2232,12 @@
 }
 
 .lp-footer__logo {
-  width: 26px;
+  width: 30px;
   height: auto;
 }
 
 .lp-footer__brand-name {
-  font: 600 17px/1 var(--lp-font-brand);
+  font: 700 20px/1 var(--lp-font-brand);
   color: rgba(255, 255, 255, 0.6);
 }
 
