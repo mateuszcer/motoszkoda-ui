@@ -27,7 +27,6 @@ function signinToResult(res: SigninResponse): AuthResult {
 
   const session: StoredSession = {
     accessToken: res.accessToken,
-    refreshToken: res.refreshToken,
     expiresAt: Date.now() + res.expiresIn * 1000,
     user,
   }

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { EnrollmentStatus } from '../domain/types'
 import { ApiError } from '../services/apiClient'
 import { enrollmentApi } from '../services/enrollmentApi'
+import { assertSafeRedirectUrl } from '../utils/validation'
 
 interface ShopPlanViewProps {
   enrollmentStatus: EnrollmentStatus
@@ -34,6 +35,7 @@ export function ShopPlanView({ enrollmentStatus, cancelAt, onBack }: ShopPlanVie
     setPortalError(null)
     try {
       const { portalUrl } = await enrollmentApi.portal()
+      assertSafeRedirectUrl(portalUrl)
       window.location.href = portalUrl
     } catch {
       setPortalError(t('shopPlan.portalError'))

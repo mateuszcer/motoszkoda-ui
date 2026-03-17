@@ -32,7 +32,6 @@ export interface RegisterPayload {
 
 export interface StoredSession {
   accessToken: string
-  refreshToken: string
   expiresAt: number // epoch ms
   user: User
 }

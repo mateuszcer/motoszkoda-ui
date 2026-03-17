@@ -5,6 +5,8 @@ import {
   isValidNip,
   isValidE164Phone,
   isValidPolishPostalCode,
+  isWeakPassword,
+  assertSafeRedirectUrl,
   validateYear,
 } from './validation'
 
@@ -102,6 +104,50 @@ describe('isValidPolishPostalCode', () => {
 
   it('rejects wrong format', () => {
     expect(isValidPolishPostalCode('000-01')).toBe(false)
+  })
+})
+
+describe('isWeakPassword', () => {
+  it('rejects passwords shorter than 8 characters', () => {
+    expect(isWeakPassword('Abc1234')).toBe(true)
+  })
+
+  it('rejects passwords without uppercase', () => {
+    expect(isWeakPassword('abcdefg1')).toBe(true)
+  })
+
+  it('rejects passwords without lowercase', () => {
+    expect(isWeakPassword('ABCDEFG1')).toBe(true)
+  })
+
+  it('rejects passwords without digits', () => {
+    expect(isWeakPassword('Abcdefgh')).toBe(true)
+  })
+
+  it('accepts strong password', () => {
+    expect(isWeakPassword('Abcdefg1')).toBe(false)
+  })
+
+  it('accepts complex password', () => {
+    expect(isWeakPassword('MyP@ssw0rd!')).toBe(false)
+  })
+})
+
+describe('assertSafeRedirectUrl', () => {
+  it('allows checkout.stripe.com', () => {
+    expect(() => assertSafeRedirectUrl('https://checkout.stripe.com/session/abc')).not.toThrow()
+  })
+
+  it('allows billing.stripe.com', () => {
+    expect(() => assertSafeRedirectUrl('https://billing.stripe.com/portal/abc')).not.toThrow()
+  })
+
+  it('blocks unknown hosts', () => {
+    expect(() => assertSafeRedirectUrl('https://evil.com/phish')).toThrow('Redirect blocked')
+  })
+
+  it('blocks subdomain spoofing', () => {
+    expect(() => assertSafeRedirectUrl('https://checkout.stripe.com.evil.com/x')).toThrow('Redirect blocked')
   })
 })
 

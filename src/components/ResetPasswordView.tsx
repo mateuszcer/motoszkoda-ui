@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getApiErrorMessage } from '../utils/apiErrors'
+import { isWeakPassword } from '../utils/validation'
 
 interface ResetPasswordViewProps {
   accessToken: string
@@ -20,8 +21,8 @@ export function ResetPasswordView({ accessToken, onSubmit, onGoToLogin }: ResetP
     e.preventDefault()
     setError(null)
 
-    if (password.length < 6) {
-      setError(t('auth.passwordMinLength'))
+    if (isWeakPassword(password)) {
+      setError(t('auth.passwordRequirements'))
       return
     }
     if (password !== confirmPassword) {

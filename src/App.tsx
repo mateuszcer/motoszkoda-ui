@@ -37,7 +37,7 @@ import { useRouting } from './hooks/useRouting'
 import { usePlan } from './hooks/usePlan'
 import { usePlanCatalog } from './hooks/usePlanCatalog'
 import { useShopPortal } from './hooks/useShopPortal'
-import { setOnUnauthorized } from './services/apiClient'
+import { clearApiCache, setOnUnauthorized } from './services/apiClient'
 import { authApi } from './services/authApi'
 import { billingApi } from './services/billingApi'
 import { enrollmentApi } from './services/enrollmentApi'
@@ -45,6 +45,7 @@ import * as localPrefs from './services/localPreferences'
 import { fetchNotifications } from './services/notificationsApi'
 import { uploadAttachments } from './services/attachmentApi'
 import { repairRequestApi } from './services/repairRequestApi'
+import { assertSafeRedirectUrl } from './utils/validation'
 
 // Lazy-loaded route components
 const LandingPage = lazy(() => import('./components/LandingPage').then((m) => ({ default: m.LandingPage })))
@@ -117,10 +118,16 @@ function App() {
 
   const lastNotificationTime = useRef<string | undefined>(undefined)
 
-  // Read reset-password token once, not on every render
+  // Read reset-password token once, then strip it from the URL to prevent leakage via Referer headers / browser history
   const resetToken = useMemo(() => {
     if (screen !== 'reset-password') return ''
-    return new URLSearchParams(window.location.search).get('token') ?? ''
+    const token = new URLSearchParams(window.location.search).get('token') ?? ''
+    if (token) {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('token')
+      window.history.replaceState(null, '', url.pathname + url.hash)
+    }
+    return token
   }, [screen])
 
   const selectedRequest = useMemo(() => {
@@ -134,6 +141,7 @@ function App() {
   const doLogout = useCallback(() => {
     const wasAdmin = auth.user?.role === 'ADMIN'
     void authApi.logout()
+    clearApiCache()
     setAuth({ user: null, token: null, isAuthenticated: false })
     setEnrollmentStatus(null)
     setEnrollmentCancelAt(null)
@@ -631,6 +639,7 @@ function App() {
     setUpgradeLoading(true)
     try {
       const { checkoutUrl } = await billingApi.upgrade(billingInterval)
+      assertSafeRedirectUrl(checkoutUrl)
       window.location.href = checkoutUrl
     } catch {
       setUpgradeLoading(false)
@@ -640,6 +649,7 @@ function App() {
   const handleManageSubscription = async () => {
     try {
       const { portalUrl } = await billingApi.portal()
+      assertSafeRedirectUrl(portalUrl)
       window.location.href = portalUrl
     } catch {
       // silently ignore

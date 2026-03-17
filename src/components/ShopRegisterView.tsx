@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import type { ShopRegistrationRequest } from '../domain/apiTypes'
 import { useAddressAutocomplete } from '../hooks/useAddressAutocomplete'
 import { getApiErrorMessage } from '../utils/apiErrors'
-import { isValidE164Phone, isValidNip, isValidPolishPostalCode } from '../utils/validation'
+import { isValidE164Phone, isValidNip, isValidPolishPostalCode, isWeakPassword } from '../utils/validation'
 import { PhoneInput } from './PhoneInput'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
@@ -89,7 +89,7 @@ export function ShopRegisterView({ onRegister, onSwitchToLogin }: ShopRegisterVi
     const errs: Record<string, string> = {}
     if (!email.trim()) errs.email = t('shopRegister.emailRequired')
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errs.email = t('shopRegister.emailInvalid')
-    if (password.length < 6) errs.password = t('shopRegister.passwordMinLength')
+    if (isWeakPassword(password)) errs.password = t('shopRegister.passwordRequirements')
     if (password !== confirmPassword) errs.confirmPassword = t('shopRegister.passwordMismatch')
     setErrors(errs)
     return Object.keys(errs).length === 0

@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getApiErrorMessage } from '../utils/apiErrors'
+import { isWeakPassword } from '../utils/validation'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
@@ -37,8 +38,8 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
       setError(t('auth.emailInvalid'))
       return
     }
-    if (password.length < 6) {
-      setError(t('auth.passwordMinLength'))
+    if (isWeakPassword(password)) {
+      setError(t('auth.passwordRequirements'))
       return
     }
     if (password !== confirmPassword) {

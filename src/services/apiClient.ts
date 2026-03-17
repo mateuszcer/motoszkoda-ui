@@ -110,6 +110,19 @@ interface CachedEntry<T> {
 
 const CACHE_PREFIX = 'autoceny_cache_'
 
+export function clearApiCache(): void {
+  const keys: string[] = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key?.startsWith(CACHE_PREFIX)) {
+      keys.push(key)
+    }
+  }
+  for (const key of keys) {
+    localStorage.removeItem(key)
+  }
+}
+
 export async function cachedGet<T>(
   path: string,
   opts: RequestOptions & { ttlMs: number; cacheKey: string },

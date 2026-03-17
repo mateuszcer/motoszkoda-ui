@@ -27,6 +27,23 @@ export const isValidPolishPostalCode = (code: string): boolean => {
   return /^\d{2}-\d{3}$/.test(code)
 }
 
+export function isWeakPassword(password: string): boolean {
+  if (password.length < 8) return true
+  if (!/[a-z]/.test(password)) return true
+  if (!/[A-Z]/.test(password)) return true
+  if (!/\d/.test(password)) return true
+  return false
+}
+
+const ALLOWED_REDIRECT_HOSTS = ['checkout.stripe.com', 'billing.stripe.com']
+
+export function assertSafeRedirectUrl(url: string): void {
+  const parsed = new URL(url)
+  if (!ALLOWED_REDIRECT_HOSTS.includes(parsed.hostname)) {
+    throw new Error(`Redirect blocked: untrusted host "${parsed.hostname}"`)
+  }
+}
+
 export const validateYear = (yearValue: number): string | null => {
   if (!Number.isInteger(yearValue)) {
     return 'validation.yearNotInteger'
