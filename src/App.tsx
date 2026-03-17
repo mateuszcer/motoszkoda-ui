@@ -595,7 +595,7 @@ function App() {
   if (!auth.isAuthenticated && screen === 'admin-login') {
     return (
       <main className="app-shell admin-shell">
-        <AppHeader brandMarkClass="admin-brand-mark" />
+        <AppHeader />
         <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
           <AdminLoginView onLogin={handleAdminLogin} />
         </Suspense>
@@ -680,7 +680,7 @@ function App() {
   if (isAdmin) {
     return (
       <main className="app-shell admin-shell">
-        <AppHeader brandMarkClass="admin-brand-mark" />
+        <AppHeader />
         <ErrorBoundary>
           <AdminVouchersView onLogout={doLogout} />
         </ErrorBoundary>

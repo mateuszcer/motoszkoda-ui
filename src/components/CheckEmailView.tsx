@@ -33,7 +33,7 @@ export function CheckEmailView({ email, onGoToLogin, onResendConfirmation }: Che
       <div className="auth-card u-text-center">
         <div className="auth-brand">
           <div className="brand-mark">
-            <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
+            <img src="/brand/white-logo.svg" alt="" className="brand-mark-logo" />
           </div>
           <h2>{t('checkEmail.title')}</h2>
           <p>{t('checkEmail.message', { email })}</p>

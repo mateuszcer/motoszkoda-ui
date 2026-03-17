@@ -1,6 +1,5 @@
 import { Turnstile } from '@marsidev/react-turnstile'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
-import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getApiErrorMessage } from '../utils/apiErrors'
@@ -16,7 +15,6 @@ interface LoginViewProps {
   onSwitchToShopRegister: () => void
   onForgotPassword?: () => void
   initialMode?: LoginMode
-  brandMark?: ReactNode
 }
 
 export function LoginView({
@@ -26,7 +24,6 @@ export function LoginView({
   onSwitchToShopRegister,
   onForgotPassword,
   initialMode = 'driver',
-  brandMark,
 }: LoginViewProps) {
   const { t } = useTranslation()
   const [mode, setMode] = useState<LoginMode>(initialMode)
@@ -133,9 +130,6 @@ export function LoginView({
         </div>
 
         <div className="auth-brand">
-          <div className="brand-mark">
-            {brandMark ?? <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />}
-          </div>
           <h2>{t(titleKey as 'auth.loginTitle')}</h2>
           <p>{t(subtitleKey as 'auth.loginSubtitle')}</p>
         </div>

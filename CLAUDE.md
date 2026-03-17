@@ -10,7 +10,7 @@ Stack: React 19 + Vite 7 + TypeScript 5.9, pure CSS, i18next (PL/EN), deployed o
 **Always read `design-guidelines.md` before making any UI or styling changes.**
 It defines the complete design system: colors, typography, spacing, components, shadows, radii, motion, dark mode, and accessibility rules. Key rules:
 
-- One accent color only: mint `#6ECFAB` (`--mint-500`)
+- One accent color only: brand teal `#007C7C` (`--mint-500`)
 - Albert Sans for landing page headlines ONLY — never in app UI
 - DM Sans for ALL app UI text and landing body/buttons
 - No italic anywhere. No uppercase on buttons/headings (only overline labels)

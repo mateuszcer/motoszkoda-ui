@@ -1,7 +1,7 @@
 /* ==========================================================
    LANDING PAGE — Autoceny
-   Pixel-perfect match to reference v3
-   Josefin Sans 600 + DM Sans · Mint #6ECFAB · Dark teal #1B3533
+   Pixel-perfect match to reference v4
+   Albert Sans 600 + DM Sans · Brand #007C7C · Dark teal
    ========================================================== */
 
 /* ── Tokens ─────────────────────────────────────────────── */
@@ -11,17 +11,17 @@
   --lp-font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --lp-font-brand: 'Sora', 'DM Sans', system-ui, sans-serif;
 
-  --mint: #34d399;
-  --mint-light: #5ddcad;
-  --mint-dark: #27b77f;
-  --mint-subtle: #edfcf5;
-  --mint-head: #6ee7b7;
+  --mint: #007c7c;
+  --mint-light: #2a9e9e;
+  --mint-dark: #006363;
+  --mint-subtle: #e6f5f5;
+  --mint-head: #5cbfbf;
 
   --teal-900: #070707;
-  --teal-800: #0a2e2e;
-  --teal-700: #0c4e4e;
-  --teal-600: #0e7878;
-  --teal-500: #0fa3a3;
+  --teal-800: #003d3d;
+  --teal-700: #007c7c;
+  --teal-600: #009e9e;
+  --teal-500: #0fbfbf;
 
   --n900: #1e2024;
   --n700: #475569;
@@ -176,13 +176,9 @@
   gap: 10px;
 }
 
-.lp-nav__brand .brand-mark {
+.lp-nav__logo {
   width: 34px;
-  height: 34px;
-  background: var(--teal-700);
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
+  height: auto;
 }
 
 .lp-nav__brand-name {
@@ -722,7 +718,7 @@
   border-radius: 12px;
   padding: 14px;
   margin-bottom: 10px;
-  border-left: 3px solid #34d399;
+  border-left: 3px solid var(--mint);
 }
 .lp-app__order-top {
   display: flex;
@@ -910,7 +906,7 @@
 .lp-float-card__fill {
   height: 100%;
   width: 65%;
-  background: #34d399;
+  background: var(--mint);
   border-radius: 2px;
 }
 .lp-float-card__sub {
@@ -2235,13 +2231,9 @@
   gap: 8px;
 }
 
-.lp-footer__brand .brand-mark {
+.lp-footer__logo {
   width: 26px;
-  height: 26px;
-  background: var(--teal-700);
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
+  height: auto;
 }
 
 .lp-footer__brand-name {

@@ -2,22 +2,22 @@
    DESIGN TOKENS
    ============================================================ */
 :root {
-  /* Mint accent — #34D399 base */
-  --mint-700: #1a9b6b;
-  --mint-600: #27b77f;
-  --mint-500: #34d399;
-  --mint-400: #5ddcad;
-  --mint-300: #86e5c2;
-  --mint-200: #b8f0db;
-  --mint-100: #dcf8ed;
-  --mint-50: #edfcf5;
+  /* Mint accent — #007C7C base */
+  --mint-700: #004d4d;
+  --mint-600: #006363;
+  --mint-500: #007c7c;
+  --mint-400: #2a9e9e;
+  --mint-300: #5cbfbf;
+  --mint-200: #99d9d9;
+  --mint-100: #ccecec;
+  --mint-50: #e6f5f5;
 
-  /* Teal darks — #0FA3A3 base */
+  /* Teal darks — #007C7C base */
   --teal-900: #070707;
-  --teal-800: #0a2e2e;
-  --teal-700: #0c4e4e;
-  --teal-600: #0e7878;
-  --teal-500: #0fa3a3;
+  --teal-800: #003d3d;
+  --teal-700: #007c7c;
+  --teal-600: #009e9e;
+  --teal-500: #0fbfbf;
 
   /* Neutrals — cool slate */
   --neutral-950: #070707;
@@ -127,9 +127,9 @@
   --white: #080c12;
 
   /* Mint — darken light tints */
-  --mint-50: #0a1f17;
-  --mint-100: #0e2b1f;
-  --mint-200: #143d2c;
+  --mint-50: #0a1a1a;
+  --mint-100: #0e2626;
+  --mint-200: #143838;
 
   /* Semantic — darken light tints */
   --success-50: #0e1f1a;
@@ -232,24 +232,21 @@
   gap: var(--space-2);
 }
 
-.app-header .brand-mark {
+.app-header__logo {
+  display: block;
   width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--teal-700);
-  display: grid;
-  place-items: center;
+  height: auto;
   flex-shrink: 0;
   transition: transform var(--duration-normal) var(--ease-out);
 }
 
 .brand-mark-logo {
   display: block;
-  width: 60%;
+  width: 72%;
   height: auto;
 }
 
-.app-header .brand:hover .brand-mark {
+.app-header .brand:hover .app-header__logo {
   transform: scale(1.08) rotate(-3deg);
 }
 

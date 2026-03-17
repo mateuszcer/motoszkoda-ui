@@ -104,9 +104,7 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
       <nav className={`lp-nav ${navSolid ? 'lp-nav--solid' : ''}`}>
         <div className="lp-nav__inner">
           <div className="lp-nav__brand">
-            <div className="brand-mark">
-              <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
-            </div>
+            <img src="/brand/main-logo.svg" alt="" className="lp-nav__logo" />
             <span className="lp-nav__brand-name">autoceny</span>
           </div>
 
@@ -577,9 +575,7 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
       <footer className="lp-footer">
         <div className="lp-footer__inner">
           <div className="lp-footer__brand">
-            <div className="brand-mark">
-              <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
-            </div>
+            <img src="/brand/white-logo.svg" alt="" className="lp-footer__logo" />
             <span className="lp-footer__brand-name">autoceny</span>
           </div>
           <ul className="lp-footer__links">

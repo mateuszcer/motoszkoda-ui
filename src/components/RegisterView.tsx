@@ -1,6 +1,5 @@
 import { Turnstile } from '@marsidev/react-turnstile'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
-import type { ReactNode } from 'react'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getApiErrorMessage } from '../utils/apiErrors'
@@ -13,10 +12,9 @@ interface RegisterViewProps {
   onSwitchToLogin: () => void
   titleKey?: string
   subtitleKey?: string
-  brandMark?: ReactNode
 }
 
-export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKey, brandMark }: RegisterViewProps) {
+export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKey }: RegisterViewProps) {
   const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -67,9 +65,6 @@ export function RegisterView({ onRegister, onSwitchToLogin, titleKey, subtitleKe
     <section className="auth-screen">
       <form className="auth-card" onSubmit={(e) => void handleSubmit(e)}>
         <div className="auth-brand">
-          <div className="brand-mark">
-            {brandMark ?? <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />}
-          </div>
           <h2>{titleKey ? t(titleKey as 'auth.registerTitle') : t('auth.registerTitle')}</h2>
           <p>{subtitleKey ? t(subtitleKey as 'auth.registerSubtitle') : t('auth.registerSubtitle')}</p>
         </div>

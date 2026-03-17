@@ -145,7 +145,7 @@ export function ShopEnrollView({
       <div className="auth-card enroll-card">
         <div className="auth-brand">
           <div className="brand-mark">
-            <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
+            <img src="/brand/white-logo.svg" alt="" className="brand-mark-logo" />
           </div>
           <h2>{t('shopEnroll.title')}</h2>
         </div>

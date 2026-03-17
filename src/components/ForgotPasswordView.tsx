@@ -56,7 +56,7 @@ export function ForgotPasswordView({ onSubmit, onBackToLogin }: ForgotPasswordVi
         <div className="auth-card u-text-center">
           <div className="auth-brand">
             <div className="brand-mark">
-              <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
+              <img src="/brand/white-logo.svg" alt="" className="brand-mark-logo" />
             </div>
             <h2>{t('auth.forgotPasswordSentTitle')}</h2>
             <p>{t('auth.forgotPasswordSentMessage', { email })}</p>
@@ -75,7 +75,7 @@ export function ForgotPasswordView({ onSubmit, onBackToLogin }: ForgotPasswordVi
       <form className="auth-card" onSubmit={(e) => void handleSubmit(e)}>
         <div className="auth-brand">
           <div className="brand-mark">
-            <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
+            <img src="/brand/white-logo.svg" alt="" className="brand-mark-logo" />
           </div>
           <h2>{t('auth.forgotPasswordTitle')}</h2>
           <p>{t('auth.forgotPasswordSubtitle')}</p>

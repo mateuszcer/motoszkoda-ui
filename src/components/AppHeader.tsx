@@ -20,25 +20,24 @@ function LanguageToggle() {
 
 interface AppHeaderProps {
   brandMark?: ReactNode
-  brandMarkClass?: string
   onBrandClick?: () => void
   navSlot?: ReactNode
 }
 
-const defaultBrandMark = <img src="/logo/logomark-whitee.svg" alt="" className="brand-mark-logo" />
+const defaultBrandMark = <img src="/brand/white-logo.svg" alt="" className="app-header__logo" />
 
-export const AppHeader = memo(function AppHeader({ brandMark, brandMarkClass, onBrandClick, navSlot }: AppHeaderProps) {
+export const AppHeader = memo(function AppHeader({ brandMark, onBrandClick, navSlot }: AppHeaderProps) {
   const mark = brandMark ?? defaultBrandMark
   return (
     <header className="app-header">
       {onBrandClick ? (
         <button className="brand brand-btn" onClick={onBrandClick} type="button">
-          <div className={`brand-mark${brandMarkClass ? ` ${brandMarkClass}` : ''}`}>{mark}</div>
+          {mark}
           <h1>Autoceny</h1>
         </button>
       ) : (
         <div className="brand">
-          <div className={`brand-mark${brandMarkClass ? ` ${brandMarkClass}` : ''}`}>{mark}</div>
+          {mark}
           <h1>Autoceny</h1>
         </div>
       )}
