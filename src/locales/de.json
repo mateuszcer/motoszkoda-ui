@@ -69,7 +69,9 @@
     "activeRequests": "Aktive Anfragen",
     "updated": "Aktualisiert {{date}}",
     "quoteCount_one": "{{count}} Angebot",
-    "quoteCount_other": "{{count}} Angebote"
+    "quoteCount_other": "{{count}} Angebote",
+    "questionCount_one": "{{count}} Frage",
+    "questionCount_other": "{{count}} Fragen"
   },
 
   "myRequests": {

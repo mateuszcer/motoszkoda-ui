@@ -93,6 +93,7 @@ export const HomeView = memo(function HomeView({
         <div className="cards-stack">
           {filteredRequests.map((request) => {
             const quoteCount = request.shopQuotes.filter((s) => s.state === 'quote_sent').length
+            const questionCount = request.shopQuotes.filter((s) => s.state === 'question_sent').length
             return (
               <article
                 className="request-card"
@@ -115,6 +116,9 @@ export const HomeView = memo(function HomeView({
                   <span className={`pill pill-${request.status}`}>{t(`status.${request.status}`)}</span>
                   {quoteCount > 0 ? (
                     <span className="meta-item">{t('home.quoteCount', { count: quoteCount })}</span>
+                  ) : null}
+                  {questionCount > 0 ? (
+                    <span className="pill pill-alert">{t('home.questionCount', { count: questionCount })}</span>
                   ) : null}
                 </div>
               </article>

@@ -2088,14 +2088,14 @@ label small {
 }
 
 /* Asymmetric border-radius for message bubbles */
-.thread-message-driver {
+.thread-message-self {
   justify-self: end;
   background: var(--mint-50);
   border: 1px solid var(--mint-100);
   border-radius: var(--radius-md) var(--radius-md) 4px var(--radius-md);
 }
 
-.thread-message-shop {
+.thread-message-other {
   justify-self: start;
   background: var(--neutral-100);
   border: 1px solid var(--neutral-200);

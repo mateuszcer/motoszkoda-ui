@@ -22,7 +22,7 @@ const nextId = (prefix: string): string => {
 }
 
 const createMessage = (
-  author: 'driver' | 'shop',
+  author: 'self' | 'other',
   text: string,
   sentAt: string,
   attachments: Attachment[] = [],
@@ -128,13 +128,13 @@ export const initialMockRequests: RepairRequest[] = [
     threads: {
       shop_3: t('shop_3', 'Hamulce Premium', 1, [
         createMessage(
-          'shop',
+          'other',
           'Czy może Pan przesłać zdjęcie tarcz hamulcowych? Pomoże nam to ocenić, czy konieczna jest wymiana.',
           minutesAgo(7),
         ),
       ]),
       shop_4: t('shop_4', 'FixPoint Auto', 0, [
-        createMessage('shop', 'Możemy umówić wizytę na jutro rano. Proszę dać znać, czy to odpowiada.', minutesAgo(5)),
+        createMessage('other', 'Możemy umówić wizytę na jutro rano. Proszę dać znać, czy to odpowiada.', minutesAgo(5)),
       ]),
     },
   },
@@ -177,8 +177,8 @@ export const initialMockRequests: RepairRequest[] = [
     ],
     threads: {
       shop_8: t('shop_8', 'Klimat Serwis', 0, [
-        createMessage('shop', 'Czy może Pan potwierdzić, kiedy zaczął się problem?', minutesAgo(520)),
-        createMessage('driver', 'Zaczęło się w zeszłym tygodniu.', minutesAgo(500)),
+        createMessage('other', 'Czy może Pan potwierdzić, kiedy zaczął się problem?', minutesAgo(520)),
+        createMessage('self', 'Zaczęło się w zeszłym tygodniu.', minutesAgo(500)),
       ]),
     },
   },
@@ -216,7 +216,7 @@ export const createRequestFromPayload = (payload: CreateRepairRequestPayload): R
 
 export const createDriverMessage = (text: string, attachments: Attachment[]): ThreadMessage => ({
   id: nextId('msg'),
-  author: 'driver',
+  author: 'self',
   text,
   attachments,
   sentAt: new Date().toISOString(),
@@ -224,7 +224,7 @@ export const createDriverMessage = (text: string, attachments: Attachment[]): Th
 
 export const createShopMessage = (text: string): ThreadMessage => ({
   id: nextId('msg'),
-  author: 'shop',
+  author: 'other',
   text,
   attachments: [],
   sentAt: new Date().toISOString(),

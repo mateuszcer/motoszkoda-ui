@@ -156,7 +156,7 @@ export function RepairRequestDetail({
       if (shop.state !== 'question_sent') return false
       const thread = request.threads[shop.shopId]
       if (!thread || thread.messages.length === 0) return true
-      return thread.messages[thread.messages.length - 1].author === 'shop'
+      return thread.messages[thread.messages.length - 1].author === 'other'
     }).length
   }, [request.shopQuotes, request.threads])
 
@@ -168,7 +168,7 @@ export function RepairRequestDetail({
         const lastMessage = thread?.messages[thread.messages.length - 1]
         const needsReply =
           shop.state === 'question_sent' &&
-          (!thread || thread.messages.length === 0 || thread.messages[thread.messages.length - 1].author === 'shop')
+          (!thread || thread.messages.length === 0 || thread.messages[thread.messages.length - 1].author === 'other')
         return {
           shop,
           unreadCount: thread?.unreadCount ?? 0,

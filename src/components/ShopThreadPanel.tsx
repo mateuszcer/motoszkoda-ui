@@ -63,7 +63,7 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
     }
   }
 
-  const hasNeedsAnswer = thread.messages.length > 0 && thread.messages[thread.messages.length - 1].author === 'shop'
+  const hasNeedsAnswer = thread.messages.length > 0 && thread.messages[thread.messages.length - 1].author === 'other'
 
   return (
     <aside className="thread-panel-backdrop" role="presentation" onClick={onClose}>

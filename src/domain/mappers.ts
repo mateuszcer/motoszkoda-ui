@@ -142,7 +142,7 @@ export function mapCompareToShopQuote(cv: CompareViewResponse, interested: boole
 export function mapMessage(msg: MessageResponse, currentUserId: string): ThreadMessage {
   return {
     id: msg.id,
-    author: msg.senderId === currentUserId ? 'driver' : 'shop',
+    author: msg.senderId === currentUserId ? 'self' : 'other',
     text: msg.content,
     sentAt: msg.createdAt,
     attachments: [],

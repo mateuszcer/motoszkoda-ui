@@ -34,7 +34,7 @@ export type SortQuotesBy = 'newest' | 'cheapest' | 'closest'
 
 export type AttachmentKind = 'image' | 'video' | 'document'
 
-export type MessageAuthor = 'driver' | 'shop'
+export type MessageAuthor = 'self' | 'other'
 
 export interface Attachment {
   id: string

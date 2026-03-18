@@ -81,7 +81,7 @@ export function usePlan(isAuthenticated: boolean, isDriver: boolean, freeEntitle
       if (isUnlimited(freeEntitlements.maxQuestionsPerRepairRequest)) return false
       const thread = request.threads[shopId]
       if (!thread) return false
-      const driverMessages = thread.messages.filter((m) => m.author === 'driver').length
+      const driverMessages = thread.messages.filter((m) => m.author === 'self').length
       return driverMessages >= freeEntitlements.maxQuestionsPerRepairRequest
     },
     [isFree, freeEntitlements.maxQuestionsPerRepairRequest],

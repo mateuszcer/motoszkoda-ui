@@ -70,7 +70,10 @@
     "updated": "Zaktualizowano {{date}}",
     "quoteCount_one": "{{count}} wycena",
     "quoteCount_few": "{{count}} wyceny",
-    "quoteCount_many": "{{count}} wycen"
+    "quoteCount_many": "{{count}} wycen",
+    "questionCount_one": "{{count}} pytanie",
+    "questionCount_few": "{{count}} pytania",
+    "questionCount_many": "{{count}} pytań"
   },
 
   "myRequests": {

@@ -69,7 +69,9 @@
     "activeRequests": "Active Requests",
     "updated": "Updated {{date}}",
     "quoteCount_one": "{{count}} quote",
-    "quoteCount_other": "{{count}} quotes"
+    "quoteCount_other": "{{count}} quotes",
+    "questionCount_one": "{{count}} question",
+    "questionCount_other": "{{count}} questions"
   },
 
   "myRequests": {
