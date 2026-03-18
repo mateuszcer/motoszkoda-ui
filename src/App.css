@@ -2155,8 +2155,10 @@ label small {
 .auth-screen {
   display: grid;
   place-items: center;
-  min-height: 100vh;
+  min-height: calc(100vh - var(--nav-height) - var(--space-5));
   padding: var(--space-4);
+  align-content: start;
+  padding-top: var(--space-8);
 }
 
 .auth-card {
@@ -2507,6 +2509,7 @@ label small {
 
   .auth-screen {
     padding: 0;
+    padding-top: var(--space-4);
   }
 
   .shop-action-bar {

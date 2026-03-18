@@ -96,6 +96,73 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /api/parts/compatible:
+    get:
+      operationId: getCompatibleParts
+      summary: Get TecDoc-compatible parts for a vehicle and assembly group
+      description: |
+        Returns compatible parts from TecDoc catalog (article number, brand, description) for a given
+        VIN and assembly group. No wholesaler pricing — just catalog data.
+
+        Intended flow:
+        1. GET /api/parts/groups?vin=... → assembly group tree
+        2. User picks a group
+        3. GET /api/parts/compatible?vin=...&groupId=... → compatible TecDoc articles
+      tags: [Parts Search]
+      security:
+        - bearerAuth: [ROLE_SHOP_USER]
+      parameters:
+        - name: vin
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 17
+            maxLength: 17
+          description: Vehicle Identification Number (exactly 17 characters)
+          example: WAUZZZ8K5BA012345
+        - name: groupId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: TecDoc assembly group ID (from GET /api/parts/groups)
+          example: "1001"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 200
+          description: Max number of results to return (capped at 200)
+      responses:
+        "200":
+          description: Compatible parts from TecDoc catalog
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompatiblePartsResponse"
+        "400":
+          description: Invalid VIN or missing groupId
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Not SHOP_USER role, or shop not enrolled / suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /api/parts/groups:
     get:
       operationId: getAssemblyGroups
@@ -296,6 +363,44 @@ components:
           type: string
           description: Parent group ID (null for top-level groups)
           example: "1000"
+
+    CompatiblePartsResponse:
+      type: object
+      required: [vin, vehicle, assemblyGroupId, parts, totalBeforeLimit]
+      properties:
+        vin:
+          type: string
+        vehicle:
+          $ref: "#/components/schemas/VehicleResponse"
+        assemblyGroupId:
+          type: string
+          description: The assembly group ID that was queried
+          example: "1001"
+        parts:
+          type: array
+          items:
+            $ref: "#/components/schemas/CompatiblePartResponse"
+        totalBeforeLimit:
+          type: integer
+          description: Total number of unique parts before limit was applied (for pagination awareness)
+          example: 42
+
+    CompatiblePartResponse:
+      type: object
+      required: [articleNumber, brandName, articleName]
+      properties:
+        articleNumber:
+          type: string
+          description: TecDoc article number
+          example: P 85 020
+        brandName:
+          type: string
+          description: Manufacturer / brand name
+          example: Brembo
+        articleName:
+          type: string
+          description: Part description
+          example: Brake pad set, disc brake, front
 
     ErrorResponse:
       type: object
