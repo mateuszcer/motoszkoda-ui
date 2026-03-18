@@ -117,6 +117,7 @@ function App() {
   const [enrollmentLoading, setEnrollmentLoading] = useState(false)
 
   const lastNotificationTime = useRef<string | undefined>(undefined)
+  const isFirstPoll = useRef(true)
 
   // Read reset-password token once, then strip it from the URL to prevent leakage via Referer headers / browser history
   const resetToken = useMemo(() => {
@@ -149,6 +150,7 @@ function App() {
     setRequests([])
     setBanners([])
     lastNotificationTime.current = undefined
+    isFirstPoll.current = true
     navigate(wasAdmin ? 'admin-login' : 'landing', { replace: true })
   }, [auth.user?.role, navigate])
 
@@ -444,10 +446,18 @@ function App() {
           return // No new notifications
         }
 
+        // On first poll after mount/refresh, just record the high-water mark
+        // so we don't re-show already-existing unread notifications as banners.
+        if (isFirstPoll.current) {
+          isFirstPoll.current = false
+          lastNotificationTime.current = newest.createdAt
+          return
+        }
+
         // Find notifications newer than what we've seen
         const newOnes = lastNotificationTime.current
           ? page.notifications.filter((n) => n.createdAt > lastNotificationTime.current!)
-          : page.notifications.filter((n) => !n.read)
+          : []
 
         lastNotificationTime.current = newest.createdAt
 
