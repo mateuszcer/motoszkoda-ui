@@ -3,6 +3,10 @@
     "switchToLight": "Zum hellen Modus wechseln",
     "switchToDark": "Zum dunklen Modus wechseln"
   },
+  "nav": {
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen"
+  },
 
   "app": {
     "loading": "Wird geladen...",

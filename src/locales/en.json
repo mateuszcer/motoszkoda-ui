@@ -3,6 +3,10 @@
     "switchToLight": "Switch to light mode",
     "switchToDark": "Switch to dark mode"
   },
+  "nav": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
 
   "app": {
     "loading": "Loading...",

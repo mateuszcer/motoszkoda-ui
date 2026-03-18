@@ -3,6 +3,10 @@
     "switchToLight": "Przełącz na tryb jasny",
     "switchToDark": "Przełącz na tryb ciemny"
   },
+  "nav": {
+    "openMenu": "Otwórz menu",
+    "closeMenu": "Zamknij menu"
+  },
 
   "app": {
     "loading": "Wczytywanie...",

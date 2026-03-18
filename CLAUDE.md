@@ -3,7 +3,7 @@
 ## Project Overview
 
 Car repair quote marketplace SPA with driver, shop, and admin portals.
-Stack: React 19 + Vite 7 + TypeScript 5.9, pure CSS, i18next (PL/EN), deployed on Vercel.
+Stack: React 19 + Vite 7 + TypeScript 5.9, pure CSS, i18next (PL/EN/DE), deployed on Vercel.
 
 ## IMPORTANT: Design Guidelines
 
@@ -51,7 +51,7 @@ src/
   hooks/          # Custom React hooks
   services/       # API clients (mock implementations)
   utils/          # Pure utility functions
-  locales/        # i18n JSON files (en.json, pl.json)
+  locales/        # i18n JSON files (en.json, pl.json, de.json)
 ```
 
 ## Code Conventions
@@ -80,9 +80,10 @@ src/
 
 ### i18n
 - All user-facing text must use `t('key')` from `react-i18next`
-- Translation files: `src/locales/en.json`, `src/locales/pl.json` (single source of truth; served by Vite plugin in dev, emitted to `dist/locales/` on build)
+- Translation files: `src/locales/en.json`, `src/locales/pl.json`, `src/locales/de.json` (single source of truth; served by Vite plugin in dev, emitted to `dist/locales/` on build)
+- **When adding or changing i18n keys, always update all three locale files (EN, PL, DE)**
 - Landing page keys under `landing.*` namespace
-- Never hardcode Polish or English strings in components
+- Never hardcode Polish, English, or German strings in components
 
 ### Testing
 - Framework: Vitest + React Testing Library
