@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: MotoSzkoda Auth API
   description: Authentication endpoints proxying Supabase Auth. All endpoints are public (no JWT required).
-  version: 1.3.0
+  version: 1.4.0
 
 paths:
   /api/auth/users/signup:
@@ -563,8 +563,72 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /api/user/settings/language:
+    put:
+      operationId: updateLanguage
+      summary: Update the authenticated user's preferred language
+      description: |
+        Sets the language preference for the current user. This affects:
+        - TecDoc catalog data language (assembly group names, part descriptions)
+        - Email template and subject language
+      tags: [User Settings]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLanguageRequest"
+            example:
+              language: EN
+      responses:
+        "204":
+          description: Language updated successfully
+        "400":
+          description: Invalid language value
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: VALIDATION_ERROR
+                message: Validation failed
+                details:
+                  - "language: must not be null"
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+        "401":
+          description: Missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: UNAUTHORIZED
+                message: Authentication required
+                details: []
+                correlationId: 550e8400-e29b-41d4-a716-446655440000
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
+    UpdateLanguageRequest:
+      type: object
+      required: [language]
+      properties:
+        language:
+          $ref: "#/components/schemas/Language"
+
+    Language:
+      type: string
+      enum: [PL, EN]
+      description: "User's preferred language. PL = Polish (default), EN = English."
+
     AuthRequest:
       type: object
       required: [email, password]

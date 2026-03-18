@@ -4,9 +4,10 @@ import { LANG_CYCLE, LANG_META } from '@/utils/lang'
 
 interface LanguagePickerProps {
   variant?: 'header' | 'landing'
+  onLanguageChange?: (code: string) => void
 }
 
-export function LanguagePicker({ variant = 'header' }: LanguagePickerProps) {
+export function LanguagePicker({ variant = 'header', onLanguageChange }: LanguagePickerProps) {
   const { i18n } = useTranslation()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -19,9 +20,10 @@ export function LanguagePicker({ variant = 'header' }: LanguagePickerProps) {
   const select = useCallback(
     (code: string) => {
       void i18n.changeLanguage(code)
+      onLanguageChange?.(code)
       setOpen(false)
     },
-    [i18n],
+    [i18n, onLanguageChange],
   )
 
   useEffect(() => {

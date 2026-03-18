@@ -45,6 +45,7 @@ import * as localPrefs from './services/localPreferences'
 import { fetchNotifications } from './services/notificationsApi'
 import { uploadAttachments } from './services/attachmentApi'
 import { repairRequestApi } from './services/repairRequestApi'
+import { updateLanguagePreference } from './services/userSettingsApi'
 import { assertSafeRedirectUrl } from './utils/validation'
 
 // Lazy-loaded route components
@@ -138,6 +139,17 @@ function App() {
 
     return requests.find((request) => request.id === selectedRequestId) ?? null
   }, [requests, selectedRequestId])
+
+  const handleLanguageChange = useCallback(
+    (code: string) => {
+      if (!auth.isAuthenticated) return
+      const map: Record<string, 'PL' | 'EN'> = { pl: 'PL', en: 'EN' }
+      const backendCode = map[code]
+      if (!backendCode) return
+      void updateLanguagePreference(backendCode).catch(() => undefined)
+    },
+    [auth.isAuthenticated],
+  )
 
   const doLogout = useCallback(() => {
     const wasAdmin = auth.user?.role === 'ADMIN'
@@ -691,7 +703,7 @@ function App() {
   if (isAdmin) {
     return (
       <main className="app-shell admin-shell">
-        <AppHeader />
+        <AppHeader onLanguageChange={handleLanguageChange} />
         <ErrorBoundary>
           <AdminVouchersView onLogout={doLogout} />
         </ErrorBoundary>
@@ -727,6 +739,7 @@ function App() {
           <main className="app-shell">
             <AppHeader
               onBrandClick={() => navigate('shop-inbox')}
+              onLanguageChange={handleLanguageChange}
               navSlot={
                 <>
                   {screen !== 'shop-inbox' ? (
@@ -863,6 +876,7 @@ function App() {
     <main className="app-shell">
       <AppHeader
         onBrandClick={() => navigate('home')}
+        onLanguageChange={handleLanguageChange}
         navSlot={
           <>
             {screen !== 'home' ? (

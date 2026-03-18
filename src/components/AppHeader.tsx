@@ -6,11 +6,17 @@ interface AppHeaderProps {
   brandMark?: ReactNode
   onBrandClick?: () => void
   navSlot?: ReactNode
+  onLanguageChange?: (code: string) => void
 }
 
 const defaultBrandMark = <img src="/brand/white-logo.svg" alt="" className="app-header__logo" />
 
-export const AppHeader = memo(function AppHeader({ brandMark, onBrandClick, navSlot }: AppHeaderProps) {
+export const AppHeader = memo(function AppHeader({
+  brandMark,
+  onBrandClick,
+  navSlot,
+  onLanguageChange,
+}: AppHeaderProps) {
   const mark = brandMark ?? defaultBrandMark
   return (
     <header className="app-header">
@@ -28,7 +34,7 @@ export const AppHeader = memo(function AppHeader({ brandMark, onBrandClick, navS
       <div className="header-actions">
         {navSlot}
         <ThemeToggle />
-        <LanguagePicker />
+        <LanguagePicker onLanguageChange={onLanguageChange} />
       </div>
     </header>
   )
