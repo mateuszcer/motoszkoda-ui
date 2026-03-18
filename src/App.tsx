@@ -24,6 +24,7 @@ const ShopRegisterView = lazy(() =>
 const UpgradeLimitModal = lazy(() =>
   import('./components/UpgradeLimitModal').then((m) => ({ default: m.UpgradeLimitModal })),
 )
+const SettingsView = lazy(() => import('./components/SettingsView').then((m) => ({ default: m.SettingsView })))
 import type { BillingInterval, ShopRegistrationRequest, UserPlanInfo } from './domain/apiTypes'
 import type { AuthState } from './domain/auth-types'
 import type {
@@ -759,6 +760,9 @@ function App() {
                   <button className="btn btn-ghost" onClick={() => navigate('shop-plan')}>
                     {t('shopNav.plan')}
                   </button>
+                  <button className="btn btn-ghost" onClick={() => navigate('shop-settings')}>
+                    {t('settings.nav')}
+                  </button>
                   <button className="btn btn-ghost" onClick={doLogout}>
                     {t('auth.logout')}
                   </button>
@@ -864,6 +868,8 @@ function App() {
                   onBack={() => navigate('shop-inbox')}
                 />
               ) : null}
+
+              {screen === 'shop-settings' ? <SettingsView onBack={() => navigate('shop-inbox')} /> : null}
             </ErrorBoundary>
           </main>
         </EnrollmentGate>
@@ -891,6 +897,9 @@ function App() {
             ) : null}
             <button className="btn btn-ghost" onClick={() => navigate('plan')}>
               {t('plan.nav')}
+            </button>
+            <button className="btn btn-ghost" onClick={() => navigate('settings')}>
+              {t('settings.nav')}
             </button>
             <button className="btn btn-ghost" onClick={doLogout}>
               {t('auth.logout')}
@@ -995,6 +1004,8 @@ function App() {
         ) : null}
 
         {screen === 'plan-cancel' ? <PlanCancelView onBack={() => navigate('home')} /> : null}
+
+        {screen === 'settings' ? <SettingsView onBack={() => navigate('home')} /> : null}
       </ErrorBoundary>
 
       {limitModal ? (

@@ -1,0 +1,120 @@
+openapi: 3.0.3
+info:
+  title: MotoSzkoda Email Preferences API
+  description: Manage per-user email notification preferences (opt-in).
+  version: 1.0.0
+
+paths:
+  /api/email/preferences:
+    get:
+      summary: Get email notification preference
+      description: >
+        Returns the current email notification preference for the authenticated user.
+        If no preference has been set, returns the default (disabled).
+      operationId: getEmailPreference
+      tags: [Email Preferences]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current email notification preference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailPreferenceResponse'
+        '401':
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient role (requires USER or SHOP_USER)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update email notification preference
+      description: >
+        Enables or disables transactional email notifications for the authenticated user.
+        Default is disabled (opt-in). Verification emails are unaffected by this setting.
+      operationId: updateEmailPreference
+      tags: [Email Preferences]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEmailPreferenceRequest'
+      responses:
+        '200':
+          description: Updated email notification preference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailPreferenceResponse'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient role (requires USER or SHOP_USER)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    EmailPreferenceResponse:
+      type: object
+      required: [emailNotificationsEnabled]
+      properties:
+        emailNotificationsEnabled:
+          type: boolean
+          description: Whether transactional email notifications are enabled for this user.
+          example: false
+
+    UpdateEmailPreferenceRequest:
+      type: object
+      required: [emailNotificationsEnabled]
+      properties:
+        emailNotificationsEnabled:
+          type: boolean
+          description: Set to true to enable transactional email notifications, false to disable.
+          example: true
+
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+        correlationId:
+          type: string
+          format: uuid

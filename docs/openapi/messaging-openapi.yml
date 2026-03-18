@@ -252,6 +252,10 @@ components:
         messageType:
           type: string
           enum: [QUESTION, MESSAGE]
+        senderRole:
+          type: string
+          enum: [DRIVER, SHOP]
+          description: Which party sent the message
         content:
           type: string
         createdAt:
@@ -272,6 +276,10 @@ components:
         lastMessageType:
           type: string
           enum: [QUESTION, MESSAGE]
+        lastSenderRole:
+          type: string
+          enum: [DRIVER, SHOP]
+          description: Which party sent the last message in the thread
 
     ErrorResponse:
       type: object

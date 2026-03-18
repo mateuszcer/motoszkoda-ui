@@ -398,6 +398,12 @@ export interface RefreshTokenResponse {
   expiresIn: number
 }
 
+// ── Email Preferences ───────────────────────────────────────────────
+
+export interface EmailPreferenceResponse {
+  emailNotificationsEnabled: boolean
+}
+
 // ── Common Error ─────────────────────────────────────────────────────
 
 export interface ApiErrorResponse {

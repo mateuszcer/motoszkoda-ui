@@ -644,6 +644,17 @@
     "phoneNavSettings": "Ustawienia"
   },
 
+  "settings": {
+    "nav": "Ustawienia",
+    "title": "Ustawienia",
+    "subtitle": "Zarządzaj preferencjami konta",
+    "emailNotifications": "Powiadomienia email",
+    "emailNotificationsDescription": "Otrzymuj emaile o nowych wycenach, wiadomościach i zmianach statusu zleceń.",
+    "saving": "Zapisywanie...",
+    "saved": "Preferencje zapisane",
+    "saveFailed": "Nie udało się zapisać preferencji. Spróbuj ponownie."
+  },
+
   "shopRegister": {
     "title": "Zarejestruj swój warsztat",
     "subtitle": "Dołącz do Autoceny i zacznij otrzymywać zlecenia napraw",

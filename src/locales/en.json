@@ -639,6 +639,17 @@
     "phoneNavSettings": "Settings"
   },
 
+  "settings": {
+    "nav": "Settings",
+    "title": "Settings",
+    "subtitle": "Manage your account preferences",
+    "emailNotifications": "Email notifications",
+    "emailNotificationsDescription": "Receive email updates about new quotes, messages, and request status changes.",
+    "saving": "Saving...",
+    "saved": "Preferences saved",
+    "saveFailed": "Could not save preferences. Please try again."
+  },
+
   "shopRegister": {
     "title": "Register your shop",
     "subtitle": "Join Autoceny and start receiving repair requests",

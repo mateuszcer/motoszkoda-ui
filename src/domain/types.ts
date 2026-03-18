@@ -22,6 +22,8 @@ export type AppScreen =
   | 'plan-success'
   | 'plan-cancel'
   | 'admin-login'
+  | 'settings'
+  | 'shop-settings'
   | 'admin-vouchers'
 
 export type EnrollmentStatus = 'PENDING_PAYMENT' | 'ACTIVE' | 'SUSPENDED' | 'CANCEL_SCHEDULED'
