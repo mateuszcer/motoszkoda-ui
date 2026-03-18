@@ -447,7 +447,7 @@ function App() {
         // Find notifications newer than what we've seen
         const newOnes = lastNotificationTime.current
           ? page.notifications.filter((n) => n.createdAt > lastNotificationTime.current!)
-          : [] // Don't banner on first poll
+          : page.notifications.filter((n) => !n.read)
 
         lastNotificationTime.current = newest.createdAt
 

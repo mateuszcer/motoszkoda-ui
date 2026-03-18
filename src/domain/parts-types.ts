@@ -1,7 +1,7 @@
 export interface AssemblyGroup {
-  id: number
+  id: string
   name: string
-  parentId?: number
+  parentId?: string
 }
 
 export interface CompatiblePart {
@@ -10,11 +10,14 @@ export interface CompatiblePart {
   articleName: string
 }
 
-export type WholesalerSource = string
+export interface WholesalerSource {
+  code: string
+  name: string
+}
 
 export interface WholesalerError {
-  source: WholesalerSource
-  error: string
+  sourceCode: string
+  errorCode: string
 }
 
 export interface PartOffer {
@@ -27,11 +30,11 @@ export interface PartOffer {
   availability: 'IN_STOCK' | 'LOW_STOCK' | 'ON_ORDER' | 'UNAVAILABLE'
   quantityAvailable?: number
   leadTimeDays?: number
-  source: WholesalerSource
+  source: string
 }
 
 export interface PartsVehicle {
-  ktypeId: number
+  ktypeId: string
   make: string
   model: string
   type: string
@@ -40,20 +43,26 @@ export interface PartsVehicle {
 }
 
 export interface AssemblyGroupsResponse {
+  vin: string
   vehicle: PartsVehicle
   groups: AssemblyGroup[]
 }
 
 export interface CompatiblePartsResponse {
+  vin: string
   vehicle: PartsVehicle
-  groupId: number
+  assemblyGroupId: string
   parts: CompatiblePart[]
-  total: number
+  totalBeforeLimit: number
 }
 
 export interface PartsSearchResponse {
+  resultCode: 'OK' | 'NO_GROUP_MATCH'
+  vin: string
   vehicle: PartsVehicle
   offers: PartOffer[]
-  total: number
+  totalFound: number
+  queriedSources: WholesalerSource[]
   failedSources: WholesalerError[]
+  groups?: AssemblyGroup[]
 }

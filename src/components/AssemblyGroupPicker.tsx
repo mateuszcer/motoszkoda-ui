@@ -4,8 +4,8 @@ import type { AssemblyGroup } from '../domain/parts-types'
 
 interface AssemblyGroupPickerProps {
   groups: AssemblyGroup[]
-  selectedGroupId: number | null
-  onSelect: (groupId: number) => void
+  selectedGroupId: string | null
+  onSelect: (groupId: string) => void
   loading: boolean
 }
 
@@ -15,7 +15,7 @@ export function AssemblyGroupPicker({ groups, selectedGroupId, onSelect, loading
 
   const tree = useMemo(() => {
     const parents: AssemblyGroup[] = []
-    const childrenMap = new Map<number, AssemblyGroup[]>()
+    const childrenMap = new Map<string, AssemblyGroup[]>()
 
     for (const g of groups) {
       if (g.parentId == null) {
@@ -34,8 +34,8 @@ export function AssemblyGroupPicker({ groups, selectedGroupId, onSelect, loading
     if (!filter.trim()) return tree
 
     const q = filter.toLowerCase()
-    const matchedParentIds = new Set<number>()
-    const filteredChildrenMap = new Map<number, AssemblyGroup[]>()
+    const matchedParentIds = new Set<string>()
+    const filteredChildrenMap = new Map<string, AssemblyGroup[]>()
 
     for (const [parentId, children] of tree.childrenMap) {
       const matched = children.filter((c) => c.name.toLowerCase().includes(q))

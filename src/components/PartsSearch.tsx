@@ -16,7 +16,7 @@ export function PartsSearch({ vin, onAddPart }: PartsSearchProps) {
   const { t } = useTranslation()
   const [phase, setPhase] = useState<Phase>('idle')
   const [groups, setGroups] = useState<AssemblyGroup[]>([])
-  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
   const [selectedGroupName, setSelectedGroupName] = useState('')
   const [compatibleParts, setCompatibleParts] = useState<CompatiblePart[]>([])
   const [offers, setOffers] = useState<PartOffer[]>([])
@@ -39,7 +39,7 @@ export function PartsSearch({ vin, onAddPart }: PartsSearchProps) {
   }, [vin, t])
 
   const selectGroup = useCallback(
-    async (groupId: number) => {
+    async (groupId: string) => {
       setSelectedGroupId(groupId)
       const group = groups.find((g) => g.id === groupId)
       setSelectedGroupName(group?.name ?? '')

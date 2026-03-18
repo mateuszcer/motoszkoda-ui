@@ -5,23 +5,25 @@ const DAY_MS = 24 * 60 * 60 * 1000
 
 export const partsApi = {
   async getAssemblyGroups(vin: string): Promise<AssemblyGroupsResponse> {
-    return cachedGet<AssemblyGroupsResponse>(`/api/parts/vehicles/${vin}/assembly-groups`, {
+    return cachedGet<AssemblyGroupsResponse>('/api/parts/groups', {
+      params: { vin },
       ttlMs: DAY_MS,
       cacheKey: `parts_groups_${vin}`,
     })
   },
 
-  async getCompatibleParts(vin: string, groupId: number, limit?: number): Promise<CompatiblePartsResponse> {
-    return cachedGet<CompatiblePartsResponse>(`/api/parts/vehicles/${vin}/compatible-parts`, {
-      params: { groupId, limit },
+  async getCompatibleParts(vin: string, groupId: string, limit?: number): Promise<CompatiblePartsResponse> {
+    return cachedGet<CompatiblePartsResponse>('/api/parts/compatible', {
+      params: { vin, groupId, limit },
       ttlMs: DAY_MS,
       cacheKey: `parts_compat_${vin}_${groupId}_${limit ?? ''}`,
     })
   },
 
-  async searchParts(vin: string, opts: { q?: string; groupId?: number; limit?: number }): Promise<PartsSearchResponse> {
-    return api.get<PartsSearchResponse>(`/api/parts/vehicles/${vin}/search`, {
+  async searchParts(vin: string, opts: { q?: string; groupId?: string; limit?: number }): Promise<PartsSearchResponse> {
+    return api.get<PartsSearchResponse>('/api/parts/search', {
       params: {
+        vin,
         q: opts.q,
         groupId: opts.groupId,
         limit: opts.limit,

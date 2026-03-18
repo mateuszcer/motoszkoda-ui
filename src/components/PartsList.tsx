@@ -86,7 +86,7 @@ export function PartsList({ compatibleParts, offers, failedSources, onAddPart, o
 
       {failedSources.length > 0 ? (
         <div className="parts-sources-warning">
-          {t('partsSearch.failedSources', { sources: failedSources.map((s) => s.source).join(', ') })}
+          {t('partsSearch.failedSources', { sources: failedSources.map((s) => s.sourceCode).join(', ') })}
         </div>
       ) : null}
 
