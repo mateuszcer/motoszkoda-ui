@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { EnrollmentPlanCatalog, UserPlanCatalog } from '../domain/apiTypes'
 import { formatMinorCurrency } from '../utils/format'
+import { LanguagePicker } from './LanguagePicker'
 import { formatLimit } from '../utils/plan'
 import { SeoSchema } from './SeoSchema'
 import './LandingPage.css'
@@ -15,8 +16,6 @@ interface LandingPageProps {
 
 export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enrollmentCatalog }: LandingPageProps) {
   const { t, i18n } = useTranslation()
-  const isPolish = i18n.language.startsWith('pl')
-
   const [navSolid, setNavSolid] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [pricingAudience, setPricingAudience] = useState<'driver' | 'shop'>('driver')
@@ -24,8 +23,6 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
 
   const heroRef = useRef<HTMLElement>(null)
   const [faqHeights, setFaqHeights] = useState<number[]>([])
-
-  const toggleLang = () => void i18n.changeLanguage(isPolish ? 'en' : 'pl')
 
   // Catalog-derived pricing with fallbacks
   const lang = i18n.language
@@ -124,9 +121,7 @@ export function LandingPage({ onGetStarted, onJoinAsShop, billingCatalog, enroll
           </ul>
 
           <div className="lp-nav__actions">
-            <button className="lp-lang" onClick={toggleLang}>
-              {isPolish ? 'EN' : 'PL'}
-            </button>
+            <LanguagePicker variant="landing" />
             <button className="lp-nav__btn-pri" onClick={onGetStarted}>
               {t('landing.hero.cta')}
             </button>

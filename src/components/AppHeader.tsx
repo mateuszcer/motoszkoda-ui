@@ -1,22 +1,6 @@
 import { memo, type ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
+import { LanguagePicker } from './LanguagePicker'
 import { ThemeToggle } from './ThemeToggle'
-
-function LanguageToggle() {
-  const { i18n } = useTranslation()
-  const isPolish = i18n.language.startsWith('pl')
-
-  return (
-    <button
-      className="btn btn-ghost lang-toggle"
-      onClick={() => {
-        void i18n.changeLanguage(isPolish ? 'en' : 'pl')
-      }}
-    >
-      {isPolish ? 'EN' : 'PL'}
-    </button>
-  )
-}
 
 interface AppHeaderProps {
   brandMark?: ReactNode
@@ -44,7 +28,7 @@ export const AppHeader = memo(function AppHeader({ brandMark, onBrandClick, navS
       <div className="header-actions">
         {navSlot}
         <ThemeToggle />
-        <LanguageToggle />
+        <LanguagePicker />
       </div>
     </header>
   )

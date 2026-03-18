@@ -121,23 +121,22 @@
   }
 }
 
-/* ── Lang toggle ───────────────────────────────────────── */
-.lp-lang {
-  font-family: var(--lp-font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  padding: 6px 10px;
+/* ── Lang picker (landing variant) ─────────────────────── */
+.lang-picker__trigger--landing {
+  display: flex;
+  align-items: center;
+  padding: 6px;
   background: var(--n100);
-  color: var(--n600);
   border: 1px solid var(--n200);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s;
-  letter-spacing: 0.05em;
 }
-.lp-lang:hover {
+.lang-picker__trigger--landing:hover {
   background: var(--n200);
-  color: var(--n900);
+}
+.lang-picker__trigger--landing .lang-picker__flag {
+  width: 20px;
 }
 
 /* ══════════ NAV ══════════ */

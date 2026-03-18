@@ -3,6 +3,7 @@ import type { LineItem, QuoteOffer } from '../domain/types'
 const localeMap: Record<string, string> = {
   pl: 'pl-PL',
   en: 'en-GB',
+  de: 'de-DE',
 }
 
 const dateFormatters = new Map<string, Intl.DateTimeFormat>()
