@@ -2317,12 +2317,9 @@ label small {
   margin-bottom: var(--space-4);
 }
 
-.auth-card .form-grid {
-  margin-bottom: var(--space-5);
-}
-
 .auth-submit {
   width: 100%;
+  margin-top: var(--space-6);
 }
 
 .turnstile-wrap {
