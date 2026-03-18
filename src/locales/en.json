@@ -790,6 +790,32 @@
     "portalError": "Could not open subscription portal. Please try again."
   },
 
+  "partsSearch": {
+    "findParts": "Find parts",
+    "selectCategory": "Select a category",
+    "filterGroups": "Filter categories...",
+    "searchPlaceholder": "Search parts by name or number...",
+    "addToQuote": "Add to quote",
+    "noResults": "No parts found.",
+    "inStock": "In stock",
+    "lowStock": "Low stock",
+    "onOrder": "On order",
+    "unavailable": "Unavailable",
+    "loadingGroups": "Loading categories...",
+    "loadingParts": "Loading parts...",
+    "searching": "Searching...",
+    "backToGroups": "Back to categories",
+    "errorLoading": "Could not load data. Please try again.",
+    "retry": "Retry",
+    "failedSources": "Some wholesalers could not be reached: {{sources}}",
+    "totalParts": "{{count}} parts",
+    "totalOffers": "{{count}} offers",
+    "showingLimit": "Showing first {{count}}",
+    "priceFrom": "from {{price}}",
+    "leadTime": "{{days}} days",
+    "added": "Added"
+  },
+
   "shopEnroll": {
     "title": "Shop Activation",
     "statusPending": "Activate your shop to start receiving repair requests.",

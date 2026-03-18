@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { LineItemPayload, RepairRequest, SubmitQuotePayload } from '../domain/types'
 import { getApiErrorMessage } from '../utils/apiErrors'
 import { formatCurrencyPln } from '../utils/format'
+import { PartsSearch } from './PartsSearch'
 import { PhoneInput } from './PhoneInput'
 
 type PriceMode = 'single' | 'range'
@@ -73,6 +74,24 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
       }
     }
   }
+
+  const handleAddPart = useCallback((description: string, priceMinor?: number) => {
+    setUseLineItems(true)
+    setLineItems((prev) => {
+      const hasEmpty = prev.length === 1 && !prev[0].description && !prev[0].priceMin
+      const base = hasEmpty ? [] : prev
+      return [
+        ...base,
+        {
+          key: nextLineItemKey++,
+          description,
+          priceMode: 'single' as PriceMode,
+          priceMin: priceMinor != null ? (priceMinor / 100).toFixed(2) : '',
+          priceMax: '',
+        },
+      ]
+    })
+  }, [])
 
   const lineItemsTotal = useMemo(() => {
     if (!useLineItems || lineItems.length === 0) return null
@@ -197,6 +216,8 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
         </h3>
         <p>{request.issue.description}</p>
       </div>
+
+      {request.car.vin ? <PartsSearch vin={request.car.vin} onAddPart={handleAddPart} /> : null}
 
       <form className="quote-form" onSubmit={(e) => void handleSubmit(e)}>
         {errors.length > 0 ? (

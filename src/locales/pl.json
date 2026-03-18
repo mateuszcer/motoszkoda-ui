@@ -794,6 +794,32 @@
     "portalError": "Nie udało się otworzyć portalu subskrypcji. Spróbuj ponownie."
   },
 
+  "partsSearch": {
+    "findParts": "Znajdz czesci",
+    "selectCategory": "Wybierz kategorie",
+    "filterGroups": "Filtruj kategorie...",
+    "searchPlaceholder": "Szukaj czesci po nazwie lub numerze...",
+    "addToQuote": "Dodaj do wyceny",
+    "noResults": "Nie znaleziono czesci.",
+    "inStock": "Dostepne",
+    "lowStock": "Malo na stanie",
+    "onOrder": "Na zamowienie",
+    "unavailable": "Niedostepne",
+    "loadingGroups": "Wczytywanie kategorii...",
+    "loadingParts": "Wczytywanie czesci...",
+    "searching": "Wyszukiwanie...",
+    "backToGroups": "Wstecz do kategorii",
+    "errorLoading": "Nie udalo sie zaladowac danych. Sprobuj ponownie.",
+    "retry": "Ponow",
+    "failedSources": "Niektore hurtownie nie odpowiedzialy: {{sources}}",
+    "totalParts": "{{count}} czesci",
+    "totalOffers": "{{count}} ofert",
+    "showingLimit": "Wyswietlono pierwszych {{count}}",
+    "priceFrom": "od {{price}}",
+    "leadTime": "{{days}} dni",
+    "added": "Dodano"
+  },
+
   "shopEnroll": {
     "title": "Aktywacja warsztatu",
     "statusPending": "Aktywuj swój warsztat, aby zacząć otrzymywać zlecenia napraw.",
