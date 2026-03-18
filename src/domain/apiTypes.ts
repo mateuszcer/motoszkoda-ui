@@ -153,6 +153,7 @@ export interface CompareViewResponse {
 // ── Messaging ────────────────────────────────────────────────────────
 
 export type ApiMessageType = 'QUESTION' | 'MESSAGE'
+export type ApiSenderRole = 'DRIVER' | 'SHOP'
 
 export interface SendMessageRequest {
   content: string
@@ -163,6 +164,7 @@ export interface MessageResponse {
   repairRequestId: string
   shopId: string
   senderId: string
+  senderRole: ApiSenderRole
   messageType: ApiMessageType
   content: string
   createdAt: string
@@ -173,6 +175,7 @@ export interface ThreadSummaryResponse {
   messageCount: number
   lastMessageAt: string
   lastMessageType: ApiMessageType
+  lastSenderRole: ApiSenderRole
 }
 
 // ── Notifications ────────────────────────────────────────────────────

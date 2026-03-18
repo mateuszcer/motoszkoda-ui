@@ -305,7 +305,10 @@
     "resendEmail": "Wyślij ponownie",
     "resending": "Wysyłanie...",
     "resendSuccess": "Email weryfikacyjny wysłany ponownie.",
-    "resendFailed": "Nie udało się wysłać emaila. Spróbuj ponownie."
+    "resendFailed": "Nie udało się wysłać emaila. Spróbuj ponownie.",
+    "roleMismatchToDriver": "To jest konto kierowcy. Przełącz się na zakładkę Kierowca, żeby się zalogować.",
+    "roleMismatchToWorkshop": "To jest konto warsztatu. Przełącz się na zakładkę Warsztat, żeby się zalogować.",
+    "roleMismatchSwitchTab": "Przełącz"
   },
 
   "validation": {

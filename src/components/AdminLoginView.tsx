@@ -2,6 +2,7 @@ import { Turnstile } from '@marsidev/react-turnstile'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ApiError } from '../services/apiClient'
 import { getApiErrorMessage } from '../utils/apiErrors'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
@@ -40,7 +41,11 @@ export function AdminLoginView({ onLogin }: AdminLoginViewProps) {
     try {
       await onLogin(email.trim(), password, captchaToken)
     } catch (err) {
-      setError(getApiErrorMessage(err, t, 'admin.loginFailed'))
+      if (err instanceof ApiError && err.code === 'ROLE_MISMATCH') {
+        setError(t('admin.notAdmin'))
+      } else {
+        setError(getApiErrorMessage(err, t, 'admin.loginFailed'))
+      }
       setCaptchaToken(undefined)
       turnstileRef.current?.reset()
     } finally {

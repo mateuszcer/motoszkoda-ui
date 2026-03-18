@@ -2409,6 +2409,24 @@ label small {
   margin-bottom: var(--space-4);
 }
 
+.auth-hint {
+  background: var(--mint-50);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  color: var(--teal-700);
+  font-size: 14px;
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+[data-theme='dark'] .auth-hint {
+  background: var(--mint-100);
+  color: var(--mint-500);
+}
+
 .auth-submit {
   width: 100%;
   margin-top: var(--space-6);

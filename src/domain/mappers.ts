@@ -1,4 +1,5 @@
 import type {
+  ApiSenderRole,
   AttachmentResponse,
   CompareViewResponse,
   MessageResponse,
@@ -139,10 +140,10 @@ export function mapCompareToShopQuote(cv: CompareViewResponse, interested: boole
 
 // ── MessageResponse → ThreadMessage ──────────────────────────────────
 
-export function mapMessage(msg: MessageResponse, currentUserId: string): ThreadMessage {
+export function mapMessage(msg: MessageResponse, viewerRole: ApiSenderRole): ThreadMessage {
   return {
     id: msg.id,
-    author: msg.senderId === currentUserId ? 'self' : 'other',
+    author: msg.senderRole === viewerRole ? 'self' : 'other',
     text: msg.content,
     sentAt: msg.createdAt,
     attachments: [],

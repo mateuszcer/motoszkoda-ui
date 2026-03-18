@@ -93,9 +93,9 @@ export const shopApi = {
   },
 
   // Shop fetches own thread messages (shopId derived from JWT on backend)
-  async fetchMessages(requestId: string, currentUserId: string): Promise<ThreadMessage[]> {
+  async fetchMessages(requestId: string): Promise<ThreadMessage[]> {
     const raw = await api.get<MessageResponse[]>(`/api/repair-requests/${requestId}/messages`)
-    return raw.map((m) => mapMessage(m, currentUserId)).reverse()
+    return raw.map((m) => mapMessage(m, 'SHOP')).reverse()
   },
 
   async sendMessage(requestId: string, shopId: string, text: string): Promise<void> {

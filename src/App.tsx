@@ -199,7 +199,7 @@ function App() {
   const plan = usePlan(auth.isAuthenticated, isDriver, catalog.getEntitlements('FREE'))
   const [limitModal, setLimitModal] = useState<'open_orders' | 'daily_orders' | 'questions' | null>(null)
   const [upgradeLoading, setUpgradeLoading] = useState(false)
-  const shop = useShopPortal(auth.user?.id ?? null)
+  const shop = useShopPortal()
   const [shopSelectedRequestId, setShopSelectedRequestId] = useState<string | null>(null)
 
   // Restore session on mount
@@ -341,7 +341,7 @@ function App() {
 
       if (!auth.user) return
 
-      const detail = await repairRequestApi.fetchRequestDetail(requestId, auth.user.id)
+      const detail = await repairRequestApi.fetchRequestDetail(requestId)
       if (detail) {
         upsertRequest(detail)
       }
@@ -437,7 +437,7 @@ function App() {
 
     // Re-fetch the detail to get updated threads
     if (auth.user) {
-      const updated = await repairRequestApi.fetchRequestDetail(requestId, auth.user.id)
+      const updated = await repairRequestApi.fetchRequestDetail(requestId)
       if (updated) {
         upsertRequest(updated)
       }
@@ -509,7 +509,7 @@ function App() {
           // If we're viewing this request's detail, refresh it
           if (selectedRequestId && payload.repairRequestId === selectedRequestId && auth.user) {
             repairRequestApi.invalidateCache(selectedRequestId)
-            const updated = await repairRequestApi.fetchRequestDetail(selectedRequestId, auth.user.id)
+            const updated = await repairRequestApi.fetchRequestDetail(selectedRequestId)
             if (updated) {
               upsertRequest(updated)
             }

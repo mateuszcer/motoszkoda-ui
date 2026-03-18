@@ -156,11 +156,11 @@ export interface NotificationEvent {
 
 export interface RepairRequestApi {
   listRequests: () => Promise<RepairRequest[]>
-  fetchRequestDetail: (requestId: string, currentUserId: string) => Promise<RepairRequest | null>
+  fetchRequestDetail: (requestId: string) => Promise<RepairRequest | null>
   createRequest: (payload: CreateRepairRequestPayload) => Promise<RepairRequest>
   closeRequest: (requestId: string) => Promise<RepairRequest>
   sendThreadMessage: (payload: SendMessagePayload) => Promise<void>
-  getThreadMessages: (requestId: string, shopId: string, currentUserId: string) => Promise<ThreadMessage[]>
+  getThreadMessages: (requestId: string, shopId: string) => Promise<ThreadMessage[]>
   invalidateCache: (requestId: string) => void
 }
 

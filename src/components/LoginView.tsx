@@ -2,6 +2,7 @@ import { Turnstile } from '@marsidev/react-turnstile'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ApiError } from '../services/apiClient'
 import { getApiErrorMessage } from '../utils/apiErrors'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
@@ -30,6 +31,7 @@ export function LoginView({
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [roleMismatchTarget, setRoleMismatchTarget] = useState<LoginMode | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [captchaToken, setCaptchaToken] = useState<string | undefined>(undefined)
   const turnstileRef = useRef<TurnstileInstance>(null)
@@ -43,6 +45,7 @@ export function LoginView({
     if (next === mode) return
     setMode(next)
     setError(null)
+    setRoleMismatchTarget(null)
   }
 
   const isDriver = mode === 'driver'
@@ -53,6 +56,7 @@ export function LoginView({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setRoleMismatchTarget(null)
 
     if (!email.trim()) {
       setError(t('auth.emailRequired'))
@@ -71,7 +75,11 @@ export function LoginView({
     try {
       await onLogin(email.trim(), password, captchaToken)
     } catch (err) {
-      setError(getApiErrorMessage(err, t, 'auth.loginFailed'))
+      if (err instanceof ApiError && err.code === 'ROLE_MISMATCH') {
+        setRoleMismatchTarget(isDriver ? 'workshop' : 'driver')
+      } else {
+        setError(getApiErrorMessage(err, t, 'auth.loginFailed'))
+      }
       setCaptchaToken(undefined)
       turnstileRef.current?.reset()
     } finally {
@@ -167,7 +175,18 @@ export function LoginView({
           {isDriver ? t('auth.roleBadgeDriver') : t('auth.roleBadgeWorkshop')}
         </div>
 
-        {error ? <div className="auth-error">{error}</div> : null}
+        {roleMismatchTarget ? (
+          <div className="auth-hint">
+            <span>
+              {t(roleMismatchTarget === 'driver' ? 'auth.roleMismatchToDriver' : 'auth.roleMismatchToWorkshop')}
+            </span>
+            <button type="button" className="btn-link" onClick={() => switchMode(roleMismatchTarget)}>
+              {t('auth.roleMismatchSwitchTab')}
+            </button>
+          </div>
+        ) : error ? (
+          <div className="auth-error">{error}</div>
+        ) : null}
 
         <div className="form-grid">
           <label>

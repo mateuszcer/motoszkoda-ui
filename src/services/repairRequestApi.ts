@@ -89,7 +89,7 @@ const repairRequestApiImpl: RepairRequestApi = {
     })
   },
 
-  async fetchRequestDetail(requestId: string, currentUserId: string): Promise<RepairRequest | null> {
+  async fetchRequestDetail(requestId: string): Promise<RepairRequest | null> {
     // Fetch repair-request, compare view, thread summaries, attachments, and shop responses in parallel
     const [rawRequest, compareData, threadSummaries, rawAttachments, shopResponses] = await Promise.all([
       api.get<RepairRequestResponse>(`/api/repair-requests/${requestId}`).catch(() => null),
@@ -146,7 +146,7 @@ const repairRequestApiImpl: RepairRequestApi = {
           .get<MessageResponse[]>(`/api/repair-requests/${requestId}/messages/shops/${summary.shopId}`)
           .catch(() => [] as MessageResponse[])
 
-        const messages: ThreadMessage[] = rawMessages.map((m) => mapMessage(m, currentUserId)).reverse() // API returns newest first, UI expects oldest first
+        const messages: ThreadMessage[] = rawMessages.map((m) => mapMessage(m, 'DRIVER')).reverse() // API returns newest first, UI expects oldest first
 
         const shopName = shopNameMap.get(summary.shopId) ?? summary.shopId
         return [summary.shopId, mapThread(summary, shopName, messages)]
@@ -185,9 +185,9 @@ const repairRequestApiImpl: RepairRequestApi = {
     detailCache.delete(requestId)
   },
 
-  async getThreadMessages(requestId: string, shopId: string, currentUserId: string): Promise<ThreadMessage[]> {
+  async getThreadMessages(requestId: string, shopId: string): Promise<ThreadMessage[]> {
     const rawMessages = await api.get<MessageResponse[]>(`/api/repair-requests/${requestId}/messages/shops/${shopId}`)
-    return rawMessages.map((m) => mapMessage(m, currentUserId)).reverse()
+    return rawMessages.map((m) => mapMessage(m, 'DRIVER')).reverse()
   },
 
   invalidateCache(requestId: string): void {

@@ -11,7 +11,7 @@ import type {
 } from '../domain/types'
 import { shopApi } from '../services/shopApi'
 
-export function useShopPortal(userId: string | null) {
+export function useShopPortal() {
   const [shopQueue, setShopQueue] = useState<ShopQueueItem[]>([])
   const [shopSelectedRequest, setShopSelectedRequest] = useState<RepairRequest | null>(null)
   const [shopOwnResponse, setShopOwnResponse] = useState<ShopOwnResponse | null>(null)
@@ -47,37 +47,30 @@ export function useShopPortal(userId: string | null) {
     }
   }, [shopProfile?.shopId])
 
-  const openShopRequestDetail = useCallback(
-    async (requestId: string) => {
-      setShopLoading(true)
-      setShopError(null)
-      try {
-        const [request, ownResponse] = await Promise.all([
-          shopApi.fetchRequestDetail(requestId),
-          shopApi.fetchOwnResponse(requestId),
-        ])
-        setShopSelectedRequest(request)
-        setShopOwnResponse(ownResponse)
+  const openShopRequestDetail = useCallback(async (requestId: string) => {
+    setShopLoading(true)
+    setShopError(null)
+    try {
+      const [request, ownResponse] = await Promise.all([
+        shopApi.fetchRequestDetail(requestId),
+        shopApi.fetchOwnResponse(requestId),
+      ])
+      setShopSelectedRequest(request)
+      setShopOwnResponse(ownResponse)
 
-        // Load messages — shop endpoint derives shopId from JWT
-        if (userId) {
-          try {
-            const msgs = await shopApi.fetchMessages(requestId, userId)
-            setShopMessages(msgs)
-          } catch {
-            setShopMessages([])
-          }
-        } else {
-          setShopMessages([])
-        }
+      // Load messages — shop endpoint derives shopId from JWT
+      try {
+        const msgs = await shopApi.fetchMessages(requestId)
+        setShopMessages(msgs)
       } catch {
-        setShopError('app.loadError')
-      } finally {
-        setShopLoading(false)
+        setShopMessages([])
       }
-    },
-    [userId],
-  )
+    } catch {
+      setShopError('app.loadError')
+    } finally {
+      setShopLoading(false)
+    }
+  }, [])
 
   const handleShopAcknowledge = useCallback(
     async (requestId: string) => {
@@ -114,26 +107,17 @@ export function useShopPortal(userId: string | null) {
     [openShopRequestDetail],
   )
 
-  const handleShopAskQuestion = useCallback(
-    async (requestId: string, text: string) => {
-      await shopApi.sendQuestion(requestId, text)
-      if (userId) {
-        const msgs = await shopApi.fetchMessages(requestId, userId)
-        setShopMessages(msgs)
-      }
-    },
-    [userId],
-  )
+  const handleShopAskQuestion = useCallback(async (requestId: string, text: string) => {
+    await shopApi.sendQuestion(requestId, text)
+    const msgs = await shopApi.fetchMessages(requestId)
+    setShopMessages(msgs)
+  }, [])
 
-  const handleShopSendMessage = useCallback(
-    async (requestId: string, text: string) => {
-      if (!userId) return
-      await shopApi.sendQuestion(requestId, text)
-      const msgs = await shopApi.fetchMessages(requestId, userId)
-      setShopMessages(msgs)
-    },
-    [userId],
-  )
+  const handleShopSendMessage = useCallback(async (requestId: string, text: string) => {
+    await shopApi.sendQuestion(requestId, text)
+    const msgs = await shopApi.fetchMessages(requestId)
+    setShopMessages(msgs)
+  }, [])
 
   const loadShopProfile = useCallback(async () => {
     try {

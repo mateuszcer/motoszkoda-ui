@@ -300,7 +300,10 @@
     "resendEmail": "Resend",
     "resending": "Resending...",
     "resendSuccess": "Confirmation email sent again.",
-    "resendFailed": "Could not resend the email. Please try again."
+    "resendFailed": "Could not resend the email. Please try again.",
+    "roleMismatchToDriver": "This is a driver account. Switch to the Driver tab to sign in.",
+    "roleMismatchToWorkshop": "This is a workshop account. Switch to the Workshop tab to sign in.",
+    "roleMismatchSwitchTab": "Switch"
   },
 
   "validation": {
