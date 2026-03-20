@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { ShopQuoteCard } from '../domain/types'
 import { formatCurrencyPln, formatLineItemRange, formatQuoteRange } from '../utils/format'
+import { ShopAvatar } from './ShopAvatar'
 
 interface QuoteDetailPanelProps {
   shop: ShopQuoteCard
@@ -23,10 +24,13 @@ export function QuoteDetailPanel({ shop, onClose }: QuoteDetailPanelProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <header className="thread-header">
-          <div>
-            <p className="eyebrow">{t('quoteDetail.eyebrow')}</p>
-            <h3>{shop.shopName}</h3>
-            <small>{t('detail.kmAway', { distance: shop.distanceKm.toFixed(1) })}</small>
+          <div className="thread-header-main">
+            <ShopAvatar name={shop.shopName} logoUrl={shop.logoUrl} />
+            <div>
+              <p className="eyebrow">{t('quoteDetail.eyebrow')}</p>
+              <h3>{shop.shopName}</h3>
+              <small>{t('detail.kmAway', { distance: shop.distanceKm.toFixed(1) })}</small>
+            </div>
           </div>
           <button className="btn btn-ghost" onClick={onClose}>
             <svg

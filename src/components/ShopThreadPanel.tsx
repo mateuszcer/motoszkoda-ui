@@ -4,6 +4,7 @@ import type { Attachment, ShopThread } from '../domain/types'
 import { fileToAttachment, revokeAttachmentPreview, revokeAttachmentsPreview } from '../utils/attachments'
 import { formatDateTime } from '../utils/format'
 import { AttachmentGrid } from './AttachmentGrid'
+import { ShopAvatar } from './ShopAvatar'
 
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
@@ -77,9 +78,12 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
         }}
       >
         <header className="thread-header">
-          <div>
-            <p className="eyebrow">{t('thread.eyebrow')}</p>
-            <h3>{thread.shopName}</h3>
+          <div className="thread-header-main">
+            <ShopAvatar name={thread.shopName} logoUrl={thread.logoUrl} />
+            <div>
+              <p className="eyebrow">{t('thread.eyebrow')}</p>
+              <h3>{thread.shopName}</h3>
+            </div>
           </div>
           <button className="btn btn-ghost" onClick={onClose}>
             <svg
@@ -102,11 +106,16 @@ export function ShopThreadPanel({ thread, readOnly, onClose, onSend }: ShopThrea
           {hasNeedsAnswer && !readOnly ? <div className="thread-needs-answer">{t('thread.needsAnswer')}</div> : null}
 
           {thread.messages.map((message) => (
-            <article className={`thread-message thread-message-${message.author}`} key={message.id}>
-              <p>{message.text}</p>
-              {message.attachments.length > 0 ? <AttachmentGrid attachments={message.attachments} /> : null}
-              <small>{formatDateTime(message.sentAt, i18n.language)}</small>
-            </article>
+            <div className={`shop-msg-row shop-msg-row-${message.author}`} key={message.id}>
+              <span className={`avatar ${message.author === 'self' ? 'avatar-self' : 'avatar-other'}`}>
+                {message.author === 'self' ? 'W' : 'K'}
+              </span>
+              <article className={`thread-message thread-message-${message.author}`}>
+                <p>{message.text}</p>
+                {message.attachments.length > 0 ? <AttachmentGrid attachments={message.attachments} /> : null}
+                <small>{formatDateTime(message.sentAt, i18n.language)}</small>
+              </article>
+            </div>
           ))}
           <div ref={messagesEndRef} />
         </div>

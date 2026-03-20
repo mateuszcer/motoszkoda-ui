@@ -28,139 +28,182 @@ function statusToFilter(status: ShopRequestStatus | null): ShopInboxFilter {
   }
 }
 
+function statusBadgeClass(status: ShopRequestStatus | null): string {
+  switch (status) {
+    case 'PENDING':
+      return 'badge badge-blue'
+    case 'ACKNOWLEDGED':
+      return 'badge badge-amber'
+    case 'QUOTED':
+      return 'badge badge-green'
+    case 'DECLINED':
+      return 'badge badge-red'
+    default:
+      return 'badge badge-blue'
+  }
+}
+
 export function ShopInboxView({ queueItems, onOpenRequest, onAcknowledge, onDecline }: ShopInboxViewProps) {
   const { t, i18n } = useTranslation()
-  const [filter, setFilter] = useState<ShopInboxFilter>('all')
+  const [activeTab, setActiveTab] = useState<ShopInboxFilter>('all')
   const [search, setSearch] = useState('')
 
-  const stats = useMemo(() => {
-    const newCount = queueItems.filter((i) => i.status === 'PENDING' || i.status === null).length
-    const inProgress = queueItems.filter((i) => i.status === 'ACKNOWLEDGED').length
-    const quoted = queueItems.filter((i) => i.status === 'QUOTED').length
-    return { newCount, inProgress, quoted, total: queueItems.length }
+  const tabCounts = useMemo(() => {
+    const counts: Record<ShopInboxFilter, number> = {
+      all: queueItems.length,
+      new: 0,
+      in_progress: 0,
+      quoted: 0,
+      declined: 0,
+    }
+    for (const item of queueItems) {
+      counts[statusToFilter(item.status)]++
+    }
+    return counts
   }, [queueItems])
 
   const filtered = useMemo(() => {
-    let items = queueItems
-    if (filter !== 'all') {
-      items = items.filter((i) => statusToFilter(i.status) === filter)
+    const items = activeTab === 'all' ? queueItems : queueItems.filter((i) => statusToFilter(i.status) === activeTab)
+    if (!search.trim()) {
+      return items
     }
-    if (search.trim()) {
-      const q = search.toLowerCase()
-      items = items.filter(
-        (i) =>
-          i.make.toLowerCase().includes(q) ||
-          i.model.toLowerCase().includes(q) ||
-          i.description.toLowerCase().includes(q),
-      )
-    }
-    return items
-  }, [queueItems, filter, search])
+
+    const query = search.trim().toLowerCase()
+    return items.filter(
+      (item) =>
+        item.make.toLowerCase().includes(query) ||
+        item.model.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query),
+    )
+  }, [activeTab, queueItems, search])
 
   return (
     <section className="screen shop-inbox-screen">
-      <header className="shop-inbox-hero">
-        <div className="hero-content">
-          <p className="eyebrow">{t('shopInbox.eyebrow')}</p>
-          <h1>{t('shopInbox.headline')}</h1>
-          <p>{t('shopInbox.subheadline')}</p>
-        </div>
-      </header>
-
-      <div className="stats-row">
-        <div className="stat-item">
-          <span className="stat-number">{stats.newCount}</span>
-          <span className="stat-label">{t('shopInbox.statNew')}</span>
-        </div>
-        <div className="stat-divider" />
-        <div className="stat-item">
-          <span className="stat-number">{stats.inProgress}</span>
-          <span className="stat-label">{t('shopInbox.statInProgress')}</span>
-        </div>
-        <div className="stat-divider" />
-        <div className="stat-item">
-          <span className="stat-number">{stats.quoted}</span>
-          <span className="stat-label">{t('shopInbox.statQuoted')}</span>
-        </div>
-        <div className="stat-divider" />
-        <div className="stat-item">
-          <span className="stat-number">{stats.total}</span>
-          <span className="stat-label">{t('shopInbox.statTotal')}</span>
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">{t('shopInbox.headline')}</h1>
+          <p className="page-subtitle">{t('shopInbox.subheadline')}</p>
         </div>
       </div>
 
-      <div className="shop-search">
-        <input
-          type="text"
-          placeholder={t('shopInbox.searchPlaceholder')}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+      <div className="card">
+        <div className="card-header">
+          <nav className="tabs-nav">
+            {FILTERS.map((tab) => (
+              <button
+                key={tab}
+                className={`tab-item ${activeTab === tab ? 'tab-item-active' : ''}`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {t(`shopInbox.filter_${tab}`)}
+                <span className="tab-count">{tabCounts[tab]}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
 
-      <div className="filter-chips">
-        {FILTERS.map((f) => (
-          <button key={f} className={`chip ${filter === f ? 'chip-active' : ''}`} onClick={() => setFilter(f)}>
-            {t(`shopInbox.filter_${f}`)}
-          </button>
-        ))}
-      </div>
+        <div style={{ padding: 'var(--space-4)' }}>
+          <input
+            className="form-input"
+            type="text"
+            placeholder={t('shopInbox.searchPlaceholder')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
-      <div className="cards-stack">
-        {filtered.length === 0 ? <article className="empty-state">{t('shopInbox.noItems')}</article> : null}
-        {filtered.map((item) => {
-          const displayStatus = item.status ?? 'PENDING'
-          return (
-            <article
-              className="request-card shop-queue-card"
-              key={item.repairRequestId}
-              onClick={() => onOpenRequest(item.repairRequestId)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') onOpenRequest(item.repairRequestId)
-              }}
-            >
-              <div>
-                <h3>
-                  {item.make} {item.model} ({item.year})
-                </h3>
-                <p className="description-truncated">{item.description}</p>
-                <div className="queue-card-meta">
-                  <span className="meta-item">{t('shopInbox.kmAway', { distance: item.distanceKm.toFixed(1) })}</span>
-                  <span className="meta-item">{formatDateTime(item.deliveredAt, i18n.language)}</span>
-                  {item.hasMessages ? (
-                    <span className="meta-item unread-indicator">{t('shopInbox.newMessages')}</span>
-                  ) : null}
-                </div>
-                {item.categories.length > 0 ? (
-                  <div className="tags-inline">
-                    {item.categories.map((tag) => (
-                      <span className="pill pill-tag" key={tag}>
-                        {t(`tags.${tag}`, tag)}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-              <div className="request-meta">
-                <span className={`pill pill-shop-${statusToFilter(item.status)}`}>
-                  {t(`shopRequestStatus.${displayStatus}`)}
-                </span>
-                {displayStatus === 'PENDING' ? (
-                  <div className="inbox-quick-actions" onClick={(e) => e.stopPropagation()}>
-                    <button className="btn btn-sm btn-primary" onClick={() => onAcknowledge(item.repairRequestId)}>
-                      {t('shopInbox.acknowledge')}
-                    </button>
-                    <button className="btn btn-sm btn-ghost" onClick={() => onDecline(item.repairRequestId)}>
-                      {t('shopInbox.decline')}
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-            </article>
-          )
-        })}
+        {filtered.length === 0 ? (
+          <div className="empty-state">{t('shopInbox.noItems')}</div>
+        ) : (
+          <div className="data-table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>{t('form.vehicle')}</th>
+                  <th>{t('shopDetail.issueTitle')}</th>
+                  <th>{t('shopInbox.distance')}</th>
+                  <th>{t('shopInbox.statusCol')}</th>
+                  <th>{t('shopInbox.dateCol')}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((item) => {
+                  const displayStatus = item.status ?? 'PENDING'
+                  return (
+                    <tr key={item.repairRequestId} onClick={() => onOpenRequest(item.repairRequestId)}>
+                      <td>
+                        <div className="u-flex u-items-center" style={{ gap: 10 }}>
+                          <span className="vehicle-icon">
+                            {item.make.charAt(0)}
+                            {item.model.charAt(0)}
+                          </span>
+                          <span>
+                            {item.make} {item.model}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        {item.categories.length > 0 ? (
+                          <span className="badge badge-gray">
+                            {t(`tags.${item.categories[0]}`, item.categories[0])}
+                          </span>
+                        ) : null}
+                        <span className="u-text-muted" style={{ marginLeft: item.categories.length > 0 ? 8 : 0 }}>
+                          {item.description.length > 60 ? `${item.description.slice(0, 60)}...` : item.description}
+                        </span>
+                      </td>
+                      <td>{t('shopInbox.kmAway', { distance: item.distanceKm.toFixed(1) })}</td>
+                      <td>
+                        <span className={statusBadgeClass(item.status)}>
+                          <span className="badge-dot" />
+                          {t(`shopRequestStatus.${displayStatus}`)}
+                        </span>
+                      </td>
+                      <td>{formatDateTime(item.deliveredAt, i18n.language)}</td>
+                      <td>
+                        <div className="u-flex" style={{ justifyContent: 'flex-end', gap: '8px' }}>
+                          {displayStatus === 'PENDING' ? (
+                            <>
+                              <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  onAcknowledge(item.repairRequestId)
+                                }}
+                              >
+                                {t('shopInbox.acknowledge')}
+                              </button>
+                              <button
+                                className="btn btn-danger-outline btn-sm"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  onDecline(item.repairRequestId)
+                                }}
+                              >
+                                {t('shopInbox.decline')}
+                              </button>
+                            </>
+                          ) : null}
+                          <button
+                            className="view-link"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onOpenRequest(item.repairRequestId)
+                            }}
+                            type="button"
+                          >
+                            {t('shopInbox.viewDetail')}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </section>
   )

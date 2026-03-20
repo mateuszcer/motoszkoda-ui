@@ -61,15 +61,15 @@
   "home": {
     "eyebrow": "Panel kierowcy",
     "headline": "Znajdź najlepszą wycenę naprawy",
-    "subheadline": "Opisz usterkę raz. Warsztaty z okolicy wyślą Ci wyceny do porównania.",
+    "subheadline": "Zarządzaj swoimi zleceniami i wycenami.",
     "createRequest": "Nowe zlecenie",
     "myRequests": "Moje zlecenia",
     "statOpen": "Otwarte",
     "statClosed": "Zamknięte",
     "statTotal": "Wszystkie",
-    "tabOpen": "Otwarte ({{count}})",
-    "tabClosed": "Zamknięte ({{count}})",
-    "tabAll": "Wszystkie ({{count}})",
+    "tabOpen": "Otwarte",
+    "tabClosed": "Zamknięte",
+    "tabAll": "Wszystkie",
     "activeRequests": "Aktywne zlecenia",
     "updated": "Zaktualizowano {{date}}",
     "quoteCount_one": "{{count}} wycena",
@@ -77,7 +77,12 @@
     "quoteCount_many": "{{count}} wycen",
     "questionCount_one": "{{count}} pytanie",
     "questionCount_few": "{{count}} pytania",
-    "questionCount_many": "{{count}} pytań"
+    "questionCount_many": "{{count}} pytań",
+    "colVehicle": "Pojazd",
+    "colStatus": "Status",
+    "colQuotes": "Wyceny",
+    "colRange": "Zasięg",
+    "colUpdated": "Aktualizacja"
   },
 
   "myRequests": {
@@ -95,6 +100,7 @@
 
   "form": {
     "newRequest": "Nowe zlecenie",
+    "newRequestSubtitle": "Opisz usterkę i otrzymaj wyceny od warsztatów w okolicy",
     "done": "Gotowe",
     "stepCar": "Auto",
     "stepIssue": "Usterka",
@@ -103,22 +109,32 @@
     "titleIssue": "Opisz usterkę",
     "titleLocation": "Lokalizacja i zasięg",
     "titleSubmitted": "Zlecenie wysłane",
+    "vehicle": "Pojazd",
     "vin": "VIN",
+    "vinHint": "opcjonalny - pomaga w dokładnej wycenie",
     "make": "Marka",
     "model": "Model",
     "variant": "Wariant",
     "optional": "opcjonalne",
     "year": "Rok",
-    "moreDetails": "Więcej szczegółów",
-    "hideMoreDetails": "Ukryj szczegóły",
+    "moreDetails": "Więcej szczegółów (silnik, przebieg)",
+    "hideMoreDetails": "Ukryj dodatkowe dane pojazdu",
     "engineType": "Typ silnika",
     "fuelType": "Rodzaj paliwa",
     "mileageKm": "Przebieg (km)",
+    "change": "Zmień",
+    "category": "Kategoria",
     "issueQuestion": "Co się stało z autem?",
     "issuePlaceholder": "Opisz dźwięki, kontrolki i kiedy pojawia się problem.",
     "tagsLabel": "Kategorie",
     "photosLabel": "Zdjęcia / Dokumenty",
+    "photosOptionalHint": "opcjonalne, maks. 5",
+    "photosSummary": "Zdjęcia",
+    "descriptionLabel": "Opis",
+    "notSpecified": "Nie określono",
     "addFile": "+ Dodaj",
+    "uploadTitle": "Przeciągnij zdjęcia lub kliknij aby wybrać",
+    "uploadHint": "JPG, PNG, WebP do 5 MB",
     "noAddress": "Brak adresu",
     "address": "Adres",
     "addressLabel": "Miasto lub adres",
@@ -140,6 +156,12 @@
     "fileTooLarge": "Plik przekracza limit 5 MB",
     "fileTypeNotAllowed": "Dozwolone tylko pliki JPEG, PNG i WebP",
     "maxAttachments": "Maksymalnie 5 załączników",
+    "orderSummary": "Podsumowanie zlecenia",
+    "submitHint": "Zlecenie trafi do warsztatów w okolicy",
+    "noPhotos": "Brak",
+    "photoCount_one": "{{count}} zdjęcie",
+    "photoCount_few": "{{count}} zdjęcia",
+    "photoCount_many": "{{count}} zdjęć",
     "submitRequest": "Wyślij zlecenie",
     "confirmTitle": "Gotowe",
     "confirmMessage": "Twoje zlecenie jest aktywne. Warsztaty z okolicy zaczną wysyłać wyceny.",
@@ -185,7 +207,15 @@
     "phoneCopied": "Skopiowano!",
     "receivedAt": "Otrzymano {{date}}",
     "unansweredBanner": "Masz pytanie od warsztatu. Odpowiedz, żeby dostać wycenę.",
-    "pendingQuestion": "Oczekuje odpowiedzi"
+    "pendingQuestion": "Oczekuje odpowiedzi",
+    "vehicleData": "Dane pojazdu",
+    "issueTitle": "Opis usterki",
+    "photosTitle": "Zdjęcia",
+    "noPhotos": "Brak zdjęć",
+    "noQuotesTitle": "Brak wycen",
+    "noQuotesDesc": "Warsztaty w Twojej okolicy przeglądają Twoje zlecenie. Otrzymasz powiadomienie, gdy pojawi się pierwsza wycena.",
+    "writeMessage": "Napisz wiadomość",
+    "estimatedTime": "szacowany czas: {{count}} dzień/dni"
   },
 
   "thread": {
@@ -238,7 +268,19 @@
     "battery": "akumulator",
     "transmission": "skrzynia biegów",
     "electronics": "elektronika",
-    "air conditioning": "klimatyzacja"
+    "air conditioning": "klimatyzacja",
+    "body": "nadwozie",
+    "service": "serwis / przegląd"
+  },
+
+  "days": {
+    "monday": "Poniedziałek",
+    "tuesday": "Wtorek",
+    "wednesday": "Środa",
+    "thursday": "Czwartek",
+    "friday": "Piątek",
+    "saturday": "Sobota",
+    "sunday": "Niedziela"
   },
 
   "auth": {
@@ -284,6 +326,8 @@
     "shopNoAccount": "Nie masz konta warsztatu?",
     "shopRegisterLink": "Zarejestruj warsztat",
     "forgotPassword": "Nie pamiętasz hasła?",
+    "orDivider": "lub",
+    "continueWithGoogle": "Kontynuuj z Google",
     "forgotPasswordTitle": "Zresetuj hasło",
     "forgotPasswordSubtitle": "Podaj swój email, a wyślemy Ci link do resetowania hasła.",
     "sendResetLink": "Wyślij link",
@@ -358,7 +402,11 @@
     "kmAway": "{{distance}} km",
     "newMessages": "Nowe wiadomości",
     "acknowledge": "Przyjmij",
-    "decline": "Odrzuć"
+    "decline": "Odrzuć",
+    "distance": "Odległość",
+    "statusCol": "Status",
+    "dateCol": "Data",
+    "viewDetail": "Zobacz"
   },
 
   "shopRequestStatus": {
@@ -398,11 +446,25 @@
     "noMessages": "Brak wiadomości.",
     "questionPlaceholder": "Zadaj pytanie kierowcy...",
     "messagePlaceholder": "Wpisz wiadomość...",
-    "askQuestion": "Zadaj pytanie"
+    "askQuestion": "Zadaj pytanie",
+    "noPhotos": "Brak załączonych zdjęć.",
+    "noPhotosShort": "Brak zdjęć",
+    "locationTitle": "Lokalizacja",
+    "orderStatus": "Status zlecenia",
+    "editQuote": "Edytuj",
+    "writeMessage": "Napisz",
+    "callDriver": "Zadzwoń",
+    "distance": "Odległość: {{radius}} km",
+    "statusDescPending": "Nowe zlecenie. Sprawdź i wyślij wycenę lub odrzuć.",
+    "statusDescAcknowledged": "Zlecenie przyjęte. Wyślij wycenę, gdy będziesz gotowy.",
+    "statusDescQuoted": "Twoja wycena została wysłana. Oczekuj na kontakt od kierowcy.",
+    "statusDescDeclined": "To zlecenie zostało odrzucone.",
+    "statusDescClosed": "To zlecenie zostało zamknięte."
   },
 
   "shopQuoteForm": {
     "title": "Wyślij wycenę",
+    "priceType": "Typ ceny",
     "price": "Cena",
     "priceMin": "Cena od",
     "priceMax": "Cena do",
@@ -436,21 +498,38 @@
 
   "shopProfile": {
     "title": "Profil warsztatu",
+    "subtitle": "Informacje widoczne dla kierowców szukających wycen",
+    "sectionPhotoName": "Zdjęcie i nazwa",
+    "sectionLocationContact": "Lokalizacja i kontakt",
+    "sectionAbout": "O warsztacie",
+    "sectionHours": "Godziny otwarcia",
+    "logoTitle": "Logo warsztatu",
+    "logoHint": "JPG lub PNG, maks. 2 MB. Wyświetlane obok Twoich wycen.",
+    "uploadPhoto": "Prześlij zdjęcie",
     "name": "Nazwa warsztatu",
     "namePlaceholder": "Nazwa Twojego warsztatu",
     "address": "Adres",
     "addressPlaceholder": "Ulica i miasto",
+    "city": "Miasto",
+    "cityPlaceholder": "Miasto",
+    "postalCode": "Kod pocztowy",
+    "postalCodePlaceholder": "00-000",
     "phone": "Telefon",
     "phonePlaceholder": "123456789",
     "description": "Opis",
     "descriptionPlaceholder": "Opisz specjalizacje swojego warsztatu...",
+    "descriptionHint": "(widoczny dla kierowców)",
+    "charCount": "{{count}} / {{max}} znaków",
+    "specializations": "Specjalizacje",
     "save": "Zapisz profil",
     "saving": "Zapisywanie...",
     "saved": "Profil zapisany.",
     "saveFailed": "Nie udało się zapisać profilu. Spróbuj ponownie.",
     "nameRequired": "Nazwa warsztatu jest wymagana.",
     "addressRequired": "Adres jest wymagany.",
-    "selectAddress": "Wybierz adres z podpowiedzi."
+    "selectAddress": "Wybierz adres z podpowiedzi.",
+    "lastSaved": "Ostatnio zapisano: {{date}}",
+    "closed": "Zamknięte"
   },
 
   "landing": {
@@ -799,7 +878,28 @@
     "successTimeout": "Aktywacja trwa dłużej niż zwykle. Spróbuj odświeżyć stronę.",
     "cancelTitle": "Płatność anulowana",
     "cancelMessage": "Nie dokonano żadnych zmian w Twoim planie.",
-    "cancelCta": "Wróć do panelu"
+    "cancelCta": "Wróć do panelu",
+    "subtitle": "Twoje konto i wykorzystanie",
+    "planDescFree": "Podstawowe funkcje do porównywania wycen",
+    "planDescPro": "Wszystkie limity zniesione",
+    "usage": "Wykorzystanie",
+    "questionsNote": "Maks. {{max}} pytań na zlecenie",
+    "needMore": "Potrzebujesz więcej?",
+    "proRemovesLimits": "Plan PRO zdejmuje wszystkie limity — nieograniczone zlecenia, pytania i priorytetowe powiadomienia.",
+    "benefitNoLimitRequests": "Bez limitu zleceń",
+    "benefitNoLimitQuestions": "Bez limitu pytań",
+    "benefitPriorityNotifs": "Powiadomienia priorytetowe",
+    "notifications": "Powiadomienia",
+    "emailNotif": "Powiadomienia email",
+    "emailNotifDesc": "Nowe wyceny, wiadomości i zmiany statusu",
+    "pushNotif": "Powiadomienia push",
+    "pushNotifDesc": "Natychmiastowe powiadomienia w przeglądarce",
+    "accountInfo": "Dane konta",
+    "edit": "Edytuj",
+    "fullName": "Imię i nazwisko",
+    "email": "Email",
+    "phone": "Telefon",
+    "location": "Lokalizacja"
   },
 
   "shopPlan": {
@@ -812,7 +912,32 @@
     "restoreSubscription": "Przywróć subskrypcję",
     "cancelAtNotice": "Twoja subskrypcja zostanie anulowana {{date}}.",
     "voucherDescription": "Twój warsztat działa na podstawie vouchera. Nie musisz zarządzać subskrypcją.",
-    "portalError": "Nie udało się otworzyć portalu subskrypcji. Spróbuj ponownie."
+    "portalError": "Nie udało się otworzyć portalu subskrypcji. Spróbuj ponownie.",
+    "subtitle": "Zarządzaj planem i rozliczeniami",
+    "proName": "Plan Warsztat PRO",
+    "renewsAt": "Odnawia się {{date}} · 99 zł / miesiąc",
+    "quotesSent": "Wysłane wyceny w tym miesiącu",
+    "activeConversations": "Aktywne rozmowy",
+    "unlimited": "Bez limitu",
+    "planIncludes": "Co zawiera Twój plan",
+    "feat1": "Nielimitowane wyceny",
+    "feat2": "Nielimitowane wiadomości do kierowców",
+    "feat3": "Wyszukiwanie części z katalogu",
+    "feat4": "Profil warsztatu widoczny dla kierowców",
+    "feat5": "Powiadomienia o nowych zleceniach",
+    "feat6": "Priorytetowe wsparcie",
+    "paymentMethod": "Metoda płatności",
+    "changePayment": "Zmień",
+    "visaEnding": "Visa kończąca się na {{last4}}",
+    "expires": "Wygasa {{date}}",
+    "paymentHistory": "Historia płatności",
+    "downloadInvoices": "Pobierz wszystkie faktury",
+    "date": "Data",
+    "description": "Opis",
+    "amount": "Kwota",
+    "status": "Status",
+    "invoice": "Faktura",
+    "paid": "Opłacona"
   },
 
   "partsSearch": {
@@ -868,5 +993,38 @@
     "activationTimeout": "Aktywacja trwa dłużej niż zwykle. Odśwież stronę lub napisz do nas.",
     "retryActivation": "Spróbuj ponownie",
     "continueToDashboard": "Przejdź do panelu"
+  },
+
+  "sidebar": {
+    "driver": "Kierowca",
+    "shop": "Warsztat",
+    "admin": "Admin",
+    "account": "Konto",
+    "overview": "Przegląd",
+    "myRequests": "Moje zlecenia",
+    "messages": "Wiadomości",
+    "myPlan": "Mój plan",
+    "settings": "Ustawienia",
+    "inbox": "Skrzynka",
+    "sentQuotes": "Wysłane wyceny",
+    "shopProfile": "Profil warsztatu",
+    "subscription": "Subskrypcja",
+    "logout": "Wyloguj"
+  },
+
+  "topbar": {
+    "searchPlaceholder": "Szukaj zleceń..."
+  },
+
+  "messages": {
+    "title": "Wiadomości",
+    "searchPlaceholder": "Szukaj...",
+    "noConversations": "Brak rozmów",
+    "noMessages": "Brak wiadomości. Rozpocznij rozmowę!",
+    "inputPlaceholder": "Napisz wiadomość...",
+    "send": "Wyślij",
+    "viewRequest": "Zobacz zlecenie",
+    "today": "Dzisiaj",
+    "yesterday": "Wczoraj"
   }
 }

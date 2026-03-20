@@ -142,6 +142,7 @@ export interface CompareQuoteSummary {
 export interface CompareViewResponse {
   shopId: string
   shopName: string
+  logoUrl: string | null
   distanceKm: number
   shopRequestStatus: ApiShopRequestStatus | null
   quoteSummary: CompareQuoteSummary | null

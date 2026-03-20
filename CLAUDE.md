@@ -10,17 +10,18 @@ Stack: React 19 + Vite 7 + TypeScript 5.9, pure CSS, i18next (PL/EN/DE), deploye
 **Always read `design-guidelines.md` before making any UI or styling changes.**
 It defines the complete design system: colors, typography, spacing, components, shadows, radii, motion, dark mode, and accessibility rules. Key rules:
 
-- One accent color only: brand teal `#007C7C` (`--mint-500`)
+- One accent color only: brand teal `#1a7a5e` (`--teal-600`)
 - Albert Sans for landing page headlines ONLY — never in app UI
 - DM Sans for ALL app UI text and landing body/buttons
 - No italic anywhere. No uppercase on buttons/headings (only overline labels)
-- Cards: no visible borders, separation through shadow only
-- Buttons: all pill-shaped (999px radius), one primary per viewport
-- Page background: always `--neutral-50`, never pure white
+- Cards: bordered (`0.5px solid --gray-200`), no visible shadows
+- Buttons: 6px border-radius (`--radius-sm`), one primary per viewport
+- Page background: always `--gray-50`, never pure white
 - Shadow tint: `rgba(27,53,51,...)` not pure black
 - Respect `prefers-reduced-motion`
 - Touch targets: 44x44px minimum
 - All inputs must have `<label>`
+- Layout: persistent 220px dark sidebar for authenticated screens
 
 ## Architecture
 
@@ -30,10 +31,19 @@ It defines the complete design system: colors, typography, spacing, components, 
 - Screens rendered via conditional returns in App.tsx (not a router library)
 - Screen types defined in `src/domain/types.ts`
 
+### Layout
+- **Authenticated screens** use `AppLayout` (sidebar + topbar + content area)
+- `AppSidebar` — 220px dark sidebar (teal-900 for driver, gray-900 for shop/admin), role-based nav
+- `AppTopbar` — 52px topbar with breadcrumb, user avatar, theme toggle, language picker
+- `AppLayout` — flexbox wrapper: sidebar (fixed 220px) + main (topbar + scrollable content)
+- **Unauthenticated screens** (landing, login, register, etc.) still use `AppHeader` (top bar)
+
 ### Component Patterns
-- `AppHeader` — shared header component with `brandMark`, `onBrandClick`, `navSlot` props. Use this instead of writing inline `<header>` blocks
+- `AppHeader` — header for unauthenticated screens only (landing, login, register)
+- `AppSidebar` + `AppTopbar` + `AppLayout` — layout for authenticated screens
 - `ErrorBoundary` — wrap route-level content and third-party integrations
 - `BannerStack` — notification toasts, defined in App.tsx
+- `MessagesView` — split-pane messages screen (conversation list + chat)
 - All route-level components are lazy-loaded via `React.lazy()` + `Suspense`
 - Use `React.memo()` for stable leaf components that receive callbacks
 
@@ -70,11 +80,15 @@ src/
 - `useCallback` for handlers passed as props, `useMemo` for derived data
 
 ### CSS
-- Pure CSS, no framework. All app styles in `src/App.css` (~3800 lines)
+- Pure CSS, no framework. All app styles in `src/App.css` (~5000 lines)
 - Landing page styles in `src/components/LandingPage.css` (prefixed with `lp-`)
-- Design tokens defined as CSS custom properties in `:root`
+- Design tokens: `--teal-*` (accent), `--gray-*` (neutrals), `--green/amber/red/blue-*` (status)
+- Layout vars: `--sidebar-width: 220px`, `--topbar-height: 52px`
+- Radius: `--radius-sm: 6px`, `--radius-md: 8px`, `--radius-lg: 12px`
 - Z-index scale: `--z-banner: 50`, `--z-dropdown: 100`, `--z-overlay: 200`, `--z-modal: 300`, `--z-toast: 400`
-- Utility classes available: `u-text-center`, `u-flex`, `u-flex-1`, `u-contents`, `u-w-full`, `u-mt-3`, `u-mt-4`, `u-text-muted`, `u-text-faint`, `u-gap-3`
+- Component classes: `card`, `card-header`, `badge`, `data-table`, `tab-item`, `toggle-switch`, `form-input`, `avatar`, `page-header`, `cat-pill`, `upload-zone`, `summary-box`, `flow-stepper`, `segmented-control`
+- Layout classes: `app-layout`, `app-sidebar`, `app-topbar`, `messages-layout`
+- Utility classes: `u-text-center`, `u-flex`, `u-flex-1`, `u-contents`, `u-w-full`, `u-mt-3`, `u-mt-4`, `u-text-muted`, `u-text-faint`, `u-gap-3`
 - **Prefer CSS classes over inline `style={{}}` objects** — inline styles create new references every render
 - Dark mode via `[data-theme="dark"]` attribute on `<html>`
 
@@ -111,11 +125,11 @@ src/
 
 - Commit `.env` files (they're gitignored; use `.env.example` for reference)
 - Add inline `style={{}}` objects — use CSS classes or utility classes instead
-- Duplicate header markup — use `<AppHeader>` component
+- Duplicate header markup — use `<AppHeader>` for unauth screens, `<AppSidebar>` + `<AppTopbar>` for auth screens
 - Import `leaflet/dist/leaflet.css` globally — it's co-located with `LocationMap.tsx`
 - Use `any` type without explicit justification
 - Skip error boundaries around lazy-loaded or third-party components
 - Add new fonts or colors outside the design system
-- Use borders on cards (use shadows for separation)
+- Use shadows on cards (use 0.5px borders for separation)
 - Make full-width buttons on desktop
 - Use italic or uppercase on buttons/headings

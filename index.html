@@ -31,20 +31,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Critical font — preloaded -->
     <link
+      id="font-critical"
       rel="preload"
       as="style"
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&subset=latin,latin-ext&display=swap"
-      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=DM+Sans:wght@400;500;600;700&subset=latin,latin-ext&display=swap"
     />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&subset=latin,latin-ext&display=swap" /></noscript>
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=DM+Sans:wght@400;500;600;700&subset=latin,latin-ext&display=swap" /></noscript>
     <!-- Non-critical fonts — deferred (Albert Sans only needs 400;600;700 for landing headlines) -->
     <link
+      id="font-deferred"
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Sora:wght@600..700&subset=latin,latin-ext&display=swap"
       media="print"
-      onload="this.media='all'"
     />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Sora:wght@600;700&subset=latin,latin-ext&display=swap" /></noscript>
+    <script>
+      document.getElementById('font-critical').onload=function(){this.rel='stylesheet'};
+      document.getElementById('font-deferred').onload=function(){this.media='all'};
+    </script>
   </head>
   <body>
     <div id="root"></div>

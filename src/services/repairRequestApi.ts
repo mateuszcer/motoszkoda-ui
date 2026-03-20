@@ -112,9 +112,12 @@ const repairRequestApiImpl: RepairRequestApi = {
     if (!rawRequest) return null
 
     // Build shopName lookup from compare data
-    const shopNameMap = new Map<string, string>()
+    const shopMetaMap = new Map<string, { name: string; logoUrl?: string }>()
     for (const cv of compareData) {
-      shopNameMap.set(cv.shopId, cv.shopName)
+      shopMetaMap.set(cv.shopId, {
+        name: cv.shopName,
+        logoUrl: cv.logoUrl ?? undefined,
+      })
     }
 
     // Map compare data → ShopQuoteCard[]
@@ -148,8 +151,9 @@ const repairRequestApiImpl: RepairRequestApi = {
 
         const messages: ThreadMessage[] = rawMessages.map((m) => mapMessage(m, 'DRIVER')).reverse() // API returns newest first, UI expects oldest first
 
-        const shopName = shopNameMap.get(summary.shopId) ?? summary.shopId
-        return [summary.shopId, mapThread(summary, shopName, messages)]
+        const shopMeta = shopMetaMap.get(summary.shopId)
+        const shopName = shopMeta?.name ?? summary.shopId
+        return [summary.shopId, mapThread(summary, shopName, messages, shopMeta?.logoUrl)]
       }),
     )
 

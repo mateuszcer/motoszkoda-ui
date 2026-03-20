@@ -61,21 +61,26 @@
   "home": {
     "eyebrow": "Driver Portal",
     "headline": "Find the best repair quote",
-    "subheadline": "Describe your car issue once. Nearby shops send you quotes to compare.",
+    "subheadline": "Manage your requests and quotes.",
     "createRequest": "Create Repair Request",
     "myRequests": "My Requests",
     "statOpen": "Open",
     "statClosed": "Closed",
     "statTotal": "Total",
-    "tabOpen": "Open ({{count}})",
-    "tabClosed": "Closed ({{count}})",
-    "tabAll": "All ({{count}})",
+    "tabOpen": "Open",
+    "tabClosed": "Closed",
+    "tabAll": "All",
     "activeRequests": "Active Requests",
     "updated": "Updated {{date}}",
     "quoteCount_one": "{{count}} quote",
     "quoteCount_other": "{{count}} quotes",
     "questionCount_one": "{{count}} question",
-    "questionCount_other": "{{count}} questions"
+    "questionCount_other": "{{count}} questions",
+    "colVehicle": "Vehicle",
+    "colStatus": "Status",
+    "colQuotes": "Quotes",
+    "colRange": "Range",
+    "colUpdated": "Updated"
   },
 
   "myRequests": {
@@ -91,6 +96,7 @@
 
   "form": {
     "newRequest": "New Request",
+    "newRequestSubtitle": "Describe the issue and get quotes from nearby shops",
     "done": "Done",
     "stepCar": "Car",
     "stepIssue": "Issue",
@@ -99,22 +105,32 @@
     "titleIssue": "Describe the Issue",
     "titleLocation": "Location & Radius",
     "titleSubmitted": "Request Submitted",
+    "vehicle": "Vehicle",
     "vin": "VIN",
+    "vinHint": "optional - helps with accurate quotes",
     "make": "Make",
     "model": "Model",
     "variant": "Variant",
     "optional": "optional",
     "year": "Year",
-    "moreDetails": "More details",
-    "hideMoreDetails": "Hide more details",
+    "moreDetails": "More details (engine, mileage)",
+    "hideMoreDetails": "Hide extra vehicle details",
     "engineType": "Engine Type",
     "fuelType": "Fuel Type",
     "mileageKm": "Mileage (km)",
+    "change": "Change",
+    "category": "Category",
     "issueQuestion": "What's wrong with the car?",
     "issuePlaceholder": "Describe sounds, warning lights, and when the issue appears.",
     "tagsLabel": "Tags",
     "photosLabel": "Photos / Documents",
+    "photosOptionalHint": "optional, max. 5",
+    "photosSummary": "Photos",
+    "descriptionLabel": "Description",
+    "notSpecified": "Not specified",
     "addFile": "+ Add",
+    "uploadTitle": "Drag photos here or click to select",
+    "uploadHint": "JPG, PNG, WebP up to 5 MB",
     "noAddress": "No address yet",
     "address": "Address",
     "addressLabel": "City or address",
@@ -136,6 +152,11 @@
     "fileTooLarge": "File exceeds 5 MB limit",
     "fileTypeNotAllowed": "Only JPEG, PNG, and WebP images are allowed",
     "maxAttachments": "Maximum 5 attachments allowed",
+    "orderSummary": "Request summary",
+    "submitHint": "The request will reach nearby shops",
+    "noPhotos": "None",
+    "photoCount_one": "{{count}} photo",
+    "photoCount_other": "{{count}} photos",
     "submitRequest": "Submit Request",
     "confirmTitle": "You're all set",
     "confirmMessage": "Your request is live. Shops in your area will start sending quotes.",
@@ -180,7 +201,15 @@
     "phoneCopied": "Copied!",
     "receivedAt": "Received {{date}}",
     "unansweredBanner": "A shop asked you a question. Reply to get a quote.",
-    "pendingQuestion": "Needs reply"
+    "pendingQuestion": "Needs reply",
+    "vehicleData": "Vehicle data",
+    "issueTitle": "Issue description",
+    "photosTitle": "Photos",
+    "noPhotos": "No photos",
+    "noQuotesTitle": "No quotes",
+    "noQuotesDesc": "Shops in your area are reviewing your request. You will be notified when the first quote arrives.",
+    "writeMessage": "Write message",
+    "estimatedTime": "estimated time: {{count}} day(s)"
   },
 
   "thread": {
@@ -233,7 +262,19 @@
     "battery": "battery",
     "transmission": "transmission",
     "electronics": "electronics",
-    "air conditioning": "air conditioning"
+    "air conditioning": "air conditioning",
+    "body": "body",
+    "service": "service / inspection"
+  },
+
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
   },
 
   "auth": {
@@ -279,6 +320,8 @@
     "shopNoAccount": "Don't have a shop account?",
     "shopRegisterLink": "Register your shop",
     "forgotPassword": "Forgot password?",
+    "orDivider": "or",
+    "continueWithGoogle": "Continue with Google",
     "forgotPasswordTitle": "Reset your password",
     "forgotPasswordSubtitle": "Enter your email and we'll send you a reset link.",
     "sendResetLink": "Send reset link",
@@ -353,7 +396,11 @@
     "kmAway": "{{distance}} km away",
     "newMessages": "New messages",
     "acknowledge": "Acknowledge",
-    "decline": "Decline"
+    "decline": "Decline",
+    "distance": "Distance",
+    "statusCol": "Status",
+    "dateCol": "Date",
+    "viewDetail": "View"
   },
 
   "shopRequestStatus": {
@@ -393,7 +440,20 @@
     "noMessages": "No messages yet.",
     "questionPlaceholder": "Ask the driver a question...",
     "messagePlaceholder": "Type a message...",
-    "askQuestion": "Ask Question"
+    "askQuestion": "Ask Question",
+    "noPhotos": "No photos attached.",
+    "noPhotosShort": "No photos",
+    "locationTitle": "Location",
+    "orderStatus": "Order status",
+    "editQuote": "Edit",
+    "writeMessage": "Write",
+    "callDriver": "Call",
+    "distance": "Distance: {{radius}} km",
+    "statusDescPending": "New request. Review and send your quote or decline.",
+    "statusDescAcknowledged": "You acknowledged this request. Send a quote when ready.",
+    "statusDescQuoted": "Your quote has been sent. Await contact from the driver.",
+    "statusDescDeclined": "You declined this request.",
+    "statusDescClosed": "This request has been closed."
   },
 
   "shopQuoteForm": {
@@ -401,6 +461,7 @@
     "price": "Price",
     "priceMin": "Min price",
     "priceMax": "Max price",
+    "priceType": "Price type",
     "singlePrice": "Fixed price",
     "priceRange": "Price range",
     "addLineItems": "Add breakdown",
@@ -431,21 +492,38 @@
 
   "shopProfile": {
     "title": "Shop Profile",
+    "subtitle": "Information visible to drivers looking for quotes",
+    "sectionPhotoName": "Photo and name",
+    "sectionLocationContact": "Location and contact",
+    "sectionAbout": "About the shop",
+    "sectionHours": "Opening hours",
+    "logoTitle": "Shop logo",
+    "logoHint": "JPG or PNG, max 2 MB. Displayed next to your quotes.",
+    "uploadPhoto": "Upload photo",
     "name": "Shop Name",
     "namePlaceholder": "Your workshop name",
     "address": "Address",
     "addressPlaceholder": "Street and city",
+    "city": "City",
+    "cityPlaceholder": "City",
+    "postalCode": "Postal code",
+    "postalCodePlaceholder": "00-000",
     "phone": "Phone",
     "phonePlaceholder": "123456789",
     "description": "Description",
     "descriptionPlaceholder": "Describe your shop's specialties...",
+    "descriptionHint": "(visible to drivers)",
+    "charCount": "{{count}} / {{max}} characters",
+    "specializations": "Specializations",
     "save": "Save Profile",
     "saving": "Saving...",
     "saved": "Profile saved successfully.",
     "saveFailed": "Failed to save profile. Please try again.",
     "nameRequired": "Shop name is required.",
     "addressRequired": "Address is required.",
-    "selectAddress": "Please select an address from the suggestions."
+    "selectAddress": "Please select an address from the suggestions.",
+    "lastSaved": "Last saved: {{date}}",
+    "closed": "Closed"
   },
 
   "landing": {
@@ -794,7 +872,28 @@
     "successTimeout": "Activation is taking longer than expected. Try refreshing.",
     "cancelTitle": "Payment cancelled",
     "cancelMessage": "No changes were made to your plan.",
-    "cancelCta": "Back to dashboard"
+    "cancelCta": "Back to dashboard",
+    "subtitle": "Your account and usage",
+    "planDescFree": "Basic features for comparing quotes",
+    "planDescPro": "All limits removed",
+    "usage": "Usage",
+    "questionsNote": "Max. {{max}} questions per request",
+    "needMore": "Need more?",
+    "proRemovesLimits": "PRO removes all limits — unlimited requests, questions, and priority notifications.",
+    "benefitNoLimitRequests": "Unlimited requests",
+    "benefitNoLimitQuestions": "Unlimited questions",
+    "benefitPriorityNotifs": "Priority notifications",
+    "notifications": "Notifications",
+    "emailNotif": "Email notifications",
+    "emailNotifDesc": "New quotes, messages, and status changes",
+    "pushNotif": "Push notifications",
+    "pushNotifDesc": "Instant browser notifications",
+    "accountInfo": "Account details",
+    "edit": "Edit",
+    "fullName": "Full name",
+    "email": "Email",
+    "phone": "Phone",
+    "location": "Location"
   },
 
   "shopPlan": {
@@ -807,7 +906,32 @@
     "restoreSubscription": "Restore subscription",
     "cancelAtNotice": "Your subscription will be cancelled on {{date}}.",
     "voucherDescription": "Your shop is activated with a voucher. No subscription management needed.",
-    "portalError": "Could not open subscription portal. Please try again."
+    "portalError": "Could not open subscription portal. Please try again.",
+    "subtitle": "Manage plan and billing",
+    "proName": "Workshop PRO plan",
+    "renewsAt": "Renews {{date}} · 99 zl / month",
+    "quotesSent": "Quotes sent this month",
+    "activeConversations": "Active conversations",
+    "unlimited": "Unlimited",
+    "planIncludes": "What your plan includes",
+    "feat1": "Unlimited quotes",
+    "feat2": "Unlimited messages to drivers",
+    "feat3": "Parts catalog search",
+    "feat4": "Workshop profile visible to drivers",
+    "feat5": "New order notifications",
+    "feat6": "Priority support",
+    "paymentMethod": "Payment method",
+    "changePayment": "Change",
+    "visaEnding": "Visa ending in {{last4}}",
+    "expires": "Expires {{date}}",
+    "paymentHistory": "Payment history",
+    "downloadInvoices": "Download all invoices",
+    "date": "Date",
+    "description": "Description",
+    "amount": "Amount",
+    "status": "Status",
+    "invoice": "Invoice",
+    "paid": "Paid"
   },
 
   "partsSearch": {
@@ -863,5 +987,38 @@
     "activationTimeout": "Activation is taking longer than expected. Please try refreshing or contact support.",
     "retryActivation": "Retry",
     "continueToDashboard": "Continue to Dashboard"
+  },
+
+  "sidebar": {
+    "driver": "Driver",
+    "shop": "Workshop",
+    "admin": "Admin",
+    "account": "Account",
+    "overview": "Overview",
+    "myRequests": "My requests",
+    "messages": "Messages",
+    "myPlan": "My plan",
+    "settings": "Settings",
+    "inbox": "Inbox",
+    "sentQuotes": "Sent quotes",
+    "shopProfile": "Workshop profile",
+    "subscription": "Subscription",
+    "logout": "Log out"
+  },
+
+  "topbar": {
+    "searchPlaceholder": "Search requests..."
+  },
+
+  "messages": {
+    "title": "Messages",
+    "searchPlaceholder": "Search...",
+    "noConversations": "No conversations yet",
+    "noMessages": "No messages yet. Start the conversation!",
+    "inputPlaceholder": "Write a message...",
+    "send": "Send",
+    "viewRequest": "View request",
+    "today": "Today",
+    "yesterday": "Yesterday"
   }
 }

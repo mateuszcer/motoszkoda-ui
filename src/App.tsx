@@ -1,30 +1,22 @@
-import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './App.css'
+import { AdminLoginView } from './components/AdminLoginView'
 import { AppHeader } from './components/AppHeader'
+import { AppLayout } from './components/AppLayout'
+import { AppSidebar } from './components/AppSidebar'
+import { AppTopbar } from './components/AppTopbar'
+import { CheckEmailView } from './components/CheckEmailView'
+import { EnrollmentGate } from './components/EnrollmentGate'
 import { ErrorBoundary } from './components/ErrorBoundary'
-// Lazy-loaded auth & gate components
-const EnrollmentGate = lazy(() => import('./components/EnrollmentGate').then((m) => ({ default: m.EnrollmentGate })))
-const LoginView = lazy(() => import('./components/LoginView').then((m) => ({ default: m.LoginView })))
-const RegisterView = lazy(() => import('./components/RegisterView').then((m) => ({ default: m.RegisterView })))
-const CheckEmailView = lazy(() => import('./components/CheckEmailView').then((m) => ({ default: m.CheckEmailView })))
-const SignupConfirmationView = lazy(() =>
-  import('./components/SignupConfirmationView').then((m) => ({ default: m.SignupConfirmationView })),
-)
-const ForgotPasswordView = lazy(() =>
-  import('./components/ForgotPasswordView').then((m) => ({ default: m.ForgotPasswordView })),
-)
-const ResetPasswordView = lazy(() =>
-  import('./components/ResetPasswordView').then((m) => ({ default: m.ResetPasswordView })),
-)
-const AdminLoginView = lazy(() => import('./components/AdminLoginView').then((m) => ({ default: m.AdminLoginView })))
-const ShopRegisterView = lazy(() =>
-  import('./components/ShopRegisterView').then((m) => ({ default: m.ShopRegisterView })),
-)
-const UpgradeLimitModal = lazy(() =>
-  import('./components/UpgradeLimitModal').then((m) => ({ default: m.UpgradeLimitModal })),
-)
-const SettingsView = lazy(() => import('./components/SettingsView').then((m) => ({ default: m.SettingsView })))
+import { ForgotPasswordView } from './components/ForgotPasswordView'
+import { LoginView } from './components/LoginView'
+import { RegisterView } from './components/RegisterView'
+import { ResetPasswordView } from './components/ResetPasswordView'
+import { SettingsView } from './components/SettingsView'
+import { ShopRegisterView } from './components/ShopRegisterView'
+import { SignupConfirmationView } from './components/SignupConfirmationView'
+import { UpgradeLimitModal } from './components/UpgradeLimitModal'
 import type { BillingInterval, ShopRegistrationRequest, UserPlanInfo } from './domain/apiTypes'
 import type { AuthState } from './domain/auth-types'
 import type {
@@ -49,33 +41,36 @@ import { repairRequestApi } from './services/repairRequestApi'
 import { updateLanguagePreference } from './services/userSettingsApi'
 import { assertSafeRedirectUrl } from './utils/validation'
 
-// Lazy-loaded route components
-const LandingPage = lazy(() => import('./components/LandingPage').then((m) => ({ default: m.LandingPage })))
-const HomeView = lazy(() => import('./components/HomeView').then((m) => ({ default: m.HomeView })))
-const CreateRepairRequestFlow = lazy(() =>
-  import('./components/CreateRepairRequestFlow').then((m) => ({ default: m.CreateRepairRequestFlow })),
-)
-const MyRequestsView = lazy(() => import('./components/MyRequestsView').then((m) => ({ default: m.MyRequestsView })))
-const RepairRequestDetail = lazy(() =>
-  import('./components/RepairRequestDetail').then((m) => ({ default: m.RepairRequestDetail })),
-)
-const PlanView = lazy(() => import('./components/PlanView').then((m) => ({ default: m.PlanView })))
-const PlanSuccessView = lazy(() => import('./components/PlanSuccessView').then((m) => ({ default: m.PlanSuccessView })))
-const PlanCancelView = lazy(() => import('./components/PlanCancelView').then((m) => ({ default: m.PlanCancelView })))
-const AdminVouchersView = lazy(() =>
-  import('./components/AdminVouchersView').then((m) => ({ default: m.AdminVouchersView })),
-)
-const ShopInboxView = lazy(() => import('./components/ShopInboxView').then((m) => ({ default: m.ShopInboxView })))
-const ShopRequestDetailView = lazy(() =>
-  import('./components/ShopRequestDetailView').then((m) => ({ default: m.ShopRequestDetailView })),
-)
-const ShopSendQuoteView = lazy(() =>
-  import('./components/ShopSendQuoteView').then((m) => ({ default: m.ShopSendQuoteView })),
-)
-const ShopProfileView = lazy(() => import('./components/ShopProfileView').then((m) => ({ default: m.ShopProfileView })))
-const ShopPlanView = lazy(() => import('./components/ShopPlanView').then((m) => ({ default: m.ShopPlanView })))
+import { AdminVouchersView } from './components/AdminVouchersView'
+import { CreateRepairRequestFlow } from './components/CreateRepairRequestFlow'
+import { HomeView } from './components/HomeView'
+import { LandingPage } from './components/LandingPage'
+import { MessagesView } from './components/MessagesView'
+import { MyRequestsView } from './components/MyRequestsView'
+import { PlanCancelView } from './components/PlanCancelView'
+import { PlanSuccessView } from './components/PlanSuccessView'
+import { PlanView } from './components/PlanView'
+import { RepairRequestDetail } from './components/RepairRequestDetail'
+import { ShopInboxView } from './components/ShopInboxView'
+import { ShopMessagesView } from './components/ShopMessagesView'
+import { ShopPlanView } from './components/ShopPlanView'
+import { ShopProfileView } from './components/ShopProfileView'
+import { ShopRequestDetailView } from './components/ShopRequestDetailView'
+import { ShopSendQuoteView } from './components/ShopSendQuoteView'
 
 const NOTIFICATION_POLL_INTERVAL = 60_000
+const PUBLIC_SCREENS = new Set([
+  'landing',
+  'login',
+  'register',
+  'check-email',
+  'signup-confirmation',
+  'forgot-password',
+  'reset-password',
+  'shop-login',
+  'shop-register',
+  'admin-login',
+])
 
 const sortRequests = (requests: RepairRequest[]): RepairRequest[] => {
   return [...requests].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
@@ -117,6 +112,9 @@ function App() {
   const [enrollmentStatus, setEnrollmentStatus] = useState<EnrollmentStatus | null>(null)
   const [enrollmentCancelAt, setEnrollmentCancelAt] = useState<string | null>(null)
   const [enrollmentLoading, setEnrollmentLoading] = useState(false)
+
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [showCloseDialog, setShowCloseDialog] = useState(false)
 
   const lastNotificationTime = useRef<string | undefined>(undefined)
   const isFirstPoll = useRef(true)
@@ -202,19 +200,47 @@ function App() {
   const [upgradeLoading, setUpgradeLoading] = useState(false)
   const shop = useShopPortal()
   const [shopSelectedRequestId, setShopSelectedRequestId] = useState<string | null>(null)
+  const [shopDetailInitialTab, setShopDetailInitialTab] = useState<'details' | 'messages'>('details')
+  const [shopDetailSourceScreen, setShopDetailSourceScreen] = useState<'shop-inbox' | 'shop-messages'>('shop-inbox')
 
   // Restore session on mount
   useEffect(() => {
     const restore = async () => {
       const session = await authApi.restoreSession()
       if (session) {
+        const currentPath = window.location.pathname
         setAuth({
           user: session.user,
           token: session.accessToken,
           isAuthenticated: true,
         })
+        const currentScreen =
+          currentPath === '/'
+            ? 'landing'
+            : currentPath === '/login'
+              ? 'login'
+              : currentPath === '/register'
+                ? 'register'
+                : currentPath === '/check-email'
+                  ? 'check-email'
+                  : currentPath === '/signup-confirmation'
+                    ? 'signup-confirmation'
+                    : currentPath === '/forgot-password'
+                      ? 'forgot-password'
+                      : currentPath === '/reset-password'
+                        ? 'reset-password'
+                        : currentPath === '/shop/login'
+                          ? 'shop-login'
+                          : currentPath === '/shop/register'
+                            ? 'shop-register'
+                            : currentPath === '/admin'
+                              ? 'admin-login'
+                              : null
+
         if (session.user.role === 'ADMIN') {
-          navigate('admin-vouchers', { replace: true })
+          if (currentScreen && PUBLIC_SCREENS.has(currentScreen)) {
+            navigate('admin-vouchers', { replace: true })
+          }
         } else if (session.user.role === 'SHOP_USER') {
           setEnrollmentLoading(true)
           try {
@@ -226,9 +252,13 @@ function App() {
           } finally {
             setEnrollmentLoading(false)
           }
-          navigate('shop-inbox', { replace: true })
+          if (currentScreen && PUBLIC_SCREENS.has(currentScreen)) {
+            navigate('shop-inbox', { replace: true })
+          }
         } else {
-          navigate('home', { replace: true })
+          if (currentScreen && PUBLIC_SCREENS.has(currentScreen)) {
+            navigate('home', { replace: true })
+          }
         }
       }
       setAuthLoading(false)
@@ -338,6 +368,7 @@ function App() {
   const openRequestDetail = useCallback(
     async (requestId: string) => {
       setSelectedRequestId(requestId)
+      setShowCloseDialog(false)
       navigate('request-detail')
 
       if (!auth.user) return
@@ -564,13 +595,11 @@ function App() {
     return (
       <main className="app-shell">
         <AppHeader onBrandClick={() => navigate('landing')} />
-        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
-          <CheckEmailView
-            email={pendingEmail}
-            onGoToLogin={() => navigate('login')}
-            onResendConfirmation={handleResendConfirmation}
-          />
-        </Suspense>
+        <CheckEmailView
+          email={pendingEmail}
+          onGoToLogin={() => navigate('login')}
+          onResendConfirmation={handleResendConfirmation}
+        />
       </main>
     )
   }
@@ -580,9 +609,7 @@ function App() {
     return (
       <main className="app-shell">
         <AppHeader onBrandClick={() => navigate('landing')} />
-        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
-          <SignupConfirmationView onGoToLogin={() => navigate('login')} />
-        </Suspense>
+        <SignupConfirmationView onGoToLogin={() => navigate('login')} />
       </main>
     )
   }
@@ -592,9 +619,7 @@ function App() {
     return (
       <main className="app-shell">
         <AppHeader onBrandClick={() => navigate('landing')} />
-        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
-          <ForgotPasswordView onSubmit={handleRequestPasswordReset} onBackToLogin={() => navigate('login')} />
-        </Suspense>
+        <ForgotPasswordView onSubmit={handleRequestPasswordReset} onBackToLogin={() => navigate('login')} />
       </main>
     )
   }
@@ -604,13 +629,11 @@ function App() {
     return (
       <main className="app-shell">
         <AppHeader onBrandClick={() => navigate('landing')} />
-        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
-          <ResetPasswordView
-            accessToken={resetToken}
-            onSubmit={handleResetPassword}
-            onGoToLogin={() => navigate('login')}
-          />
-        </Suspense>
+        <ResetPasswordView
+          accessToken={resetToken}
+          onSubmit={handleResetPassword}
+          onGoToLogin={() => navigate('login')}
+        />
       </main>
     )
   }
@@ -620,40 +643,50 @@ function App() {
     return (
       <main className="app-shell admin-shell">
         <AppHeader />
-        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
-          <AdminLoginView onLogin={handleAdminLogin} />
-        </Suspense>
+        <AdminLoginView onLogin={handleAdminLogin} />
       </main>
     )
   }
 
   // Auth screens (login/register) — driver & shop
   if (!auth.isAuthenticated) {
+    const authMode = screen === 'shop-register' ? 'workshop' : screen === 'register' ? 'driver' : loginMode
     return (
-      <main className="app-shell">
+      <main className="app-shell" data-auth-mode={authMode}>
         <AppHeader onBrandClick={() => navigate('landing')} />
-        <Suspense fallback={<p className="loading">{t('app.loading')}</p>}>
-          {screen === 'shop-register' ? (
-            <ShopRegisterView
-              onRegister={handleShopRegister}
-              onSwitchToLogin={() => {
-                setLoginMode('workshop')
-                navigate('login')
-              }}
-            />
-          ) : screen === 'register' ? (
-            <RegisterView onRegister={handleRegister} onSwitchToLogin={() => navigate('login')} />
-          ) : (
-            <LoginView
-              onDriverLogin={handleLogin}
-              onShopLogin={handleShopLogin}
-              onSwitchToDriverRegister={() => navigate('register')}
-              onSwitchToShopRegister={() => navigate('shop-register')}
-              onForgotPassword={() => navigate('forgot-password')}
-              initialMode={loginMode}
-            />
-          )}
-        </Suspense>
+        {screen === 'shop-register' ? (
+          <ShopRegisterView
+            onRegister={handleShopRegister}
+            onSwitchToLogin={() => {
+              setLoginMode('workshop')
+              navigate('login')
+            }}
+            onGoogleLogin={() => {
+              /* TODO: wire up Google OAuth */
+            }}
+          />
+        ) : screen === 'register' ? (
+          <RegisterView
+            onRegister={handleRegister}
+            onSwitchToLogin={() => navigate('login')}
+            onGoogleLogin={() => {
+              /* TODO: wire up Google OAuth */
+            }}
+          />
+        ) : (
+          <LoginView
+            onDriverLogin={handleLogin}
+            onShopLogin={handleShopLogin}
+            onSwitchToDriverRegister={() => navigate('register')}
+            onSwitchToShopRegister={() => navigate('shop-register')}
+            onForgotPassword={() => navigate('forgot-password')}
+            onGoogleLogin={() => {
+              /* TODO: wire up Google OAuth */
+            }}
+            initialMode={loginMode}
+            onModeChange={setLoginMode}
+          />
+        )}
       </main>
     )
   }
@@ -703,211 +736,313 @@ function App() {
   // Admin portal (authenticated admin user)
   if (isAdmin) {
     return (
-      <main className="app-shell admin-shell">
-        <AppHeader onLanguageChange={handleLanguageChange} />
+      <AppLayout
+        sidebar={
+          <AppSidebar
+            role="admin"
+            activeScreen={screen}
+            userName="Admin"
+            userEmail={auth.user?.email ?? ''}
+            userInitials="A"
+            onNavigate={navigate}
+            onLogout={doLogout}
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
+        }
+        topbar={
+          <AppTopbar
+            title="Admin"
+            userInitials="A"
+            onMenuToggle={() => setSidebarOpen((p) => !p)}
+            onLanguageChange={handleLanguageChange}
+          />
+        }
+      >
         <ErrorBoundary>
           <AdminVouchersView onLogout={doLogout} />
         </ErrorBoundary>
-      </main>
+        <BannerStack banners={banners} />
+      </AppLayout>
     )
   }
 
   // Shop portal (authenticated shop user)
   if (isShop) {
-    const shopOpenDetail = (requestId: string) => {
+    const shopScreenTitle =
+      screen === 'shop-profile'
+        ? t('sidebar.shopProfile')
+        : screen === 'shop-plan'
+          ? t('sidebar.subscription')
+          : screen === 'shop-settings'
+            ? t('sidebar.settings')
+            : screen === 'shop-messages'
+              ? t('sidebar.messages')
+              : screen === 'shop-request-detail' || screen === 'shop-send-quote'
+                ? shop.shopSelectedRequest
+                  ? `${shop.shopSelectedRequest.car.make} ${shop.shopSelectedRequest.car.model}`
+                  : t('shopInbox.headline')
+                : t('shopInbox.headline')
+
+    const shopOpenDetail = (
+      requestId: string,
+      initialTab: 'details' | 'messages' = 'details',
+      sourceScreen: 'shop-inbox' | 'shop-messages' = 'shop-inbox',
+    ) => {
       setShopSelectedRequestId(requestId)
+      setShopDetailInitialTab(initialTab)
+      setShopDetailSourceScreen(sourceScreen)
       void shop.openShopRequestDetail(requestId)
       navigate('shop-request-detail')
     }
 
+    const shopUserName = shop.shopProfile?.name ?? auth.user?.email ?? ''
+    const shopInitials =
+      shopUserName
+        .split(/\s+/)
+        .map((w) => w[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase() || 'W'
+
     return (
-      <Suspense
-        fallback={
-          <main className="app-shell">
-            <p className="loading">{t('app.loading')}</p>
-          </main>
-        }
+      <EnrollmentGate
+        enrollmentStatus={enrollmentStatus}
+        enrollmentLoading={enrollmentLoading}
+        onVoucherRedeem={handleVoucherRedeem}
+        onPayment={handleEnrollmentPayment}
+        onStatusRefresh={handleEnrollmentStatusRefresh}
+        onLogout={doLogout}
+        enrollmentCatalog={catalog.enrollmentCatalog}
       >
-        <EnrollmentGate
-          enrollmentStatus={enrollmentStatus}
-          enrollmentLoading={enrollmentLoading}
-          onVoucherRedeem={handleVoucherRedeem}
-          onPayment={handleEnrollmentPayment}
-          onStatusRefresh={handleEnrollmentStatusRefresh}
-          onLogout={doLogout}
-          enrollmentCatalog={catalog.enrollmentCatalog}
-        >
-          <main className="app-shell">
-            <AppHeader
-              onBrandClick={() => navigate('shop-inbox')}
-              onLanguageChange={handleLanguageChange}
-              navSlot={
-                <>
-                  {screen !== 'shop-inbox' ? (
-                    <button className="btn btn-ghost" onClick={() => navigate('shop-inbox')}>
-                      {t('shopNav.inbox')}
-                    </button>
-                  ) : null}
-                  <button
-                    className="btn btn-ghost"
-                    onClick={() => {
-                      void shop.loadShopProfile()
-                      navigate('shop-profile')
-                    }}
-                  >
-                    {t('shopNav.profile')}
-                  </button>
-                  <button className="btn btn-ghost" onClick={() => navigate('shop-plan')}>
-                    {t('shopNav.plan')}
-                  </button>
-                  <button className="btn btn-ghost" onClick={() => navigate('shop-settings')}>
-                    {t('settings.nav')}
-                  </button>
-                  <button className="btn btn-ghost" onClick={doLogout}>
-                    {t('auth.logout')}
-                  </button>
-                </>
-              }
+        <AppLayout
+          sidebar={
+            <AppSidebar
+              role="shop"
+              activeScreen={screen}
+              userName={shopUserName}
+              userEmail={auth.user?.email ?? ''}
+              userInitials={shopInitials}
+              notificationCounts={{
+                inbox: shop.shopQueue.filter((i) => i.status === 'PENDING' || i.status === null).length || undefined,
+                messages: shop.shopQueue.filter((i) => i.hasMessages).length || undefined,
+              }}
+              onNavigate={(s) => {
+                if (s === 'shop-profile') void shop.loadShopProfile()
+                navigate(s)
+              }}
+              onLogout={doLogout}
+              isOpen={sidebarOpen}
+              onClose={() => setSidebarOpen(false)}
             />
+          }
+          topbar={
+            <AppTopbar
+              title={shopScreenTitle}
+              userInitials={shopInitials}
+              onMenuToggle={() => setSidebarOpen((p) => !p)}
+              onAvatarClick={() => navigate('shop-profile')}
+              onLanguageChange={handleLanguageChange}
+            />
+          }
+        >
+          <BannerStack banners={banners} />
 
-            <BannerStack banners={banners} />
+          {shop.shopLoading ? <p className="loading">{t('app.loading')}</p> : null}
+          {shop.shopError ? <p className="field-error">{t(shop.shopError as 'app.loadError')}</p> : null}
 
-            {shop.shopLoading ? <p className="loading">{t('app.loading')}</p> : null}
-            {shop.shopError ? <p className="field-error">{t(shop.shopError as 'app.loadError')}</p> : null}
+          <ErrorBoundary>
+            {!shop.shopLoading && !shop.shopError && screen === 'shop-inbox' ? (
+              <ShopInboxView
+                queueItems={shop.shopQueue}
+                onOpenRequest={(requestId) => shopOpenDetail(requestId, 'details', 'shop-inbox')}
+                onAcknowledge={(requestId) => {
+                  void shop.handleShopAcknowledge(requestId)
+                }}
+                onDecline={(requestId) => {
+                  void shop.handleShopDecline(requestId)
+                }}
+                onProfile={() => {
+                  void shop.loadShopProfile()
+                  navigate('shop-profile')
+                }}
+              />
+            ) : null}
 
-            <ErrorBoundary>
-              {!shop.shopLoading && !shop.shopError && screen === 'shop-inbox' ? (
-                <ShopInboxView
-                  queueItems={shop.shopQueue}
-                  onOpenRequest={shopOpenDetail}
-                  onAcknowledge={(requestId) => {
-                    void shop.handleShopAcknowledge(requestId)
-                  }}
-                  onDecline={(requestId) => {
-                    void shop.handleShopDecline(requestId)
-                  }}
-                  onProfile={() => {
-                    void shop.loadShopProfile()
-                    navigate('shop-profile')
-                  }}
-                />
-              ) : null}
+            {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && shop.shopSelectedRequest ? (
+              <ShopRequestDetailView
+                request={shop.shopSelectedRequest}
+                shopResponse={shop.shopOwnResponse}
+                messages={shop.shopMessages}
+                initialTab={shopDetailInitialTab}
+                onBack={() => {
+                  void shop.loadShopQueue()
+                  navigate(shopDetailSourceScreen)
+                }}
+                onAcknowledge={() => {
+                  if (shopSelectedRequestId) {
+                    void shop.handleShopAcknowledge(shopSelectedRequestId).then(() => {
+                      void shop.openShopRequestDetail(shopSelectedRequestId)
+                    })
+                  }
+                }}
+                onDecline={() => {
+                  if (shopSelectedRequestId) {
+                    void shop.handleShopDecline(shopSelectedRequestId).then(() => {
+                      void shop.loadShopQueue()
+                      navigate('shop-inbox')
+                    })
+                  }
+                }}
+                onSendQuote={() => navigate('shop-send-quote')}
+                onAskQuestion={async (text) => {
+                  if (shopSelectedRequestId) {
+                    await shop.handleShopAskQuestion(shopSelectedRequestId, text)
+                  }
+                }}
+                onSendMessage={async (text) => {
+                  if (shopSelectedRequestId) {
+                    await shop.handleShopSendMessage(shopSelectedRequestId, text)
+                  }
+                }}
+                onSharePhone={async (phone) => {
+                  if (shopSelectedRequestId) {
+                    await shop.handleSharePhone(shopSelectedRequestId, phone)
+                  }
+                }}
+              />
+            ) : null}
 
-              {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && shop.shopSelectedRequest ? (
-                <ShopRequestDetailView
-                  request={shop.shopSelectedRequest}
-                  shopResponse={shop.shopOwnResponse}
-                  messages={shop.shopMessages}
-                  onBack={() => {
-                    void shop.loadShopQueue()
-                    navigate('shop-inbox')
-                  }}
-                  onAcknowledge={() => {
-                    if (shopSelectedRequestId) {
-                      void shop.handleShopAcknowledge(shopSelectedRequestId).then(() => {
-                        void shop.openShopRequestDetail(shopSelectedRequestId)
-                      })
-                    }
-                  }}
-                  onDecline={() => {
-                    if (shopSelectedRequestId) {
-                      void shop.handleShopDecline(shopSelectedRequestId).then(() => {
-                        void shop.loadShopQueue()
-                        navigate('shop-inbox')
-                      })
-                    }
-                  }}
-                  onSendQuote={() => navigate('shop-send-quote')}
-                  onAskQuestion={async (text) => {
-                    if (shopSelectedRequestId) {
-                      await shop.handleShopAskQuestion(shopSelectedRequestId, text)
-                    }
-                  }}
-                  onSendMessage={async (text) => {
-                    if (shopSelectedRequestId) {
-                      await shop.handleShopSendMessage(shopSelectedRequestId, text)
-                    }
-                  }}
-                  onSharePhone={async (phone) => {
-                    if (shopSelectedRequestId) {
-                      await shop.handleSharePhone(shopSelectedRequestId, phone)
-                    }
-                  }}
-                />
-              ) : null}
+            {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && !shop.shopSelectedRequest ? (
+              <article className="empty-state">{t('app.notFound')}</article>
+            ) : null}
 
-              {!shop.shopLoading && !shop.shopError && screen === 'shop-request-detail' && !shop.shopSelectedRequest ? (
-                <article className="empty-state">{t('app.notFound')}</article>
-              ) : null}
+            {!shop.shopLoading && !shop.shopError && screen === 'shop-send-quote' && shop.shopSelectedRequest ? (
+              <ShopSendQuoteView
+                request={shop.shopSelectedRequest}
+                onSubmit={async (payload, phone) => {
+                  if (shopSelectedRequestId) {
+                    await shop.handleSubmitQuote(shopSelectedRequestId, payload, phone)
+                    navigate('shop-request-detail')
+                  }
+                }}
+                onBack={() => navigate('shop-request-detail')}
+              />
+            ) : null}
 
-              {!shop.shopLoading && !shop.shopError && screen === 'shop-send-quote' && shop.shopSelectedRequest ? (
-                <ShopSendQuoteView
-                  request={shop.shopSelectedRequest}
-                  onSubmit={async (payload, phone) => {
-                    if (shopSelectedRequestId) {
-                      await shop.handleSubmitQuote(shopSelectedRequestId, payload, phone)
-                      navigate('shop-request-detail')
-                    }
-                  }}
-                  onBack={() => navigate('shop-request-detail')}
-                />
-              ) : null}
+            {screen === 'shop-profile' ? (
+              <ShopProfileView
+                profile={shop.shopProfile}
+                onSave={shop.handleSaveProfile}
+                onBack={() => navigate('shop-inbox')}
+              />
+            ) : null}
 
-              {screen === 'shop-profile' ? (
-                <ShopProfileView
-                  profile={shop.shopProfile}
-                  onSave={shop.handleSaveProfile}
-                  onBack={() => navigate('shop-inbox')}
-                />
-              ) : null}
+            {screen === 'shop-plan' && enrollmentStatus ? (
+              <ShopPlanView
+                enrollmentStatus={enrollmentStatus}
+                cancelAt={enrollmentCancelAt}
+                onBack={() => navigate('shop-inbox')}
+              />
+            ) : null}
 
-              {screen === 'shop-plan' && enrollmentStatus ? (
-                <ShopPlanView
-                  enrollmentStatus={enrollmentStatus}
-                  cancelAt={enrollmentCancelAt}
-                  onBack={() => navigate('shop-inbox')}
-                />
-              ) : null}
+            {screen === 'shop-settings' ? <SettingsView onBack={() => navigate('shop-inbox')} /> : null}
 
-              {screen === 'shop-settings' ? <SettingsView onBack={() => navigate('shop-inbox')} /> : null}
-            </ErrorBoundary>
-          </main>
-        </EnrollmentGate>
-      </Suspense>
+            {!shop.shopLoading && !shop.shopError && screen === 'shop-messages' ? (
+              <ShopMessagesView
+                queueItems={shop.shopQueue}
+                onOpenRequest={(requestId) => shopOpenDetail(requestId, 'messages', 'shop-messages')}
+              />
+            ) : null}
+          </ErrorBoundary>
+        </AppLayout>
+      </EnrollmentGate>
     )
   }
 
   // Authenticated driver app
-  return (
-    <main className="app-shell">
-      <AppHeader
-        onBrandClick={() => navigate('home')}
-        onLanguageChange={handleLanguageChange}
-        navSlot={
-          <>
-            {screen !== 'home' ? (
-              <button
-                className="btn btn-ghost"
-                onClick={() => {
-                  navigate('home')
-                }}
-              >
-                {t('app.home')}
-              </button>
-            ) : null}
-            <button className="btn btn-ghost" onClick={() => navigate('plan')}>
-              {t('plan.nav')}
-            </button>
-            <button className="btn btn-ghost" onClick={() => navigate('settings')}>
-              {t('settings.nav')}
-            </button>
-            <button className="btn btn-ghost" onClick={doLogout}>
-              {t('auth.logout')}
-            </button>
-          </>
-        }
-      />
+  const driverName = auth.user?.email?.split('@')[0] ?? ''
+  const driverInitials =
+    driverName
+      .split(/[._-]/)
+      .map((w) => w[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase() || 'U'
 
+  // Count total unread messages across all threads
+  const unreadMessageCount = requests.reduce(
+    (sum, r) => sum + Object.values(r.threads).reduce((ts, th) => ts + th.unreadCount, 0),
+    0,
+  )
+
+  const driverScreenTitle =
+    screen === 'my-requests'
+      ? t('myRequests.title')
+      : screen === 'messages'
+        ? t('messages.title')
+        : screen === 'plan'
+          ? t('plan.title')
+          : screen === 'settings'
+            ? t('settings.title')
+            : screen === 'request-detail'
+              ? selectedRequest
+                ? `${selectedRequest.car.make} ${selectedRequest.car.model}`
+                : t('sidebar.overview')
+              : t('sidebar.overview')
+
+  return (
+    <AppLayout
+      sidebar={
+        <AppSidebar
+          role="driver"
+          activeScreen={screen}
+          userName={driverName}
+          userEmail={auth.user?.email ?? ''}
+          userInitials={driverInitials}
+          notificationCounts={{
+            overview: requests.filter((r) => r.status === 'open').length || undefined,
+            messages: unreadMessageCount || undefined,
+          }}
+          onNavigate={navigate}
+          onLogout={doLogout}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
+      }
+      topbar={
+        <AppTopbar
+          breadcrumb={
+            screen === 'create-request'
+              ? [{ label: t('sidebar.overview'), onClick: () => navigate('home') }, { label: t('form.newRequest') }]
+              : screen === 'request-detail'
+                ? [
+                    { label: t('myRequests.title'), onClick: () => navigate('my-requests') },
+                    {
+                      label: selectedRequest ? `${selectedRequest.car.make} ${selectedRequest.car.model}` : '',
+                    },
+                  ]
+                : undefined
+          }
+          title={screen === 'create-request' || screen === 'request-detail' ? undefined : driverScreenTitle}
+          userInitials={driverInitials}
+          onMenuToggle={() => setSidebarOpen((p) => !p)}
+          onAvatarClick={() => navigate('plan')}
+          onLanguageChange={handleLanguageChange}
+          rightSlot={
+            screen === 'create-request' ? (
+              <button className="btn btn-secondary btn-compact-sm" onClick={() => navigate('home')}>
+                {t('common.cancel')}
+              </button>
+            ) : screen === 'request-detail' && selectedRequest?.status !== 'closed' ? (
+              <button className="btn btn-danger-outline btn-compact-sm" onClick={() => setShowCloseDialog(true)}>
+                {t('detail.closeRequest')}
+              </button>
+            ) : undefined
+          }
+        />
+      }
+    >
       <BannerStack banners={banners} />
 
       {loading ? <p className="loading">{t('app.loading')}</p> : null}
@@ -942,9 +1077,6 @@ function App() {
 
         {!loading && !error && screen === 'create-request' ? (
           <CreateRepairRequestFlow
-            onCancel={() => {
-              navigate('home')
-            }}
             onSubmitRequest={handleCreateRequest}
             onViewRequest={(requestId) => {
               void openRequestDetail(requestId)
@@ -967,13 +1099,12 @@ function App() {
         {!loading && !error && screen === 'request-detail' && selectedRequest ? (
           <RepairRequestDetail
             request={selectedRequest}
-            onBackHome={() => {
-              navigate('home')
-            }}
             onCloseRequest={handleCloseRequest}
             onMarkInterested={handleMarkInterested}
             onIgnoreShop={handleIgnoreShop}
             onSendThreadMessage={handleSendThreadMessage}
+            showCloseDialog={showCloseDialog}
+            onShowCloseDialog={setShowCloseDialog}
           />
         ) : null}
 
@@ -1006,25 +1137,36 @@ function App() {
         {screen === 'plan-cancel' ? <PlanCancelView onBack={() => navigate('home')} /> : null}
 
         {screen === 'settings' ? <SettingsView onBack={() => navigate('home')} /> : null}
+
+        {screen === 'messages' ? (
+          <MessagesView
+            requests={requests}
+            userName={auth.user?.name ?? ''}
+            onOpenRequest={(requestId) => {
+              void openRequestDetail(requestId)
+            }}
+            onSendMessage={async (requestId, shopId, text) => {
+              await handleSendThreadMessage(requestId, shopId, text, [])
+            }}
+          />
+        ) : null}
       </ErrorBoundary>
 
       {limitModal ? (
-        <Suspense fallback={null}>
-          <UpgradeLimitModal
-            limitType={limitModal}
-            onUpgrade={() => {
-              setLimitModal(null)
-              void handleUpgrade()
-            }}
-            onDismiss={() => setLimitModal(null)}
-            loading={upgradeLoading}
-            freeEntitlements={plan.freeEntitlements}
-            proPriceMonthly={catalog.getPlanPrice('PRO', 'MONTHLY')}
-            currency={catalog.currency}
-          />
-        </Suspense>
+        <UpgradeLimitModal
+          limitType={limitModal}
+          onUpgrade={() => {
+            setLimitModal(null)
+            void handleUpgrade()
+          }}
+          onDismiss={() => setLimitModal(null)}
+          loading={upgradeLoading}
+          freeEntitlements={plan.freeEntitlements}
+          proPriceMonthly={catalog.getPlanPrice('PRO', 'MONTHLY')}
+          currency={catalog.currency}
+        />
       ) : null}
-    </main>
+    </AppLayout>
   )
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   DEFAULT_RADIUS_KM,
@@ -21,7 +21,6 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
 const MAX_ATTACHMENTS = 5
 
 interface CreateRepairRequestFlowProps {
-  onCancel: () => void
   onSubmitRequest: (payload: CreateRepairRequestPayload, files: Map<string, File>) => Promise<RepairRequest>
   onViewRequest: (requestId: string) => void
 }
@@ -45,7 +44,103 @@ interface LocationErrors {
   radiusKm?: string
 }
 
-export function CreateRepairRequestFlow({ onCancel, onSubmitRequest, onViewRequest }: CreateRepairRequestFlowProps) {
+function ArrowLeftIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  )
+}
+
+function ArrowRightIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+  )
+}
+
+function PlusIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  )
+}
+
+function ImageIcon() {
+  return (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <polyline points="21 15 16 10 5 21" />
+    </svg>
+  )
+}
+
+function SendIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
+      <path d="M22 2 11 13" />
+      <path d="m22 2-7 20-4-9-9-4Z" />
+    </svg>
+  )
+}
+
+function getVehicleInitials(make: string) {
+  return make.trim().slice(0, 2).toUpperCase() || '??'
+}
+
+function truncateText(value: string, maxLength: number) {
+  if (value.length <= maxLength) {
+    return value
+  }
+
+  return `${value.slice(0, maxLength - 3).trimEnd()}...`
+}
+
+export function CreateRepairRequestFlow({ onSubmitRequest, onViewRequest }: CreateRepairRequestFlowProps) {
   const { t } = useTranslation()
   const [step, setStep] = useState<FormStep>(1)
   const [showOptionalCar, setShowOptionalCar] = useState(false)
@@ -82,20 +177,16 @@ export function CreateRepairRequestFlow({ onCancel, onSubmitRequest, onViewReque
 
   const stepLabels = useMemo(() => [t('form.stepCar'), t('form.stepIssue'), t('form.stepLocation')], [t])
 
-  const stepTitle = useMemo(() => {
-    switch (step) {
-      case 1:
-        return t('form.titleCar')
-      case 2:
-        return t('form.titleIssue')
-      case 3:
-        return t('form.titleLocation')
-      case 4:
-        return t('form.titleSubmitted')
-      default:
-        return ''
-    }
-  }, [step, t])
+  const vehicleName = [make.trim(), model.trim(), variant.trim()].filter(Boolean).join(' ')
+  const vehicleNameWithYear = year.trim() ? `${vehicleName} (${year.trim()})` : vehicleName
+  const vehicleMeta = [year.trim(), vin ? `VIN: ${truncateText(vin, 12)}` : ''].filter(Boolean).join(' · ')
+  const selectedCategory = tags[0] ? t(`tags.${tags[0]}`) : t('form.notSpecified')
+  const trimmedDescription = description.trim()
+  const issuePreview = trimmedDescription ? truncateText(trimmedDescription, 54) : t('form.notSpecified')
+  const summaryLocation = autocomplete.selected?.city ?? autocomplete.selected?.displayName ?? autocomplete.query.trim()
+  const summaryRange = summaryLocation ? `${radiusKm} km · ${summaryLocation}` : `${radiusKm} km`
+  const photoSummary =
+    issueAttachments.length > 0 ? t('form.photoCount', { count: issueAttachments.length }) : t('form.noPhotos')
 
   const toggleTag = (tag: string) => {
     setTags((previous) => {
@@ -186,11 +277,50 @@ export function CreateRepairRequestFlow({ onCancel, onSubmitRequest, onViewReque
       return
     }
 
-    if (step === 2) {
-      if (validateIssue()) {
-        setStep(3)
-      }
+    if (step === 2 && validateIssue()) {
+      setStep(3)
     }
+  }
+
+  const handleIssueFilesChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (!files) {
+      return
+    }
+
+    setAttachmentError(null)
+    const remaining = MAX_ATTACHMENTS - issueAttachments.length
+    if (remaining <= 0) {
+      setAttachmentError('form.maxAttachments')
+      event.target.value = ''
+      return
+    }
+
+    const validFiles: File[] = []
+    for (const file of Array.from(files)) {
+      if (!ALLOWED_MIME_TYPES.has(file.type)) {
+        setAttachmentError('form.fileTypeNotAllowed')
+        continue
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        setAttachmentError('form.fileTooLarge')
+        continue
+      }
+      if (validFiles.length >= remaining) {
+        setAttachmentError('form.maxAttachments')
+        break
+      }
+      validFiles.push(file)
+    }
+
+    const added = validFiles.map((file) => {
+      const attachment = fileToAttachment(file)
+      fileMapRef.current.set(attachment.id, file)
+      return attachment
+    })
+
+    setIssueAttachments((previous) => [...previous, ...added])
+    event.target.value = ''
   }
 
   const handleSubmit = async () => {
@@ -233,27 +363,36 @@ export function CreateRepairRequestFlow({ onCancel, onSubmitRequest, onViewReque
   }
 
   return (
-    <section className="screen create-flow">
-      <div className="section-header">
-        <button className="btn btn-ghost" onClick={onCancel}>
-          {t('common.back')}
-        </button>
-        <h2 className="section-header__title">{t('form.newRequest')}</h2>
-        <span className="step-pill">{step < 4 ? `${step}/3` : t('form.done')}</span>
+    <section className="create-request-flow">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">{t('form.newRequest')}</h1>
+          <p className="page-subtitle">{t('form.newRequestSubtitle')}</p>
+        </div>
       </div>
 
       {step < 4 ? (
-        <nav className="stepper" aria-label="Form progress">
+        <nav className="flow-stepper" aria-label="Form progress">
           {stepLabels.map((label, index) => {
             const stepNum = index + 1
-            const isActive = step === stepNum
+            const isCurrent = step === stepNum
             const isDone = step > stepNum
+            const numberClass = isDone
+              ? 'flow-step-number flow-step-number-done'
+              : isCurrent
+                ? 'flow-step-number flow-step-number-current'
+                : 'flow-step-number flow-step-number-pending'
+            const labelClass =
+              isDone || isCurrent ? 'flow-step-label flow-step-label-active' : 'flow-step-label flow-step-label-pending'
+
             return (
               <div key={label} className="u-contents">
-                {index > 0 ? <div className="stepper-line" /> : null}
-                <div className={`stepper-step ${isActive ? 'active' : ''} ${isDone ? 'done' : ''}`}>
-                  <span className="stepper-dot">{isDone ? '\u2713' : stepNum}</span>
-                  <span>{label}</span>
+                {index > 0 ? (
+                  <div className={`flow-step-line ${isDone ? 'flow-step-line-done' : 'flow-step-line-pending'}`} />
+                ) : null}
+                <div className="flow-step">
+                  <span className={numberClass}>{isDone ? '\u2713' : stepNum}</span>
+                  <span className={labelClass}>{label}</span>
                 </div>
               </div>
             )
@@ -261,248 +400,351 @@ export function CreateRepairRequestFlow({ onCancel, onSubmitRequest, onViewReque
         </nav>
       ) : null}
 
-      <article className="form-card">
-        <h3>{stepTitle}</h3>
+      {step === 1 ? (
+        <div className="create-request-flow__shell">
+          <div className="card">
+            <div className="flow-card-body">
+              <h3 className="flow-card-title">{t('form.titleCar')}</h3>
 
-        {step === 1 ? (
-          <div className="form-grid">
-            <label>
-              {t('form.vin')} <small className="u-text-faint">({t('form.optional')})</small>
-              <input
-                className="vin-input"
-                value={vin}
-                onChange={(event) => {
-                  setVin(normalizeVin(event.target.value))
-                }}
-                placeholder="WAUZZZ8V9KA101234"
-                maxLength={17}
-              />
-              {carErrors.vin ? <small className="field-error">{t(carErrors.vin)}</small> : null}
-            </label>
-
-            <label>
-              {t('form.make')}
-              <CarBrandCombobox value={make} onChange={setMake} />
-              {carErrors.make ? <small className="field-error">{t(carErrors.make)}</small> : null}
-            </label>
-
-            <label>
-              {t('form.model')}
-              <input
-                value={model}
-                onChange={(event) => {
-                  setModel(event.target.value)
-                }}
-                placeholder="A3"
-              />
-              {carErrors.model ? <small className="field-error">{t(carErrors.model)}</small> : null}
-            </label>
-
-            <label>
-              {t('form.variant')} <small className="u-text-faint">({t('form.optional')})</small>
-              <input
-                value={variant}
-                onChange={(event) => {
-                  setVariant(event.target.value)
-                }}
-                placeholder="Sportback"
-              />
-            </label>
-
-            <label>
-              {t('form.year')}
-              <input
-                type="number"
-                value={year}
-                onChange={(event) => {
-                  setYear(event.target.value)
-                }}
-                placeholder="2019"
-              />
-              {carErrors.year ? (
-                <small className="field-error">{t(carErrors.year, { min: MIN_CAR_YEAR, max: MAX_CAR_YEAR })}</small>
-              ) : null}
-            </label>
-
-            <button
-              type="button"
-              className="btn btn-ghost inline-button"
-              onClick={() => {
-                setShowOptionalCar((previous) => !previous)
-              }}
-            >
-              {showOptionalCar ? t('form.hideMoreDetails') : t('form.moreDetails')}
-            </button>
-
-            {showOptionalCar ? (
-              <>
-                <label>
-                  {t('form.engineType')}
-                  <input
-                    value={engineType}
-                    onChange={(event) => {
-                      setEngineType(event.target.value)
-                    }}
-                    placeholder="1.4 TSI"
-                  />
+              <div className="form-group">
+                <label className="form-label" htmlFor="vin-input">
+                  {t('form.vin')} <span className="flow-field-hint">({t('form.vinHint')})</span>
                 </label>
-
-                <label>
-                  {t('form.fuelType')}
-                  <input
-                    value={fuelType}
-                    onChange={(event) => {
-                      setFuelType(event.target.value)
-                    }}
-                    placeholder="Petrol"
-                  />
-                </label>
-
-                <label>
-                  {t('form.mileageKm')}
-                  <input
-                    type="number"
-                    value={mileageKm}
-                    onChange={(event) => {
-                      setMileageKm(event.target.value)
-                    }}
-                    placeholder="112000"
-                  />
-                  {carErrors.mileageKm ? <small className="field-error">{t(carErrors.mileageKm)}</small> : null}
-                </label>
-              </>
-            ) : null}
-
-            <div className="sticky-cta">
-              <button className="btn btn-primary btn-lg u-w-full" onClick={handleNext}>
-                {t('common.next')}
-              </button>
-            </div>
-          </div>
-        ) : null}
-
-        {step === 2 ? (
-          <div className="form-grid">
-            <label>
-              {t('form.issueQuestion')}
-              <textarea
-                value={description}
-                onChange={(event) => {
-                  setDescription(event.target.value)
-                }}
-                rows={5}
-                placeholder={t('form.issuePlaceholder')}
-              />
-              {issueErrors.description ? <small className="field-error">{t(issueErrors.description)}</small> : null}
-            </label>
-
-            <div>
-              <span className="label-title">{t('form.tagsLabel')}</span>
-              <div className="chips-wrap">
-                {ISSUE_TAGS.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    className={`chip ${tags.includes(tag) ? 'chip-active' : ''}`}
-                    onClick={() => {
-                      toggleTag(tag)
-                    }}
-                  >
-                    {t(`tags.${tag}`)}
-                  </button>
-                ))}
+                <input
+                  id="vin-input"
+                  className="form-input vin-input"
+                  value={vin}
+                  onChange={(event) => {
+                    setVin(normalizeVin(event.target.value))
+                  }}
+                  placeholder="WAUZZZ8V9KA101234"
+                  maxLength={17}
+                />
+                {carErrors.vin ? <small className="field-error">{t(carErrors.vin)}</small> : null}
               </div>
-            </div>
 
-            <div>
-              <span className="label-title">{t('form.photosLabel')}</span>
-              <label className="btn btn-secondary file-input-btn" htmlFor="issue-file-input">
-                {t('form.addFile')}
-              </label>
-              <input
-                id="issue-file-input"
-                type="file"
-                multiple
-                accept="image/jpeg,image/png,image/webp"
-                onChange={(event) => {
-                  const files = event.target.files
-                  if (!files) {
-                    return
-                  }
+              <div className="form-grid-2">
+                <div className="form-group">
+                  <span className="form-label">{t('form.make')}</span>
+                  <CarBrandCombobox value={make} onChange={setMake} />
+                  {carErrors.make ? <small className="field-error">{t(carErrors.make)}</small> : null}
+                </div>
 
-                  setAttachmentError(null)
-                  const remaining = MAX_ATTACHMENTS - issueAttachments.length
-                  if (remaining <= 0) {
-                    setAttachmentError('form.maxAttachments')
-                    event.target.value = ''
-                    return
-                  }
+                <div className="form-group">
+                  <label className="form-label" htmlFor="model-input">
+                    {t('form.model')}
+                  </label>
+                  <input
+                    id="model-input"
+                    className="form-input"
+                    value={model}
+                    onChange={(event) => {
+                      setModel(event.target.value)
+                    }}
+                    placeholder="A3"
+                  />
+                  {carErrors.model ? <small className="field-error">{t(carErrors.model)}</small> : null}
+                </div>
+              </div>
 
-                  const validFiles: File[] = []
-                  for (const file of Array.from(files)) {
-                    if (!ALLOWED_MIME_TYPES.has(file.type)) {
-                      setAttachmentError('form.fileTypeNotAllowed')
-                      continue
-                    }
-                    if (file.size > MAX_FILE_SIZE) {
-                      setAttachmentError('form.fileTooLarge')
-                      continue
-                    }
-                    if (validFiles.length >= remaining) {
-                      setAttachmentError('form.maxAttachments')
-                      break
-                    }
-                    validFiles.push(file)
-                  }
+              <div className="form-grid-2">
+                <div className="form-group">
+                  <label className="form-label" htmlFor="variant-input">
+                    {t('form.variant')} <span className="flow-field-hint">({t('form.optional')})</span>
+                  </label>
+                  <input
+                    id="variant-input"
+                    className="form-input"
+                    value={variant}
+                    onChange={(event) => {
+                      setVariant(event.target.value)
+                    }}
+                    placeholder="Sportback"
+                  />
+                </div>
 
-                  const added = validFiles.map((file) => {
-                    const attachment = fileToAttachment(file)
-                    fileMapRef.current.set(attachment.id, file)
-                    return attachment
-                  })
-                  setIssueAttachments((previous) => [...previous, ...added])
-                  event.target.value = ''
-                }}
-              />
-              {attachmentError ? <small className="field-error">{t(attachmentError)}</small> : null}
-              <AttachmentGrid attachments={issueAttachments} removable onRemove={removeIssueAttachment} />
-            </div>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="year-input">
+                    {t('form.year')}
+                  </label>
+                  <input
+                    id="year-input"
+                    className="form-input"
+                    type="number"
+                    value={year}
+                    onChange={(event) => {
+                      setYear(event.target.value)
+                    }}
+                    placeholder="2019"
+                  />
+                  {carErrors.year ? (
+                    <small className="field-error">{t(carErrors.year, { min: MIN_CAR_YEAR, max: MAX_CAR_YEAR })}</small>
+                  ) : null}
+                </div>
+              </div>
 
-            <div className="sticky-cta u-flex u-gap-3">
               <button
-                className="btn btn-ghost"
+                type="button"
+                className="view-link flow-toggle-link"
                 onClick={() => {
-                  setStep(1)
+                  setShowOptionalCar((previous) => !previous)
                 }}
               >
-                {t('common.back')}
+                <PlusIcon />
+                {showOptionalCar ? t('form.hideMoreDetails') : t('form.moreDetails')}
               </button>
-              <button className="btn btn-primary btn-lg u-flex-1" onClick={handleNext}>
-                {t('common.next')}
-              </button>
+
+              {showOptionalCar ? (
+                <div className="flow-optional-fields">
+                  <div className="form-grid-2">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="engine-input">
+                        {t('form.engineType')}
+                      </label>
+                      <input
+                        id="engine-input"
+                        className="form-input"
+                        value={engineType}
+                        onChange={(event) => {
+                          setEngineType(event.target.value)
+                        }}
+                        placeholder="1.4 TSI"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="fuel-input">
+                        {t('form.fuelType')}
+                      </label>
+                      <input
+                        id="fuel-input"
+                        className="form-input"
+                        value={fuelType}
+                        onChange={(event) => {
+                          setFuelType(event.target.value)
+                        }}
+                        placeholder="Petrol"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="mileage-input">
+                      {t('form.mileageKm')}
+                    </label>
+                    <input
+                      id="mileage-input"
+                      className="form-input"
+                      type="number"
+                      value={mileageKm}
+                      onChange={(event) => {
+                        setMileageKm(event.target.value)
+                      }}
+                      placeholder="112000"
+                    />
+                    {carErrors.mileageKm ? <small className="field-error">{t(carErrors.mileageKm)}</small> : null}
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
-        ) : null}
 
-        {step === 3 ? (
-          <LocationStep
-            autocomplete={autocomplete}
-            radiusKm={radiusKm}
-            onRadiusChange={setRadiusKm}
-            locationErrors={locationErrors}
-            isSubmitting={isSubmitting}
-            onBack={() => setStep(2)}
-            onSubmit={handleSubmit}
-          />
-        ) : null}
+          <div className="flow-actions">
+            <div className="u-flex-1" />
+            <button className="btn btn-primary" onClick={handleNext}>
+              {t('common.next')}
+              <ArrowRightIcon />
+            </button>
+          </div>
+        </div>
+      ) : null}
 
-        {step === 4 ? (
-          <div className="confirmation-card">
-            <span className="pill pill-open">{t('status.open')}</span>
-            <h4>{t('form.confirmTitle')}</h4>
-            <p>{t('form.confirmMessage')}</p>
+      {step === 2 ? (
+        <div className="create-request-flow__shell">
+          <div className="card flow-summary-card">
+            <span className="vehicle-icon vehicle-icon-lg flow-summary-card__icon">{getVehicleInitials(make)}</span>
+            <div className="flow-summary-card__content">
+              <div className="vehicle-name flow-summary-card__title">{vehicleName}</div>
+              <div className="vehicle-desc">{vehicleMeta}</div>
+            </div>
             <button
-              className="btn btn-primary btn-lg"
+              type="button"
+              className="view-link"
+              onClick={() => {
+                setStep(1)
+              }}
+            >
+              {t('form.change')}
+            </button>
+          </div>
+
+          <div className="card">
+            <div className="flow-card-body">
+              <h3 className="flow-card-title">{t('form.titleIssue')}</h3>
+
+              <div className="form-group">
+                <span className="form-label">{t('form.category')}</span>
+                <div className="flow-tag-grid">
+                  {ISSUE_TAGS.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      className={`cat-pill ${tags.includes(tag) ? 'cat-pill-selected' : ''}`}
+                      onClick={() => {
+                        toggleTag(tag)
+                      }}
+                    >
+                      {t(`tags.${tag}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="issue-description">
+                  {t('form.issueQuestion')}
+                </label>
+                <textarea
+                  id="issue-description"
+                  className="form-input"
+                  value={description}
+                  onChange={(event) => {
+                    setDescription(event.target.value)
+                  }}
+                  rows={5}
+                  placeholder={t('form.issuePlaceholder')}
+                />
+                {issueErrors.description ? <small className="field-error">{t(issueErrors.description)}</small> : null}
+              </div>
+
+              <div className="form-group flow-upload-group">
+                <span className="form-label">
+                  {t('form.photosLabel')} <span className="flow-field-hint">({t('form.photosOptionalHint')})</span>
+                </span>
+                <label className="upload-zone flow-upload-zone" htmlFor="issue-file-input">
+                  <span className="upload-zone__icon">
+                    <ImageIcon />
+                  </span>
+                  <div className="upload-zone__title">{t('form.uploadTitle')}</div>
+                  <div className="upload-zone__hint">{t('form.uploadHint')}</div>
+                </label>
+                <input
+                  id="issue-file-input"
+                  type="file"
+                  multiple
+                  accept="image/jpeg,image/png,image/webp"
+                  style={{ display: 'none' }}
+                  onChange={handleIssueFilesChange}
+                />
+                {attachmentError ? <small className="field-error">{t(attachmentError)}</small> : null}
+                <AttachmentGrid attachments={issueAttachments} removable onRemove={removeIssueAttachment} />
+              </div>
+            </div>
+          </div>
+
+          <div className="flow-actions">
+            <button
+              className="btn btn-secondary"
+              onClick={() => {
+                setStep(1)
+              }}
+            >
+              <ArrowLeftIcon />
+              {t('common.back')}
+            </button>
+            <div className="u-flex-1" />
+            <button className="btn btn-primary" onClick={handleNext}>
+              {t('common.next')}
+              <ArrowRightIcon />
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {step === 3 ? (
+        <div className="create-request-flow__shell">
+          <div className="card flow-summary-card">
+            <span className="vehicle-icon vehicle-icon-lg flow-summary-card__icon">{getVehicleInitials(make)}</span>
+            <div className="flow-summary-card__content">
+              <div className="vehicle-name flow-summary-card__title">{vehicleNameWithYear}</div>
+              <div className="vehicle-desc flow-summary-card__secondary">
+                {selectedCategory} · {issuePreview}
+              </div>
+            </div>
+            <span className="badge badge-gray flow-summary-card__badge">{selectedCategory}</span>
+          </div>
+
+          <div className="card">
+            <div className="flow-card-body">
+              <h3 className="flow-card-title">{t('form.titleLocation')}</h3>
+              <LocationStep
+                autocomplete={autocomplete}
+                radiusKm={radiusKm}
+                onRadiusChange={setRadiusKm}
+                locationErrors={locationErrors}
+                isSubmitting={isSubmitting}
+                onBack={() => setStep(2)}
+                onSubmit={handleSubmit}
+                hideActions
+              />
+            </div>
+          </div>
+
+          <div className="summary-box">
+            <div className="summary-box__title">{t('form.orderSummary')}</div>
+            <div className="summary-row">
+              <span className="summary-row__label">{t('home.colVehicle')}</span>
+              <span className="summary-row__value">{vehicleNameWithYear}</span>
+            </div>
+            <div className="summary-row">
+              <span className="summary-row__label">{t('form.category')}</span>
+              <span className="summary-row__value">{selectedCategory}</span>
+            </div>
+            <div className="summary-row">
+              <span className="summary-row__label">{t('form.descriptionLabel')}</span>
+              <span className="summary-row__value">{issuePreview}</span>
+            </div>
+            <div className="summary-row">
+              <span className="summary-row__label">{t('home.colRange')}</span>
+              <span className="summary-row__value">{summaryRange}</span>
+            </div>
+            <div className="summary-row">
+              <span className="summary-row__label">{t('form.photosSummary')}</span>
+              <span className="summary-row__value">{photoSummary}</span>
+            </div>
+          </div>
+
+          <div className="flow-actions">
+            <button
+              className="btn btn-secondary"
+              onClick={() => {
+                setStep(2)
+              }}
+            >
+              <ArrowLeftIcon />
+              {t('common.back')}
+            </button>
+            <div className="u-flex-1" />
+            <span className="flow-actions__hint">{t('form.submitHint')}</span>
+            <button className="btn btn-primary" onClick={handleSubmit} disabled={isSubmitting}>
+              <SendIcon />
+              {isSubmitting ? t('form.submitting') : t('form.submitRequest')}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {step === 4 ? (
+        <div className="create-request-flow__shell">
+          <div className="summary-box u-text-center">
+            <span className="badge badge-green">
+              <span className="badge-dot" />
+              {t('status.open')}
+            </span>
+            <h4 style={{ margin: '12px 0 8px', fontSize: '16px', fontWeight: 500 }}>{t('form.confirmTitle')}</h4>
+            <p style={{ fontSize: '13px', color: 'var(--gray-500)', margin: '0 0 16px' }}>{t('form.confirmMessage')}</p>
+            <button
+              className="btn btn-primary"
               onClick={() => {
                 if (submittedRequestId) {
                   onViewRequest(submittedRequestId)
@@ -512,8 +754,8 @@ export function CreateRepairRequestFlow({ onCancel, onSubmitRequest, onViewReque
               {t('form.viewRequest')}
             </button>
           </div>
-        ) : null}
-      </article>
+        </div>
+      ) : null}
     </section>
   )
 }

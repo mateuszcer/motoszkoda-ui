@@ -23,7 +23,9 @@ export type AppScreen =
   | 'plan-cancel'
   | 'admin-login'
   | 'settings'
+  | 'messages'
   | 'shop-settings'
+  | 'shop-messages'
   | 'admin-vouchers'
 
 export type EnrollmentStatus = 'PENDING_PAYMENT' | 'ACTIVE' | 'SUSPENDED' | 'CANCEL_SCHEDULED'
@@ -95,6 +97,7 @@ export interface QuoteOffer {
 export interface ShopQuoteCard {
   shopId: string
   shopName: string
+  logoUrl?: string
   distanceKm: number
   state: QuoteState
   questionPreview?: string
@@ -116,6 +119,7 @@ export interface ThreadMessage {
 export interface ShopThread {
   shopId: string
   shopName: string
+  logoUrl?: string
   unreadCount: number
   messages: ThreadMessage[]
   lastActivityAt: string
@@ -223,6 +227,13 @@ export interface SharePhonePayload {
   phone: string
 }
 
+export interface DayHours {
+  day: string
+  open: string
+  close: string
+  closed: boolean
+}
+
 export interface ShopProfile {
   shopId: string
   name: string
@@ -231,6 +242,11 @@ export interface ShopProfile {
   description: string
   lat: number
   lon: number
+  city?: string
+  postalCode?: string
+  logoUrl?: string
+  specializations?: string[]
+  openingHours?: DayHours[]
 }
 
 export interface UpdateShopProfilePayload {

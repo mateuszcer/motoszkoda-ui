@@ -25,7 +25,9 @@ const PATH_TO_SCREEN: Record<string, AppScreen> = {
   '/plan/success': 'plan-success',
   '/plan/cancel': 'plan-cancel',
   '/settings': 'settings',
+  '/messages': 'messages',
   '/shop/settings': 'shop-settings',
+  '/shop/messages': 'shop-messages',
   '/admin': 'admin-login',
   '/admin/vouchers': 'admin-vouchers',
 }

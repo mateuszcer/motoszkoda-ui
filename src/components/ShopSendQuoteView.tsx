@@ -207,53 +207,77 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
         {t('common.back')}
       </button>
 
-      <h2>{t('shopQuoteForm.title')}</h2>
+      <div className="shop-quote-container">
+        <h2 className="page-title">{t('shopQuoteForm.title')}</h2>
 
-      {/* Context card */}
-      <div className="quote-context-card">
-        <h3>
-          {request.car.make} {request.car.model} ({request.car.year})
-        </h3>
-        <p>{request.issue.description}</p>
-      </div>
-
-      {request.car.vin ? <PartsSearch vin={request.car.vin} onAddPart={handleAddPart} /> : null}
-
-      <form className="quote-form" onSubmit={(e) => void handleSubmit(e)}>
-        {errors.length > 0 ? (
-          <div className="auth-error">
-            {errors.map((err, i) => (
-              <p key={i}>{err}</p>
-            ))}
+        {/* Vehicle context card */}
+        <div className="card shop-quote-context">
+          <div className="card-header">
+            <div className="u-flex u-items-center" style={{ gap: 10 }}>
+              <span className="vehicle-icon">
+                {request.car.make.charAt(0)}
+                {request.car.model.charAt(0)}
+              </span>
+              <div>
+                <strong>
+                  {request.car.make} {request.car.model} ({request.car.year})
+                </strong>
+                <div className="u-flex" style={{ gap: 6, marginTop: 4 }}>
+                  <span className="page-subtitle">{t('shopDetail.radius', { radius: request.location.radiusKm })}</span>
+                  {request.issue.tags.length > 0 ? (
+                    <span className="badge badge-gray">
+                      {t(`tags.${request.issue.tags[0]}`, request.issue.tags[0])}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            </div>
           </div>
-        ) : null}
+        </div>
 
-        <div className="form-grid">
-          {/* Mode A: Simple total price (no line items) */}
+        {request.car.vin ? <PartsSearch vin={request.car.vin} onAddPart={handleAddPart} /> : null}
+
+        <form className="quote-form" onSubmit={(e) => void handleSubmit(e)}>
+          {errors.length > 0 ? (
+            <div className="auth-error">
+              {errors.map((err, i) => (
+                <p key={i}>{err}</p>
+              ))}
+            </div>
+          ) : null}
+
+          {/* Price mode toggle using segmented control */}
           {!useLineItems ? (
             <>
-              <div className="quote-price-mode">
-                <button
-                  type="button"
-                  className={`chip ${priceMode === 'single' ? 'chip-active' : ''}`}
-                  onClick={() => setPriceMode('single')}
-                >
-                  {t('shopQuoteForm.singlePrice')}
-                </button>
-                <button
-                  type="button"
-                  className={`chip ${priceMode === 'range' ? 'chip-active' : ''}`}
-                  onClick={() => setPriceMode('range')}
-                >
-                  {t('shopQuoteForm.priceRange')}
-                </button>
+              <div className="form-group">
+                <label className="form-label">{t('shopQuoteForm.priceType')}</label>
+                <div className="segmented-control">
+                  <button
+                    type="button"
+                    className={`segmented-control-item ${priceMode === 'single' ? 'segmented-control-item-active' : ''}`}
+                    onClick={() => setPriceMode('single')}
+                  >
+                    {t('shopQuoteForm.singlePrice')}
+                  </button>
+                  <button
+                    type="button"
+                    className={`segmented-control-item ${priceMode === 'range' ? 'segmented-control-item-active' : ''}`}
+                    onClick={() => setPriceMode('range')}
+                  >
+                    {t('shopQuoteForm.priceRange')}
+                  </button>
+                </div>
               </div>
 
               {priceMode === 'single' ? (
-                <label>
-                  {t('shopQuoteForm.price')}
+                <div className="form-group">
+                  <label className="form-label" htmlFor="quote-price">
+                    {t('shopQuoteForm.price')}
+                  </label>
                   <div className="input-with-suffix">
                     <input
+                      id="quote-price"
+                      className="form-input"
                       type="number"
                       min="0"
                       step="0.01"
@@ -263,15 +287,19 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
                     />
                     <span className="input-suffix">PLN</span>
                   </div>
-                </label>
+                </div>
               ) : null}
 
               {priceMode === 'range' ? (
                 <div className="price-inputs-row">
-                  <label>
-                    {t('shopQuoteForm.priceMin')}
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="quote-price-min">
+                      {t('shopQuoteForm.priceMin')}
+                    </label>
                     <div className="input-with-suffix">
                       <input
+                        id="quote-price-min"
+                        className="form-input"
                         type="number"
                         min="0"
                         step="0.01"
@@ -281,11 +309,15 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
                       />
                       <span className="input-suffix">PLN</span>
                     </div>
-                  </label>
-                  <label>
-                    {t('shopQuoteForm.priceMax')}
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="quote-price-max">
+                      {t('shopQuoteForm.priceMax')}
+                    </label>
                     <div className="input-with-suffix">
                       <input
+                        id="quote-price-max"
+                        className="form-input"
                         type="number"
                         min="0"
                         step="0.01"
@@ -295,13 +327,13 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
                       />
                       <span className="input-suffix">PLN</span>
                     </div>
-                  </label>
+                  </div>
                 </div>
               ) : null}
             </>
           ) : null}
 
-          {/* Line items */}
+          {/* Line items toggle */}
           <button
             type="button"
             className={`line-items-toggle ${useLineItems ? 'line-items-toggle-remove' : ''}`}
@@ -313,89 +345,96 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
           {useLineItems ? (
             <div className="quote-line-items quote-line-items-visible">
               {lineItems.map((item, i) => (
-                <div className="line-item-card" key={item.key}>
-                  <div className="line-item-header">
-                    <span className="line-item-number">{i + 1}.</span>
-                    <div className="line-item-desc">
-                      <input
-                        type="text"
-                        value={item.description}
-                        onChange={(e) => updateLineItem(item.key, 'description', e.target.value)}
-                        placeholder={t('shopQuoteForm.lineItemDescriptionPlaceholder')}
-                      />
+                <div className="line-item-card card" key={item.key}>
+                  <div style={{ padding: 'var(--space-4)' }}>
+                    <div className="line-item-header">
+                      <span className="line-item-number">{i + 1}.</span>
+                      <div className="line-item-desc">
+                        <input
+                          className="form-input"
+                          type="text"
+                          value={item.description}
+                          onChange={(e) => updateLineItem(item.key, 'description', e.target.value)}
+                          placeholder={t('shopQuoteForm.lineItemDescriptionPlaceholder')}
+                        />
+                      </div>
+                      {lineItems.length > 1 ? (
+                        <button
+                          type="button"
+                          className="btn-remove-item"
+                          onClick={() => removeLineItem(item.key)}
+                          title={t('shopQuoteForm.removeItem')}
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M18 6L6 18" />
+                            <path d="M6 6l12 12" />
+                          </svg>
+                        </button>
+                      ) : null}
                     </div>
-                    {lineItems.length > 1 ? (
+                    <div className="segmented-control" style={{ marginTop: 8, marginBottom: 8 }}>
                       <button
                         type="button"
-                        className="btn-remove-item"
-                        onClick={() => removeLineItem(item.key)}
-                        title={t('shopQuoteForm.removeItem')}
+                        className={`segmented-control-item ${item.priceMode === 'single' ? 'segmented-control-item-active' : ''}`}
+                        onClick={() => updateLineItem(item.key, 'priceMode', 'single')}
                       >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M18 6L6 18" />
-                          <path d="M6 6l12 12" />
-                        </svg>
+                        {t('shopQuoteForm.singlePrice')}
                       </button>
-                    ) : null}
-                  </div>
-                  <div className="quote-price-mode quote-price-mode-inline">
-                    <button
-                      type="button"
-                      className={`chip chip-sm ${item.priceMode === 'single' ? 'chip-active' : ''}`}
-                      onClick={() => updateLineItem(item.key, 'priceMode', 'single')}
-                    >
-                      {t('shopQuoteForm.singlePrice')}
-                    </button>
-                    <button
-                      type="button"
-                      className={`chip chip-sm ${item.priceMode === 'range' ? 'chip-active' : ''}`}
-                      onClick={() => updateLineItem(item.key, 'priceMode', 'range')}
-                    >
-                      {t('shopQuoteForm.priceRange')}
-                    </button>
-                  </div>
-                  <div className="line-item-prices">
-                    <label>
-                      {item.priceMode === 'range'
-                        ? t('shopQuoteForm.lineItemPriceMin')
-                        : t('shopQuoteForm.lineItemPrice')}
-                      <div className="input-with-suffix">
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={item.priceMin}
-                          onChange={(e) => updateLineItem(item.key, 'priceMin', e.target.value)}
-                          placeholder="0.00"
-                        />
-                        <span className="input-suffix">PLN</span>
-                      </div>
-                    </label>
-                    {item.priceMode === 'range' ? (
-                      <label>
-                        {t('shopQuoteForm.lineItemPriceMax')}
+                      <button
+                        type="button"
+                        className={`segmented-control-item ${item.priceMode === 'range' ? 'segmented-control-item-active' : ''}`}
+                        onClick={() => updateLineItem(item.key, 'priceMode', 'range')}
+                      >
+                        {t('shopQuoteForm.priceRange')}
+                      </button>
+                    </div>
+                    <div className="line-item-prices">
+                      <div className="form-group">
+                        <label className="form-label">
+                          {item.priceMode === 'range'
+                            ? t('shopQuoteForm.lineItemPriceMin')
+                            : t('shopQuoteForm.lineItemPrice')}
+                        </label>
                         <div className="input-with-suffix">
                           <input
+                            className="form-input"
                             type="number"
                             min="0"
                             step="0.01"
-                            value={item.priceMax}
-                            onChange={(e) => updateLineItem(item.key, 'priceMax', e.target.value)}
+                            value={item.priceMin}
+                            onChange={(e) => updateLineItem(item.key, 'priceMin', e.target.value)}
                             placeholder="0.00"
                           />
                           <span className="input-suffix">PLN</span>
                         </div>
-                      </label>
-                    ) : null}
+                      </div>
+                      {item.priceMode === 'range' ? (
+                        <div className="form-group">
+                          <label className="form-label">{t('shopQuoteForm.lineItemPriceMax')}</label>
+                          <div className="input-with-suffix">
+                            <input
+                              className="form-input"
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={item.priceMax}
+                              onChange={(e) => updateLineItem(item.key, 'priceMax', e.target.value)}
+                              placeholder="0.00"
+                            />
+                            <span className="input-suffix">PLN</span>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -404,13 +443,12 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
                 {t('shopQuoteForm.addLineItem')}
               </button>
 
-              {/* Line items total */}
               {lineItemsTotal && lineItemsTotal.totalMin > 0 ? (
                 <div className="line-items-total">
                   <span>{t('shopQuoteForm.lineItemTotal')}</span>
                   <strong>
                     {lineItemsTotal.totalMax > lineItemsTotal.totalMin
-                      ? `${formatCurrencyPln(lineItemsTotal.totalMin, i18n.language)} – ${formatCurrencyPln(lineItemsTotal.totalMax, i18n.language)}`
+                      ? `${formatCurrencyPln(lineItemsTotal.totalMin, i18n.language)} - ${formatCurrencyPln(lineItemsTotal.totalMax, i18n.language)}`
                       : formatCurrencyPln(lineItemsTotal.totalMin, i18n.language)}
                   </strong>
                 </div>
@@ -418,43 +456,51 @@ export function ShopSendQuoteView({ request, onSubmit, onBack }: ShopSendQuoteVi
             </div>
           ) : null}
 
-          <label>
-            {t('shopQuoteForm.estimatedDays')} <small>({t('form.optional')})</small>
+          <div className="form-group">
+            <label className="form-label" htmlFor="quote-days">
+              {t('shopQuoteForm.estimatedDays')} <small>({t('form.optional')})</small>
+            </label>
             <input
+              id="quote-days"
+              className="form-input"
               type="number"
               min="1"
               value={estimatedDays}
               onChange={(e) => setEstimatedDays(e.target.value)}
               placeholder="e.g. 3"
             />
-          </label>
+          </div>
 
-          <label>
-            {t('shopQuoteForm.note')} <small>({t('form.optional')})</small>
+          <div className="form-group">
+            <label className="form-label" htmlFor="quote-note">
+              {t('shopQuoteForm.note')} <small>({t('form.optional')})</small>
+            </label>
             <textarea
+              id="quote-note"
+              className="form-input"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder={t('shopQuoteForm.notePlaceholder')}
               rows={3}
             />
-          </label>
-        </div>
+          </div>
 
-        {/* Share phone toggle */}
-        <div className="phone-share-row">
-          <label className="toggle-label">
-            <input type="checkbox" checked={sharePhone} onChange={(e) => setSharePhone(e.target.checked)} />
-            {t('shopQuoteForm.sharePhoneLabel')}
-          </label>
-          {sharePhone ? (
-            <PhoneInput value={phone} onChange={setPhone} placeholder={t('shopQuoteForm.phonePlaceholder')} />
-          ) : null}
-        </div>
+          {/* Share phone toggle */}
+          <div className="phone-share-row">
+            <label className="toggle-label">
+              <input type="checkbox" checked={sharePhone} onChange={(e) => setSharePhone(e.target.checked)} />
+              {t('shopQuoteForm.sharePhoneLabel')}
+            </label>
+            {sharePhone ? (
+              <PhoneInput value={phone} onChange={setPhone} placeholder={t('shopQuoteForm.phonePlaceholder')} />
+            ) : null}
+          </div>
 
-        <button className="btn btn-primary btn-lg auth-submit" type="submit" disabled={submitting}>
-          {submitting ? t('shopQuoteForm.submitting') : t('shopQuoteForm.submit')}
-        </button>
-      </form>
+          <button className="btn btn-primary btn-lg" type="submit" disabled={submitting}>
+            {submitting ? t('shopQuoteForm.submitting') : t('shopQuoteForm.submit')}
+          </button>
+        </form>
+      </div>
     </section>
   )
 }

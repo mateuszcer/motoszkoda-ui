@@ -61,21 +61,26 @@
   "home": {
     "eyebrow": "Fahrerportal",
     "headline": "Finden Sie das beste Reparaturangebot",
-    "subheadline": "Beschreiben Sie Ihr Autoproblem einmal. Werkstätten in der Nähe senden Ihnen Angebote zum Vergleich.",
+    "subheadline": "Verwalten Sie Ihre Anfragen und Angebote.",
     "createRequest": "Reparaturanfrage erstellen",
     "myRequests": "Meine Anfragen",
     "statOpen": "Offen",
     "statClosed": "Geschlossen",
     "statTotal": "Gesamt",
-    "tabOpen": "Offen ({{count}})",
-    "tabClosed": "Geschlossen ({{count}})",
-    "tabAll": "Alle ({{count}})",
+    "tabOpen": "Offen",
+    "tabClosed": "Geschlossen",
+    "tabAll": "Alle",
     "activeRequests": "Aktive Anfragen",
     "updated": "Aktualisiert {{date}}",
     "quoteCount_one": "{{count}} Angebot",
     "quoteCount_other": "{{count}} Angebote",
     "questionCount_one": "{{count}} Frage",
-    "questionCount_other": "{{count}} Fragen"
+    "questionCount_other": "{{count}} Fragen",
+    "colVehicle": "Fahrzeug",
+    "colStatus": "Status",
+    "colQuotes": "Angebote",
+    "colRange": "Umkreis",
+    "colUpdated": "Aktualisiert"
   },
 
   "myRequests": {
@@ -91,6 +96,7 @@
 
   "form": {
     "newRequest": "Neue Anfrage",
+    "newRequestSubtitle": "Beschreiben Sie das Problem und erhalten Sie Angebote von Werkstätten in der Nähe",
     "done": "Fertig",
     "stepCar": "Fahrzeug",
     "stepIssue": "Problem",
@@ -99,22 +105,32 @@
     "titleIssue": "Problem beschreiben",
     "titleLocation": "Standort und Umkreis",
     "titleSubmitted": "Anfrage gesendet",
+    "vehicle": "Fahrzeug",
     "vin": "FIN",
+    "vinHint": "optional - hilft bei genauen Angeboten",
     "make": "Marke",
     "model": "Modell",
     "variant": "Variante",
     "optional": "optional",
     "year": "Baujahr",
-    "moreDetails": "Weitere Details",
-    "hideMoreDetails": "Details ausblenden",
+    "moreDetails": "Weitere Details (Motor, Laufleistung)",
+    "hideMoreDetails": "Zusätzliche Fahrzeugdetails ausblenden",
     "engineType": "Motortyp",
     "fuelType": "Kraftstoffart",
     "mileageKm": "Kilometerstand (km)",
+    "change": "Ändern",
+    "category": "Kategorie",
     "issueQuestion": "Was ist mit dem Auto los?",
     "issuePlaceholder": "Beschreiben Sie Geräusche, Warnleuchten und wann das Problem auftritt.",
     "tagsLabel": "Kategorien",
     "photosLabel": "Fotos / Dokumente",
+    "photosOptionalHint": "optional, max. 5",
+    "photosSummary": "Fotos",
+    "descriptionLabel": "Beschreibung",
+    "notSpecified": "Nicht angegeben",
     "addFile": "+ Hinzufügen",
+    "uploadTitle": "Fotos hierher ziehen oder klicken zum Auswählen",
+    "uploadHint": "JPG, PNG, WebP bis 5 MB",
     "noAddress": "Noch keine Adresse",
     "address": "Adresse",
     "addressLabel": "Stadt oder Adresse",
@@ -136,6 +152,11 @@
     "fileTooLarge": "Datei überschreitet das Limit von 5 MB",
     "fileTypeNotAllowed": "Nur JPEG-, PNG- und WebP-Bilder sind erlaubt",
     "maxAttachments": "Maximal 5 Anhänge erlaubt",
+    "orderSummary": "Zusammenfassung",
+    "submitHint": "Die Anfrage erreicht Werkstätten in der Nähe",
+    "noPhotos": "Keine",
+    "photoCount_one": "{{count}} Foto",
+    "photoCount_other": "{{count}} Fotos",
     "submitRequest": "Anfrage senden",
     "confirmTitle": "Alles erledigt",
     "confirmMessage": "Ihre Anfrage ist aktiv. Werkstätten in Ihrer Nähe werden Ihnen Angebote senden.",
@@ -180,7 +201,15 @@
     "phoneCopied": "Kopiert!",
     "receivedAt": "Erhalten {{date}}",
     "unansweredBanner": "Eine Werkstatt hat Ihnen eine Frage gestellt. Antworten Sie, um ein Angebot zu erhalten.",
-    "pendingQuestion": "Antwort erforderlich"
+    "pendingQuestion": "Antwort erforderlich",
+    "vehicleData": "Fahrzeugdaten",
+    "issueTitle": "Fehlerbeschreibung",
+    "photosTitle": "Fotos",
+    "noPhotos": "Keine Fotos",
+    "noQuotesTitle": "Keine Angebote",
+    "noQuotesDesc": "Werkstätten in Ihrer Nähe prüfen Ihre Anfrage. Sie werden benachrichtigt, sobald das erste Angebot eintrifft.",
+    "writeMessage": "Nachricht schreiben",
+    "estimatedTime": "geschätzte Zeit: {{count}} Tag(e)"
   },
 
   "thread": {
@@ -233,7 +262,19 @@
     "battery": "Batterie",
     "transmission": "Getriebe",
     "electronics": "Elektronik",
-    "air conditioning": "Klimaanlage"
+    "air conditioning": "Klimaanlage",
+    "body": "Karosserie",
+    "service": "Service / Inspektion"
+  },
+
+  "days": {
+    "monday": "Montag",
+    "tuesday": "Dienstag",
+    "wednesday": "Mittwoch",
+    "thursday": "Donnerstag",
+    "friday": "Freitag",
+    "saturday": "Samstag",
+    "sunday": "Sonntag"
   },
 
   "auth": {
@@ -279,6 +320,8 @@
     "shopNoAccount": "Kein Werkstattkonto?",
     "shopRegisterLink": "Werkstatt registrieren",
     "forgotPassword": "Passwort vergessen?",
+    "orDivider": "oder",
+    "continueWithGoogle": "Weiter mit Google",
     "forgotPasswordTitle": "Passwort zurücksetzen",
     "forgotPasswordSubtitle": "Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link zum Zurücksetzen.",
     "sendResetLink": "Link senden",
@@ -350,7 +393,11 @@
     "kmAway": "{{distance}} km entfernt",
     "newMessages": "Neue Nachrichten",
     "acknowledge": "Bestätigen",
-    "decline": "Ablehnen"
+    "decline": "Ablehnen",
+    "distance": "Entfernung",
+    "statusCol": "Status",
+    "dateCol": "Datum",
+    "viewDetail": "Ansehen"
   },
 
   "shopRequestStatus": {
@@ -390,11 +437,25 @@
     "noMessages": "Noch keine Nachrichten.",
     "questionPlaceholder": "Stellen Sie dem Fahrer eine Frage...",
     "messagePlaceholder": "Nachricht eingeben...",
-    "askQuestion": "Frage stellen"
+    "askQuestion": "Frage stellen",
+    "noPhotos": "Keine Fotos angehängt.",
+    "noPhotosShort": "Keine Fotos",
+    "locationTitle": "Standort",
+    "orderStatus": "Auftragsstatus",
+    "editQuote": "Bearbeiten",
+    "writeMessage": "Schreiben",
+    "callDriver": "Anrufen",
+    "distance": "Entfernung: {{radius}} km",
+    "statusDescPending": "Neue Anfrage. Prüfen und Angebot senden oder ablehnen.",
+    "statusDescAcknowledged": "Sie haben diese Anfrage bestätigt. Senden Sie ein Angebot, wenn Sie bereit sind.",
+    "statusDescQuoted": "Ihr Angebot wurde gesendet. Warten Sie auf den Kontakt des Fahrers.",
+    "statusDescDeclined": "Sie haben diese Anfrage abgelehnt.",
+    "statusDescClosed": "Diese Anfrage wurde geschlossen."
   },
 
   "shopQuoteForm": {
     "title": "Angebot senden",
+    "priceType": "Preistyp",
     "price": "Preis",
     "priceMin": "Mindestpreis",
     "priceMax": "Höchstpreis",
@@ -428,21 +489,38 @@
 
   "shopProfile": {
     "title": "Werkstattprofil",
+    "subtitle": "Informationen, die für Fahrer sichtbar sind, die Angebote suchen",
+    "sectionPhotoName": "Foto und Name",
+    "sectionLocationContact": "Standort und Kontakt",
+    "sectionAbout": "Über die Werkstatt",
+    "sectionHours": "Öffnungszeiten",
+    "logoTitle": "Werkstattlogo",
+    "logoHint": "JPG oder PNG, max. 2 MB. Wird neben Ihren Angeboten angezeigt.",
+    "uploadPhoto": "Foto hochladen",
     "name": "Werkstattname",
     "namePlaceholder": "Name Ihrer Werkstatt",
     "address": "Adresse",
     "addressPlaceholder": "Straße und Stadt",
+    "city": "Stadt",
+    "cityPlaceholder": "Stadt",
+    "postalCode": "Postleitzahl",
+    "postalCodePlaceholder": "00000",
     "phone": "Telefon",
     "phonePlaceholder": "123456789",
     "description": "Beschreibung",
     "descriptionPlaceholder": "Beschreiben Sie die Spezialisierungen Ihrer Werkstatt...",
+    "descriptionHint": "(für Fahrer sichtbar)",
+    "charCount": "{{count}} / {{max}} Zeichen",
+    "specializations": "Spezialisierungen",
     "save": "Profil speichern",
     "saving": "Wird gespeichert...",
     "saved": "Profil erfolgreich gespeichert.",
     "saveFailed": "Profil konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
     "nameRequired": "Werkstattname ist erforderlich.",
     "addressRequired": "Adresse ist erforderlich.",
-    "selectAddress": "Bitte wählen Sie eine Adresse aus den Vorschlägen."
+    "selectAddress": "Bitte wählen Sie eine Adresse aus den Vorschlägen.",
+    "lastSaved": "Zuletzt gespeichert: {{date}}",
+    "closed": "Geschlossen"
   },
 
   "landing": {
@@ -780,7 +858,28 @@
     "successTimeout": "Die Aktivierung dauert länger als erwartet. Versuchen Sie, die Seite neu zu laden.",
     "cancelTitle": "Zahlung abgebrochen",
     "cancelMessage": "An Ihrem Plan wurden keine Änderungen vorgenommen.",
-    "cancelCta": "Zurück zum Dashboard"
+    "cancelCta": "Zurück zum Dashboard",
+    "subtitle": "Ihr Konto und Nutzung",
+    "planDescFree": "Grundfunktionen zum Vergleichen von Angeboten",
+    "planDescPro": "Alle Limits aufgehoben",
+    "usage": "Nutzung",
+    "questionsNote": "Max. {{max}} Fragen pro Anfrage",
+    "needMore": "Brauchen Sie mehr?",
+    "proRemovesLimits": "Der PRO-Plan hebt alle Limits auf — unbegrenzte Anfragen, Fragen und Prioritätsbenachrichtigungen.",
+    "benefitNoLimitRequests": "Unbegrenzte Anfragen",
+    "benefitNoLimitQuestions": "Unbegrenzte Fragen",
+    "benefitPriorityNotifs": "Prioritätsbenachrichtigungen",
+    "notifications": "Benachrichtigungen",
+    "emailNotif": "E-Mail-Benachrichtigungen",
+    "emailNotifDesc": "Neue Angebote, Nachrichten und Statusänderungen",
+    "pushNotif": "Push-Benachrichtigungen",
+    "pushNotifDesc": "Sofortige Browser-Benachrichtigungen",
+    "accountInfo": "Kontodaten",
+    "edit": "Bearbeiten",
+    "fullName": "Vollständiger Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "location": "Standort"
   },
 
   "shopPlan": {
@@ -793,7 +892,32 @@
     "restoreSubscription": "Abonnement wiederherstellen",
     "cancelAtNotice": "Ihr Abonnement wird am {{date}} gekündigt.",
     "voucherDescription": "Ihre Werkstatt ist mit einem Gutschein aktiviert. Keine Abonnementverwaltung erforderlich.",
-    "portalError": "Das Abonnementportal konnte nicht geöffnet werden. Bitte versuchen Sie es erneut."
+    "portalError": "Das Abonnementportal konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.",
+    "subtitle": "Plan und Abrechnung verwalten",
+    "proName": "Werkstatt PRO Plan",
+    "renewsAt": "Verlängert sich am {{date}} · 99 zl / Monat",
+    "quotesSent": "Angebote diesen Monat gesendet",
+    "activeConversations": "Aktive Gespräche",
+    "unlimited": "Unbegrenzt",
+    "planIncludes": "Was Ihr Plan beinhaltet",
+    "feat1": "Unbegrenzte Angebote",
+    "feat2": "Unbegrenzte Nachrichten an Fahrer",
+    "feat3": "Teilekatalog-Suche",
+    "feat4": "Werkstattprofil für Fahrer sichtbar",
+    "feat5": "Benachrichtigungen bei neuen Aufträgen",
+    "feat6": "Prioritäts-Support",
+    "paymentMethod": "Zahlungsmethode",
+    "changePayment": "Ändern",
+    "visaEnding": "Visa endet auf {{last4}}",
+    "expires": "Läuft ab {{date}}",
+    "paymentHistory": "Zahlungshistorie",
+    "downloadInvoices": "Alle Rechnungen herunterladen",
+    "date": "Datum",
+    "description": "Beschreibung",
+    "amount": "Betrag",
+    "status": "Status",
+    "invoice": "Rechnung",
+    "paid": "Bezahlt"
   },
 
   "partsSearch": {
@@ -849,5 +973,38 @@
     "activationTimeout": "Die Aktivierung dauert länger als erwartet. Bitte laden Sie die Seite neu oder kontaktieren Sie den Support.",
     "retryActivation": "Erneut versuchen",
     "continueToDashboard": "Weiter zum Dashboard"
+  },
+
+  "sidebar": {
+    "driver": "Fahrer",
+    "shop": "Werkstatt",
+    "admin": "Admin",
+    "account": "Konto",
+    "overview": "Übersicht",
+    "myRequests": "Meine Aufträge",
+    "messages": "Nachrichten",
+    "myPlan": "Mein Plan",
+    "settings": "Einstellungen",
+    "inbox": "Posteingang",
+    "sentQuotes": "Gesendete Angebote",
+    "shopProfile": "Werkstattprofil",
+    "subscription": "Abonnement",
+    "logout": "Abmelden"
+  },
+
+  "topbar": {
+    "searchPlaceholder": "Aufträge suchen..."
+  },
+
+  "messages": {
+    "title": "Nachrichten",
+    "searchPlaceholder": "Suchen...",
+    "noConversations": "Noch keine Gespräche",
+    "noMessages": "Noch keine Nachrichten. Starten Sie das Gespräch!",
+    "inputPlaceholder": "Nachricht schreiben...",
+    "send": "Senden",
+    "viewRequest": "Auftrag ansehen",
+    "today": "Heute",
+    "yesterday": "Gestern"
   }
 }

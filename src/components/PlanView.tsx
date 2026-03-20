@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { BillingInterval, Entitlements, UserPlanInfo } from '../domain/apiTypes'
 import type { RepairRequest } from '../domain/types'
@@ -18,20 +17,18 @@ interface PlanViewProps {
   currency: string
 }
 
-export function PlanView({
-  planInfo,
-  requests,
-  onUpgrade,
-  onManageSubscription,
-  onBack,
-  upgradeLoading,
-  freeEntitlements,
-  proPriceMonthly,
-  proPriceAnnual,
-  currency,
-}: PlanViewProps) {
+export function PlanView(props: PlanViewProps) {
+  const {
+    planInfo,
+    requests,
+    onUpgrade,
+    onManageSubscription,
+    upgradeLoading,
+    freeEntitlements,
+    proPriceMonthly,
+    currency,
+  } = props
   const { t, i18n } = useTranslation()
-  const [billingInterval, setBillingInterval] = useState<BillingInterval>('MONTHLY')
 
   const isFree = planInfo?.planCode === 'FREE'
   const isPro = planInfo?.planCode === 'PRO'
@@ -42,16 +39,25 @@ export function PlanView({
   const today = new Date().toISOString().slice(0, 10)
   const dailyCount = requests.filter((r) => r.createdAt.slice(0, 10) === today).length
 
-  const activePrice = billingInterval === 'ANNUAL' ? (proPriceAnnual ?? 24900) : (proPriceMonthly ?? 2900)
+  const activePrice = proPriceMonthly ?? 2900
   const priceLabel = formatMinorCurrency(activePrice, currency, i18n.language)
-  const intervalLabel = billingInterval === 'ANNUAL' ? t('plan.annual') : t('plan.monthly')
+  const intervalLabel = t('plan.monthly')
+
+  const maxOpen = freeEntitlements.maxOpenRepairRequests
+  const maxDaily = freeEntitlements.maxRepairRequestsPerDay
+  const maxQuestions = freeEntitlements.maxQuestionsPerRepairRequest
+
+  const openPct = isFree && !isUnlimited(maxOpen) ? Math.min(100, Math.round((openCount / maxOpen) * 100)) : 0
+  const dailyPct = isFree && !isUnlimited(maxDaily) ? Math.min(100, Math.round((dailyCount / maxDaily) * 100)) : 0
 
   return (
-    <section className="screen plan-screen">
-      <button className="btn btn-ghost back-btn" onClick={onBack}>
-        {t('common.back')}
-      </button>
-      <h2>{t('plan.title')}</h2>
+    <section className="plan-screen">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">{t('plan.title')}</h1>
+          <p className="page-subtitle">{t('plan.subtitle')}</p>
+        </div>
+      </div>
 
       {/* Warning banners */}
       {isCancelScheduled && planInfo?.cancelAt ? (
@@ -65,7 +71,7 @@ export function PlanView({
               }),
             })}
           </p>
-          <button className="btn btn-primary btn-sm" onClick={onManageSubscription}>
+          <button className="btn btn-primary" onClick={onManageSubscription}>
             {t('plan.restoreSubscription')}
           </button>
         </div>
@@ -74,87 +80,186 @@ export function PlanView({
       {isPastDue ? (
         <div className="plan-warning-banner plan-warning-banner--error">
           <p>{t('plan.pastDueNotice')}</p>
-          <button className="btn btn-primary btn-sm" onClick={onManageSubscription}>
+          <button className="btn btn-primary" onClick={onManageSubscription}>
             {t('plan.updatePayment')}
           </button>
         </div>
       ) : null}
 
-      {/* Current plan card */}
-      <div className="plan-card">
-        <div className="plan-card-header">
-          <div>
-            <h3>{isFree ? t('plan.freePlan') : t('plan.proPlan')}</h3>
-            <span className="pill pill-open">{t('plan.statusActive')}</span>
+      <div className="plan-cards">
+        {/* Plan info card */}
+        <div className="card">
+          <div className="plan-hero">
+            <div className="plan-hero-body">
+              <div className="plan-hero-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gray-500)" strokeWidth="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <div>
+                <div className="u-flex" style={{ alignItems: 'center', gap: '8px' }}>
+                  <span className="plan-hero-name">{isFree ? t('plan.freePlan') : t('plan.proPlan')}</span>
+                  <span className="badge badge-green">
+                    <span className="badge-dot" />
+                    {t('plan.statusActive')}
+                  </span>
+                </div>
+                <div className="plan-hero-desc">{isFree ? t('plan.planDescFree') : t('plan.planDescPro')}</div>
+              </div>
+            </div>
+            {isPro && !isCancelScheduled && !isPastDue ? (
+              <button className="view-link" onClick={onManageSubscription}>
+                {t('plan.manageSubscription')}
+              </button>
+            ) : null}
           </div>
         </div>
-        <div className="plan-stats">
-          <div className="plan-stat-row">
-            <span>{t('plan.openOrders')}</span>
-            <span>
-              {isFree && !isUnlimited(freeEntitlements.maxOpenRepairRequests)
-                ? t('plan.usageOf', { used: openCount, max: freeEntitlements.maxOpenRepairRequests })
-                : t('plan.unlimited')}
-            </span>
+
+        {/* Usage card */}
+        <div className="card">
+          <div className="card-header">
+            <span>{t('plan.usage')}</span>
           </div>
-          <div className="plan-stat-row">
-            <span>{t('plan.dailyOrders')}</span>
-            <span>
-              {isFree && !isUnlimited(freeEntitlements.maxRepairRequestsPerDay)
-                ? t('plan.usageOf', { used: dailyCount, max: freeEntitlements.maxRepairRequestsPerDay })
-                : t('plan.unlimited')}
-            </span>
+          <div className="plan-stats">
+            <div className="plan-stat-row">
+              <div className="plan-stat-row-header">
+                <span>{t('plan.openOrders')}</span>
+                <span>
+                  {isFree && !isUnlimited(maxOpen)
+                    ? t('plan.usageOf', { used: openCount, max: maxOpen })
+                    : t('plan.unlimited')}
+                </span>
+              </div>
+              {isFree && !isUnlimited(maxOpen) ? (
+                <div className="plan-usage-bar">
+                  <div className="plan-usage-fill" style={{ width: `${openPct}%` }} />
+                </div>
+              ) : null}
+            </div>
+            <div className="plan-stat-row">
+              <div className="plan-stat-row-header">
+                <span>{t('plan.dailyOrders')}</span>
+                <span>
+                  {isFree && !isUnlimited(maxDaily)
+                    ? t('plan.usageOf', { used: dailyCount, max: maxDaily })
+                    : t('plan.unlimited')}
+                </span>
+              </div>
+              {isFree && !isUnlimited(maxDaily) ? (
+                <div className="plan-usage-bar">
+                  <div className="plan-usage-fill" style={{ width: `${dailyPct}%` }} />
+                </div>
+              ) : null}
+            </div>
+            <div className="plan-stat-row">
+              <div className="plan-stat-row-header">
+                <span>{t('plan.questionsPerOrder')}</span>
+                <span>{isFree ? formatLimit(maxQuestions, t) : t('plan.unlimited')}</span>
+              </div>
+              {isFree && !isUnlimited(maxQuestions) ? (
+                <div className="plan-stat-note">{t('plan.questionsNote', { max: maxQuestions })}</div>
+              ) : null}
+            </div>
           </div>
-          <div className="plan-stat-row">
-            <span>{t('plan.questionsPerOrder')}</span>
-            <span>{isFree ? formatLimit(freeEntitlements.maxQuestionsPerRepairRequest, t) : t('plan.unlimited')}</span>
+        </div>
+
+        {/* Upgrade CTA card (free only) */}
+        {isFree ? (
+          <div className="card">
+            <div className="plan-stats">
+              <div className="plan-upgrade-header">
+                <div>
+                  <div className="plan-upgrade-title">{t('plan.needMore')}</div>
+                  <div className="plan-upgrade-desc">{t('plan.proRemovesLimits')}</div>
+                </div>
+                <div className="plan-upgrade-price">
+                  <div className="plan-upgrade-price-amount">{priceLabel}</div>
+                  <div className="plan-upgrade-price-interval">/ {intervalLabel}</div>
+                </div>
+              </div>
+              <div className="plan-upgrade-features">
+                <div className="plan-upgrade-feature">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green-600)" strokeWidth="2">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  {t('plan.benefitNoLimitRequests')}
+                </div>
+                <div className="plan-upgrade-feature">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green-600)" strokeWidth="2">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  {t('plan.benefitNoLimitQuestions')}
+                </div>
+                <div className="plan-upgrade-feature">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green-600)" strokeWidth="2">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  {t('plan.benefitPriorityNotifs')}
+                </div>
+              </div>
+              <button className="btn btn-secondary" onClick={() => onUpgrade('MONTHLY')} disabled={upgradeLoading}>
+                {upgradeLoading ? '...' : t('plan.upgradeCta')}
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Notifications card (static) */}
+        <div className="card">
+          <div className="card-header">
+            <span>{t('plan.notifications')}</span>
+          </div>
+          <div className="plan-stats">
+            <div className="plan-notify-row">
+              <div>
+                <div className="plan-notify-label">{t('plan.emailNotif')}</div>
+                <div className="plan-notify-desc">{t('plan.emailNotifDesc')}</div>
+              </div>
+              <div className="toggle-switch toggle-switch-on">
+                <div className="toggle-switch-knob" />
+              </div>
+            </div>
+            <div className="plan-notify-row">
+              <div>
+                <div className="plan-notify-label">{t('plan.pushNotif')}</div>
+                <div className="plan-notify-desc">{t('plan.pushNotifDesc')}</div>
+              </div>
+              <div className="toggle-switch">
+                <div className="toggle-switch-knob" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Account info card (static) */}
+        <div className="card">
+          <div className="card-header">
+            <span>{t('plan.accountInfo')}</span>
+            <button className="view-link">{t('plan.edit')}</button>
+          </div>
+          <div className="plan-stats">
+            <div className="plan-account-grid">
+              <div>
+                <div className="plan-account-label">{t('plan.fullName')}</div>
+                <div className="plan-account-value">Jan Kowalski</div>
+              </div>
+              <div>
+                <div className="plan-account-label">{t('plan.email')}</div>
+                <div className="plan-account-value">jan@example.pl</div>
+              </div>
+              <div>
+                <div className="plan-account-label">{t('plan.phone')}</div>
+                <div className="plan-account-value">+48 500 123 456</div>
+              </div>
+              <div>
+                <div className="plan-account-label">{t('plan.location')}</div>
+                <div className="plan-account-value">Wroclaw</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* PRO management */}
-      {isPro && !isCancelScheduled && !isPastDue ? (
-        <button className="btn btn-ghost u-mt-4" onClick={onManageSubscription}>
-          {t('plan.manageSubscription')}
-        </button>
-      ) : null}
-
-      {/* Upgrade card for FREE users */}
-      {isFree ? (
-        <div className="plan-upgrade-card">
-          <h3>{t('plan.upgradeTitle')}</h3>
-          <p>{t('plan.upgradeDesc')}</p>
-          <ul className="plan-upgrade-benefits">
-            <li>{t('plan.upgradeBenefit1')}</li>
-            <li>{t('plan.upgradeBenefit2')}</li>
-            <li>{t('plan.upgradeBenefit3')}</li>
-          </ul>
-          <div className="plan-upgrade-price">
-            {priceLabel} <span>/ {intervalLabel}</span>
-          </div>
-          <div className="plan-billing-toggle">
-            <button
-              className={`enroll-billing-btn ${billingInterval === 'MONTHLY' ? 'enroll-billing-btn--active' : ''}`}
-              onClick={() => setBillingInterval('MONTHLY')}
-            >
-              {t('plan.monthly')}
-            </button>
-            <button
-              className={`enroll-billing-btn ${billingInterval === 'ANNUAL' ? 'enroll-billing-btn--active' : ''}`}
-              onClick={() => setBillingInterval('ANNUAL')}
-            >
-              {t('plan.annual')}
-            </button>
-          </div>
-          <button
-            className="btn btn-primary btn-lg u-mt-4 u-w-full"
-            onClick={() => onUpgrade(billingInterval)}
-            disabled={upgradeLoading}
-          >
-            {upgradeLoading ? '...' : t('plan.upgradeCta')}
-          </button>
-        </div>
-      ) : null}
     </section>
   )
 }

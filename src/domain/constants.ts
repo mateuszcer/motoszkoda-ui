@@ -52,6 +52,19 @@ export const CAR_BRANDS = [
 export const MIN_CAR_YEAR = 1980
 export const MAX_CAR_YEAR = new Date().getFullYear() + 1
 
+export const SHOP_SPECIALIZATIONS = [
+  'brakes',
+  'air conditioning',
+  'suspension',
+  'engine',
+  'transmission',
+  'electronics',
+  'body',
+  'service',
+] as const
+
+export const DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const
+
 export const DEFAULT_RADIUS_KM = 15
 export const MAX_RADIUS_KM = 100
 export const MIN_RADIUS_KM = 1

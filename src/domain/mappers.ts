@@ -128,6 +128,7 @@ export function mapCompareToShopQuote(cv: CompareViewResponse, interested: boole
   return {
     shopId: cv.shopId,
     shopName: cv.shopName,
+    logoUrl: cv.logoUrl ?? undefined,
     distanceKm: cv.distanceKm,
     state: mapShopRequestStatus(cv.shopRequestStatus, cv.lastMessageType),
     quote,
@@ -152,10 +153,16 @@ export function mapMessage(msg: MessageResponse, viewerRole: ApiSenderRole): Thr
 
 // ── ThreadSummaryResponse + messages → ShopThread ────────────────────
 
-export function mapThread(summary: ThreadSummaryResponse, shopName: string, messages: ThreadMessage[]): ShopThread {
+export function mapThread(
+  summary: ThreadSummaryResponse,
+  shopName: string,
+  messages: ThreadMessage[],
+  logoUrl?: string,
+): ShopThread {
   return {
     shopId: summary.shopId,
     shopName,
+    logoUrl,
     unreadCount: 0, // managed client-side or via notifications
     messages,
     lastActivityAt: summary.lastMessageAt,
