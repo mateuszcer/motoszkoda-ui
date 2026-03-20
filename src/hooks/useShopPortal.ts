@@ -133,6 +133,16 @@ export function useShopPortal() {
     setShopProfile(updated)
   }, [])
 
+  const handleUploadProfileLogo = useCallback(async (file: File) => {
+    const updated = await shopApi.uploadLogo(file)
+    setShopProfile(updated)
+  }, [])
+
+  const handleDeleteProfileLogo = useCallback(async () => {
+    const updated = await shopApi.deleteLogo()
+    setShopProfile(updated)
+  }, [])
+
   return {
     shopQueue,
     shopSelectedRequest,
@@ -151,5 +161,7 @@ export function useShopPortal() {
     handleShopSendMessage,
     loadShopProfile,
     handleSaveProfile,
+    handleUploadProfileLogo,
+    handleDeleteProfileLogo,
   }
 }

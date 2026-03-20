@@ -934,6 +934,8 @@ function App() {
               <ShopProfileView
                 profile={shop.shopProfile}
                 onSave={shop.handleSaveProfile}
+                onUploadLogo={shop.handleUploadProfileLogo}
+                onDeleteLogo={shop.handleDeleteProfileLogo}
                 onBack={() => navigate('shop-inbox')}
               />
             ) : null}

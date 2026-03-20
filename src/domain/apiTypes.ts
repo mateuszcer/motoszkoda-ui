@@ -305,6 +305,7 @@ export interface ShopInfoResponse {
   address: string
   contactPhoneE164?: string
   description?: string
+  logoUrl?: string | null
   lat: number
   lon: number
 }
@@ -316,6 +317,21 @@ export interface UpdateShopRequest {
   description?: string
   lat: number
   lon: number
+}
+
+export interface ShopLogoUploadUrlRequest {
+  fileName: string
+  contentType: string
+  sizeBytes: number
+}
+
+export interface ShopLogoUploadUrlResponse {
+  storageKey: string
+  uploadUrl: string
+}
+
+export interface ConfirmShopLogoRequest {
+  storageKey: string
 }
 
 // ── Billing ─────────────────────────────────────────────────────────

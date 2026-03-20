@@ -9,10 +9,14 @@ import { PhoneInput } from './PhoneInput'
 interface ShopProfileViewProps {
   profile: ShopProfile | null
   onSave: (payload: UpdateShopProfilePayload) => Promise<void>
+  onUploadLogo: (file: File) => Promise<void>
+  onDeleteLogo: () => Promise<void>
   onBack: () => void
 }
 
 const DEFAULT_DESCRIPTION_MAX = 500
+const MAX_LOGO_FILE_SIZE = 2 * 1024 * 1024
+const ALLOWED_LOGO_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 
 function buildDefaultHours(): DayHours[] {
   return DAYS_OF_WEEK.map((day) => ({
@@ -23,7 +27,7 @@ function buildDefaultHours(): DayHours[] {
   }))
 }
 
-export function ShopProfileView({ profile, onSave }: ShopProfileViewProps) {
+export function ShopProfileView({ profile, onSave, onUploadLogo, onDeleteLogo }: ShopProfileViewProps) {
   const { t } = useTranslation()
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -37,6 +41,8 @@ export function ShopProfileView({ profile, onSave }: ShopProfileViewProps) {
   const [success, setSuccess] = useState(false)
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [deletingLogo, setDeletingLogo] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -122,6 +128,47 @@ export function ShopProfileView({ profile, onSave }: ShopProfileViewProps) {
     [autocomplete],
   )
 
+  const handleLogoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+
+    if (!file) return
+
+    if (!ALLOWED_LOGO_TYPES.has(file.type)) {
+      setErrors([t('shopProfile.logoFileType')])
+      return
+    }
+
+    if (file.size > MAX_LOGO_FILE_SIZE) {
+      setErrors([t('shopProfile.logoFileTooLarge')])
+      return
+    }
+
+    setUploadingLogo(true)
+    setSuccess(false)
+    setErrors([])
+    try {
+      await onUploadLogo(file)
+    } catch (err) {
+      setErrors([getApiErrorMessage(err, t, 'shopProfile.logoUploadFailed')])
+    } finally {
+      setUploadingLogo(false)
+    }
+  }
+
+  const handleLogoDelete = async () => {
+    setDeletingLogo(true)
+    setSuccess(false)
+    setErrors([])
+    try {
+      await onDeleteLogo()
+    } catch (err) {
+      setErrors([getApiErrorMessage(err, t, 'shopProfile.logoDeleteFailed')])
+    } finally {
+      setDeletingLogo(false)
+    }
+  }
+
   return (
     <section className="screen shop-profile-screen">
       <form onSubmit={(e) => void handleSubmit(e)}>
@@ -160,31 +207,41 @@ export function ShopProfileView({ profile, onSave }: ShopProfileViewProps) {
               <div className="profile-photo-row">
                 <div
                   className="profile-logo-upload"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => {
+                    if (!uploadingLogo && !deletingLogo) fileInputRef.current?.click()
+                  }}
                   role="button"
                   tabIndex={0}
+                  aria-disabled={uploadingLogo || deletingLogo}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click()
+                    if ((e.key === 'Enter' || e.key === ' ') && !uploadingLogo && !deletingLogo) {
+                      fileInputRef.current?.click()
+                    }
                   }}
                 >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="var(--gray-400)"
-                    strokeWidth="1.5"
-                  >
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                    <circle cx="8.5" cy="8.5" r="1.5" />
-                    <polyline points="21 15 16 10 5 21" />
-                  </svg>
+                  {profile?.logoUrl ? (
+                    <img src={profile.logoUrl} alt={`${profile.name} logo`} className="profile-logo-upload__image" />
+                  ) : (
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--gray-400)"
+                      strokeWidth="1.5"
+                    >
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                  )}
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/jpeg,image/png"
+                    accept="image/jpeg,image/png,image/webp"
                     hidden
                     aria-label={t('shopProfile.uploadPhoto')}
+                    onChange={(e) => void handleLogoSelect(e)}
                   />
                 </div>
                 <div>
@@ -192,9 +249,24 @@ export function ShopProfileView({ profile, onSave }: ShopProfileViewProps) {
                   <p className="u-text-faint" style={{ fontSize: 12, marginBottom: 8 }}>
                     {t('shopProfile.logoHint')}
                   </p>
-                  <button type="button" className="view-link" onClick={() => fileInputRef.current?.click()}>
-                    {t('shopProfile.uploadPhoto')}
+                  <button
+                    type="button"
+                    className="view-link"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingLogo || deletingLogo}
+                  >
+                    {uploadingLogo ? t('shopProfile.uploadingPhoto') : t('shopProfile.uploadPhoto')}
                   </button>
+                  {profile?.logoUrl ? (
+                    <button
+                      type="button"
+                      className="view-link"
+                      onClick={() => void handleLogoDelete()}
+                      disabled={uploadingLogo || deletingLogo}
+                    >
+                      {deletingLogo ? t('shopProfile.deletingPhoto') : t('shopProfile.removePhoto')}
+                    </button>
+                  ) : null}
                 </div>
               </div>
               <div className="form-group">

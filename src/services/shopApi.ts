@@ -1,8 +1,11 @@
 import type {
   AttachmentResponse,
+  ConfirmShopLogoRequest,
   MessageResponse,
   RepairRequestResponse,
   ShopInfoResponse,
+  ShopLogoUploadUrlRequest,
+  ShopLogoUploadUrlResponse,
   ShopQueueResponse,
   ShopRequestResponse,
   SubmitQuoteRequest,
@@ -120,5 +123,37 @@ export const shopApi = {
     }
     const raw = await api.put<ShopInfoResponse>('/api/shops/me', { body })
     return mapShopProfile(raw)
+  },
+
+  async uploadLogo(file: File): Promise<ShopProfile> {
+    const body: ShopLogoUploadUrlRequest = {
+      fileName: file.name,
+      contentType: file.type,
+      sizeBytes: file.size,
+    }
+    const { storageKey, uploadUrl } = await api.post<ShopLogoUploadUrlResponse>('/api/shops/me/logo/upload-url', {
+      body,
+    })
+
+    const uploadResponse = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type },
+      body: file,
+    })
+
+    if (!uploadResponse.ok) {
+      throw new Error('SHOP_LOGO_UPLOAD_FAILED')
+    }
+
+    await api.post<void>('/api/shops/me/logo/confirm', {
+      body: { storageKey } satisfies ConfirmShopLogoRequest,
+    })
+
+    return this.fetchProfile()
+  },
+
+  async deleteLogo(): Promise<ShopProfile> {
+    await api.delete<void>('/api/shops/me/logo')
+    return this.fetchProfile()
   },
 }

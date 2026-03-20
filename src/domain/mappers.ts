@@ -236,6 +236,7 @@ export function mapShopProfile(raw: ShopInfoResponse): ShopProfile {
     address: raw.address,
     phone: raw.contactPhoneE164 ?? '',
     description: raw.description ?? '',
+    logoUrl: raw.logoUrl ?? undefined,
     lat: raw.lat,
     lon: raw.lon,
   }
