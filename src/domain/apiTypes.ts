@@ -303,8 +303,8 @@ export interface ShopInfoResponse {
   shopId: string
   name: string
   address: string
-  phone: string
-  description: string
+  contactPhoneE164?: string
+  description?: string
   lat: number
   lon: number
 }
