@@ -149,10 +149,6 @@ function parseErrorResponse(response: Response, body: ApiErrorResponse | undefin
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {
-  if (response.status === 204) {
-    return undefined as T
-  }
-
   if (!response.ok) {
     let body: ApiErrorResponse | undefined
     try {
@@ -164,7 +160,12 @@ async function handleResponse<T>(response: Response): Promise<T> {
     throw parseErrorResponse(response, body)
   }
 
-  return (await response.json()) as T
+  const text = await response.text()
+  if (!text) {
+    return undefined as T
+  }
+
+  return JSON.parse(text) as T
 }
 
 // ── Request execution with retry-on-401 ─────────────────────────────
