@@ -1,31 +1,24 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { RepairRequest, ShopThread, ThreadMessage } from '../domain/types'
+import type { ConversationSummary, ThreadMessage } from '../domain/types'
+import { useConversations } from '../hooks/useConversations'
+import { repairRequestApi } from '../services/repairRequestApi'
 import { formatDateTime } from '../utils/format'
 
 interface MessagesViewProps {
-  requests: RepairRequest[]
   userName: string
   onOpenRequest: (requestId: string) => void
   onSendMessage: (requestId: string, shopId: string, text: string) => Promise<void>
 }
 
-interface Conversation {
-  requestId: string
-  shopId: string
-  shopName: string
-  carLabel: string
-  issueTag: string
-  issueDescription: string
-  thread: ShopThread
-  lastMessage: ThreadMessage | null
-}
-
-export function MessagesView({ requests, userName, onOpenRequest, onSendMessage }: MessagesViewProps) {
+export function MessagesView({ userName, onOpenRequest, onSendMessage }: MessagesViewProps) {
   const { t, i18n } = useTranslation()
+  const { conversations, loading, hasMore, loadMore, loadingMore, refresh, error } = useConversations('DRIVER')
   const [activeConvo, setActiveConvo] = useState<{ requestId: string; shopId: string } | null>(null)
   const [messageText, setMessageText] = useState('')
   const [sending, setSending] = useState(false)
+  const [activeMessages, setActiveMessages] = useState<ThreadMessage[]>([])
+  const [activeMessagesLoading, setActiveMessagesLoading] = useState(false)
   const chatBodyRef = useRef<HTMLDivElement>(null)
 
   const userInitials = useMemo(() => {
@@ -34,41 +27,32 @@ export function MessagesView({ requests, userName, onOpenRequest, onSendMessage 
     return userName.slice(0, 2).toUpperCase()
   }, [userName])
 
-  const conversations = useMemo(() => {
-    const result: Conversation[] = []
-    for (const request of requests) {
-      for (const [shopId, thread] of Object.entries(request.threads)) {
-        const lastMessage = thread.messages.length > 0 ? thread.messages[thread.messages.length - 1] : null
-        result.push({
-          requestId: request.id,
-          shopId,
-          shopName: thread.shopName,
-          carLabel: `${request.car.make} ${request.car.model}`,
-          issueTag: request.issue.tags[0] ?? '',
-          issueDescription: request.issue.description,
-          thread,
-          lastMessage,
-        })
-      }
-    }
-    result.sort((a, b) => {
-      const aTime = a.thread.lastActivityAt
-      const bTime = b.thread.lastActivityAt
-      return bTime.localeCompare(aTime)
-    })
-    return result
-  }, [requests])
-
   const activeConversation = useMemo(() => {
     if (!activeConvo) return null
-    return conversations.find((c) => c.requestId === activeConvo.requestId && c.shopId === activeConvo.shopId) ?? null
+    return (
+      conversations.find((c) => c.repairRequestId === activeConvo.requestId && c.shopId === activeConvo.shopId) ?? null
+    )
   }, [activeConvo, conversations])
+
+  // Fetch thread messages when a conversation is selected
+  useEffect(() => {
+    if (!activeConvo) {
+      setActiveMessages([])
+      return
+    }
+    setActiveMessagesLoading(true)
+    void repairRequestApi
+      .getThreadMessages(activeConvo.requestId, activeConvo.shopId)
+      .then((msgs) => setActiveMessages(msgs))
+      .catch(() => setActiveMessages([]))
+      .finally(() => setActiveMessagesLoading(false))
+  }, [activeConvo])
 
   useEffect(() => {
     if (chatBodyRef.current) {
       chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight
     }
-  }, [activeConversation?.thread.messages.length])
+  }, [activeMessages.length])
 
   const handleSend = useCallback(async () => {
     if (!activeConvo || !messageText.trim() || sending) return
@@ -76,10 +60,13 @@ export function MessagesView({ requests, userName, onOpenRequest, onSendMessage 
     try {
       await onSendMessage(activeConvo.requestId, activeConvo.shopId, messageText.trim())
       setMessageText('')
+      const msgs = await repairRequestApi.getThreadMessages(activeConvo.requestId, activeConvo.shopId)
+      setActiveMessages(msgs)
+      refresh()
     } finally {
       setSending(false)
     }
-  }, [activeConvo, messageText, sending, onSendMessage])
+  }, [activeConvo, messageText, sending, onSendMessage, refresh])
 
   const formatConvoTime = (dateStr: string) => {
     const date = new Date(dateStr)
@@ -108,6 +95,12 @@ export function MessagesView({ requests, userName, onOpenRequest, onSendMessage 
     return formatDateTime(dateStr, i18n.language)
   }
 
+  const renderPreview = (convo: ConversationSummary) => {
+    if (!convo.lastMessagePreview) return ''
+    if (convo.lastSenderIsSelf) return `${t('messages.youPrefix')}${convo.lastMessagePreview}`
+    return convo.lastMessagePreview
+  }
+
   const isListHidden = activeConvo !== null
   const isChatHidden = activeConvo === null
 
@@ -131,44 +124,53 @@ export function MessagesView({ requests, userName, onOpenRequest, onSendMessage 
             <input className="messages-list__search-input" placeholder={t('messages.searchPlaceholder')} />
           </div>
         </div>
-        {conversations.length === 0 ? (
-          <div style={{ padding: '20px', textAlign: 'center', color: 'var(--gray-500)', fontSize: '13px' }}>
-            {t('messages.noConversations')}
-          </div>
+        {loading ? (
+          <div className="messages-list__loading">{t('messages.loading')}</div>
+        ) : error ? (
+          <div className="messages-list__loading">{t(error)}</div>
+        ) : conversations.length === 0 ? (
+          <div className="messages-list__loading">{t('messages.noConversations')}</div>
         ) : (
-          conversations.map((convo) => {
-            const isActive = activeConvo?.requestId === convo.requestId && activeConvo?.shopId === convo.shopId
-            return (
-              <div
-                key={`${convo.requestId}-${convo.shopId}`}
-                className={`messages-conversation ${isActive ? 'messages-conversation--active' : ''}`}
-                onClick={() => setActiveConvo({ requestId: convo.requestId, shopId: convo.shopId })}
-              >
-                <div className="messages-conversation__row">
-                  <span
-                    className={`messages-conversation__avatar ${convo.thread.unreadCount > 0 ? 'messages-conversation__avatar--unread' : ''}`}
-                  >
-                    {convo.shopName.charAt(0)}
-                  </span>
-                  <div className="messages-conversation__info">
-                    <div className="messages-conversation__header">
-                      <span className="messages-conversation__name">{convo.shopName}</span>
-                      <span className="messages-conversation__time">
-                        {convo.lastMessage ? formatConvoTime(convo.lastMessage.sentAt) : ''}
-                      </span>
+          <>
+            {conversations.map((convo) => {
+              const isActive = activeConvo?.requestId === convo.repairRequestId && activeConvo?.shopId === convo.shopId
+              return (
+                <div
+                  key={`${convo.repairRequestId}-${convo.shopId}`}
+                  className={`messages-conversation ${isActive ? 'messages-conversation--active' : ''}`}
+                  onClick={() => setActiveConvo({ requestId: convo.repairRequestId, shopId: convo.shopId })}
+                >
+                  <div className="messages-conversation__row">
+                    <span
+                      className={`messages-conversation__avatar ${convo.unreadCount > 0 ? 'messages-conversation__avatar--unread' : ''}`}
+                    >
+                      {convo.counterpartyName.charAt(0)}
+                    </span>
+                    <div className="messages-conversation__info">
+                      <div className="messages-conversation__header">
+                        <span className="messages-conversation__name">{convo.counterpartyName}</span>
+                        <span className="messages-conversation__time">{formatConvoTime(convo.lastMessageAt)}</span>
+                      </div>
+                      <div className="messages-conversation__preview">{renderPreview(convo)}</div>
                     </div>
-                    <div className="messages-conversation__preview">{convo.lastMessage?.text ?? ''}</div>
+                    {convo.unreadCount > 0 ? <span className="messages-conversation__unread" /> : null}
                   </div>
-                  {convo.thread.unreadCount > 0 ? <span className="messages-conversation__unread" /> : null}
+                  <div className="messages-conversation__context">
+                    <span className="badge badge-gray messages-conversation__context-badge">
+                      {convo.issueTag ? `${convo.carLabel} · ${convo.issueTag}` : convo.carLabel}
+                    </span>
+                  </div>
                 </div>
-                <div className="messages-conversation__context">
-                  <span className="badge badge-gray messages-conversation__context-badge">
-                    {convo.issueTag ? `${convo.carLabel} · ${convo.issueTag}` : convo.carLabel}
-                  </span>
-                </div>
+              )
+            })}
+            {hasMore ? (
+              <div className="messages-list__load-more">
+                <button className="messages-list__load-more-btn" onClick={loadMore} disabled={loadingMore}>
+                  {loadingMore ? t('messages.loading') : t('messages.loadMore')}
+                </button>
               </div>
-            )
-          })
+            ) : null}
+          </>
         )}
       </div>
 
@@ -192,30 +194,30 @@ export function MessagesView({ requests, userName, onOpenRequest, onSendMessage 
                     />
                   </svg>
                 </button>
-                <span className="messages-chat__header-avatar">{activeConversation.shopName.charAt(0)}</span>
+                <span className="messages-chat__header-avatar">{activeConversation.counterpartyName.charAt(0)}</span>
                 <div>
-                  <div className="messages-chat__header-name">{activeConversation.shopName}</div>
+                  <div className="messages-chat__header-name">{activeConversation.counterpartyName}</div>
                   <div className="messages-chat__header-context">
-                    {activeConversation.issueDescription
-                      ? `${activeConversation.carLabel} · ${activeConversation.issueDescription}`
+                    {activeConversation.issueTag
+                      ? `${activeConversation.carLabel} · ${activeConversation.issueTag}`
                       : activeConversation.carLabel}
                   </div>
                 </div>
               </div>
-              <button className="view-link" onClick={() => onOpenRequest(activeConversation.requestId)}>
+              <button className="view-link" onClick={() => onOpenRequest(activeConversation.repairRequestId)}>
                 {t('messages.viewRequest')}
               </button>
             </div>
 
             <div className="messages-chat__body" ref={chatBodyRef}>
-              {activeConversation.thread.messages.length === 0 ? (
-                <div style={{ textAlign: 'center', color: 'var(--gray-500)', fontSize: '13px', padding: '20px' }}>
-                  {t('messages.noMessages')}
-                </div>
+              {activeMessagesLoading ? (
+                <div className="messages-chat__loading">{t('messages.loading')}</div>
+              ) : activeMessages.length === 0 ? (
+                <div className="messages-chat__loading">{t('messages.noMessages')}</div>
               ) : (
                 (() => {
                   let lastDateStr = ''
-                  return activeConversation.thread.messages.map((msg) => {
+                  return activeMessages.map((msg) => {
                     const msgDate = new Date(msg.sentAt).toDateString()
                     const showSeparator = msgDate !== lastDateStr
                     lastDateStr = msgDate
@@ -229,7 +231,7 @@ export function MessagesView({ requests, userName, onOpenRequest, onSendMessage 
                         <div className={`messages-chat__bubble-row ${isSent ? 'messages-chat__bubble-row--sent' : ''}`}>
                           {!isSent ? (
                             <span className="messages-chat__bubble-avatar messages-chat__bubble-avatar--received">
-                              {activeConversation.shopName.charAt(0)}
+                              {activeConversation.counterpartyName.charAt(0)}
                             </span>
                           ) : (
                             <span className="messages-chat__bubble-avatar messages-chat__bubble-avatar--sent">
@@ -257,45 +259,38 @@ export function MessagesView({ requests, userName, onOpenRequest, onSendMessage 
               )}
             </div>
 
-            <div className="messages-chat__composer">
-              <input
-                className="form-input messages-chat__composer-input"
-                placeholder={t('messages.inputPlaceholder')}
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    void handleSend()
-                  }
-                }}
-              />
-              <button
-                className="messages-chat__send-btn"
-                onClick={() => void handleSend()}
-                disabled={sending || !messageText.trim()}
-                aria-label={t('messages.send')}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 2L11 13" />
-                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                </svg>
-              </button>
-            </div>
+            {activeConversation.requestStatus === 'closed' ? (
+              <div className="messages-chat__closed-notice">{t('messages.requestClosed')}</div>
+            ) : (
+              <div className="messages-chat__composer">
+                <input
+                  className="form-input messages-chat__composer-input"
+                  placeholder={t('messages.inputPlaceholder')}
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault()
+                      void handleSend()
+                    }
+                  }}
+                />
+                <button
+                  className="messages-chat__send-btn"
+                  onClick={() => void handleSend()}
+                  disabled={sending || !messageText.trim()}
+                  aria-label={t('messages.send')}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 2L11 13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </>
         ) : (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flex: 1,
-              color: 'var(--gray-400)',
-              fontSize: '13px',
-            }}
-          >
-            {t('messages.noConversations')}
-          </div>
+          <div className="messages-chat__loading">{t('messages.noConversations')}</div>
         )}
       </div>
     </div>

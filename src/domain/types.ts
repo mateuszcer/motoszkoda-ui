@@ -125,6 +125,20 @@ export interface ShopThread {
   lastActivityAt: string
 }
 
+export interface ConversationSummary {
+  repairRequestId: string
+  shopId: string
+  counterpartyName: string
+  carLabel: string
+  issueTag: string | null
+  requestStatus: RequestStatus
+  messageCount: number
+  unreadCount: number
+  lastMessageAt: string
+  lastMessagePreview: string
+  lastSenderIsSelf: boolean
+}
+
 export interface RepairRequest {
   id: string
   status: RequestStatus

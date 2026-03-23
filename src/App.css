@@ -6801,6 +6801,55 @@ button.avatar:hover {
   cursor: not-allowed;
 }
 
+.messages-list__loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4);
+  color: var(--gray-400);
+  font-size: 13px;
+}
+
+.messages-list__load-more {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3);
+}
+
+.messages-list__load-more-btn {
+  font-size: 13px;
+  color: var(--teal-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+}
+
+.messages-list__load-more-btn:hover {
+  background: var(--gray-100);
+}
+
+[data-theme='dark'] .messages-list__load-more-btn:hover {
+  background: var(--gray-800);
+}
+
+.messages-chat__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--gray-400);
+  font-size: 13px;
+}
+
+.messages-chat__closed-notice {
+  padding: var(--space-3) var(--space-4);
+  text-align: center;
+  color: var(--gray-500);
+  font-size: 13px;
+  border-top: 0.5px solid var(--gray-200);
+}
+
 /* ============================================================
    DRIVER REQUEST DETAIL — two-column grid layout
    ============================================================ */

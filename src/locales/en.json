@@ -1026,6 +1026,11 @@
     "send": "Send",
     "viewRequest": "View request",
     "today": "Today",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "loadMore": "Load more",
+    "loading": "Loading...",
+    "loadError": "Could not load conversations. Please try again.",
+    "youPrefix": "You: ",
+    "requestClosed": "This request is closed"
   }
 }

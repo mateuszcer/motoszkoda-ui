@@ -2,6 +2,7 @@ import type {
   ApiSenderRole,
   AttachmentResponse,
   CompareViewResponse,
+  ConversationItemResponse,
   MessageResponse,
   RepairRequestResponse,
   ShopInfoResponse,
@@ -12,6 +13,7 @@ import type {
 import type {
   Attachment,
   AttachmentKind,
+  ConversationSummary,
   LineItem,
   QuoteOffer,
   QuoteState,
@@ -239,5 +241,23 @@ export function mapShopProfile(raw: ShopInfoResponse): ShopProfile {
     logoUrl: raw.logoUrl ?? undefined,
     lat: raw.lat,
     lon: raw.lon,
+  }
+}
+
+// ── ConversationItemResponse → ConversationSummary ──────────────────
+
+export function mapConversationItem(raw: ConversationItemResponse, viewerRole: ApiSenderRole): ConversationSummary {
+  return {
+    repairRequestId: raw.repairRequestId,
+    shopId: raw.shopId,
+    counterpartyName: raw.counterpartyName,
+    carLabel: raw.carLabel,
+    issueTag: raw.issueTag,
+    requestStatus: mapRequestStatus(raw.requestStatus),
+    messageCount: raw.messageCount,
+    unreadCount: raw.unreadCount,
+    lastMessageAt: raw.lastMessageAt,
+    lastMessagePreview: raw.lastMessageContent,
+    lastSenderIsSelf: raw.lastSenderRole === viewerRole,
   }
 }

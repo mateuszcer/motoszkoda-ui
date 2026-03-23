@@ -1012,6 +1012,11 @@
     "send": "Senden",
     "viewRequest": "Auftrag ansehen",
     "today": "Heute",
-    "yesterday": "Gestern"
+    "yesterday": "Gestern",
+    "loadMore": "Mehr laden",
+    "loading": "Wird geladen...",
+    "loadError": "Gespräche konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "youPrefix": "Sie: ",
+    "requestClosed": "Dieser Auftrag ist geschlossen"
   }
 }

@@ -179,6 +179,30 @@ export interface ThreadSummaryResponse {
   lastSenderRole: ApiSenderRole
 }
 
+// ── Conversations ────────────────────────────────────────────────────
+
+export interface ConversationItemResponse {
+  repairRequestId: string
+  shopId: string
+  shopName: string
+  counterpartyName: string
+  carLabel: string
+  issueTag: string | null
+  requestStatus: ApiRequestStatus
+  messageCount: number
+  unreadCount: number
+  lastMessageAt: string
+  lastMessageContent: string
+  lastSenderRole: ApiSenderRole
+}
+
+export interface ConversationPageResponse {
+  items: ConversationItemResponse[]
+  totalUnreadCount: number
+  hasMore: boolean
+  nextCursor: string | null
+}
+
 // ── Notifications ────────────────────────────────────────────────────
 
 export type ApiNotificationType =

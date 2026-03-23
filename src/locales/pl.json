@@ -1032,6 +1032,11 @@
     "send": "Wyślij",
     "viewRequest": "Zobacz zlecenie",
     "today": "Dzisiaj",
-    "yesterday": "Wczoraj"
+    "yesterday": "Wczoraj",
+    "loadMore": "Pokaż więcej",
+    "loading": "Ładowanie...",
+    "loadError": "Nie udało się załadować rozmów. Spróbuj ponownie.",
+    "youPrefix": "Ty: ",
+    "requestClosed": "To zlecenie jest zamknięte"
   }
 }

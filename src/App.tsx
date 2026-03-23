@@ -950,11 +950,8 @@ function App() {
 
             {screen === 'shop-settings' ? <SettingsView onBack={() => navigate('shop-inbox')} /> : null}
 
-            {!shop.shopLoading && !shop.shopError && screen === 'shop-messages' ? (
-              <ShopMessagesView
-                queueItems={shop.shopQueue}
-                onOpenRequest={(requestId) => shopOpenDetail(requestId, 'messages', 'shop-messages')}
-              />
+            {screen === 'shop-messages' ? (
+              <ShopMessagesView onOpenRequest={(requestId) => shopOpenDetail(requestId, 'messages', 'shop-messages')} />
             ) : null}
           </ErrorBoundary>
         </AppLayout>
@@ -972,7 +969,7 @@ function App() {
       .slice(0, 2)
       .toUpperCase() || 'U'
 
-  // Count total unread messages across all threads
+  // TODO: Replace with totalUnreadCount from GET /api/conversations when backend supports real unread counts
   const unreadMessageCount = requests.reduce(
     (sum, r) => sum + Object.values(r.threads).reduce((ts, th) => ts + th.unreadCount, 0),
     0,
@@ -1142,7 +1139,6 @@ function App() {
 
         {screen === 'messages' ? (
           <MessagesView
-            requests={requests}
             userName={auth.user?.name ?? ''}
             onOpenRequest={(requestId) => {
               void openRequestDetail(requestId)

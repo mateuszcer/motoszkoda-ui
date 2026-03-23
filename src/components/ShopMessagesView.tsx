@@ -1,34 +1,27 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { ShopQueueItem } from '../domain/types'
+import { useConversations } from '../hooks/useConversations'
 import { formatDateTime } from '../utils/format'
 
 interface ShopMessagesViewProps {
-  queueItems: ShopQueueItem[]
   onOpenRequest: (requestId: string) => void
 }
 
-export function ShopMessagesView({ queueItems, onOpenRequest }: ShopMessagesViewProps) {
+export function ShopMessagesView({ onOpenRequest }: ShopMessagesViewProps) {
   const { t, i18n } = useTranslation()
+  const { conversations, loading, hasMore, loadMore, loadingMore, error } = useConversations('SHOP')
   const [search, setSearch] = useState('')
 
-  const conversations = useMemo(() => {
-    const filtered = queueItems
-      .filter((item) => item.hasMessages)
-      .sort((a, b) => b.lastActivityAt.localeCompare(a.lastActivityAt))
-
-    if (!search.trim()) {
-      return filtered
-    }
-
+  const filtered = useMemo(() => {
+    if (!search.trim()) return conversations
     const query = search.trim().toLowerCase()
-    return filtered.filter(
-      (item) =>
-        item.make.toLowerCase().includes(query) ||
-        item.model.toLowerCase().includes(query) ||
-        item.description.toLowerCase().includes(query),
+    return conversations.filter(
+      (c) =>
+        c.carLabel.toLowerCase().includes(query) ||
+        c.counterpartyName.toLowerCase().includes(query) ||
+        (c.issueTag && c.issueTag.toLowerCase().includes(query)),
     )
-  }, [queueItems, search])
+  }, [conversations, search])
 
   return (
     <section>
@@ -40,7 +33,7 @@ export function ShopMessagesView({ queueItems, onOpenRequest }: ShopMessagesView
       </div>
 
       <div className="card">
-        <div style={{ padding: 'var(--space-4)' }}>
+        <div className="card-filter-bar">
           <input
             className="form-input"
             type="text"
@@ -50,7 +43,11 @@ export function ShopMessagesView({ queueItems, onOpenRequest }: ShopMessagesView
           />
         </div>
 
-        {conversations.length === 0 ? (
+        {loading ? (
+          <div className="empty-state">{t('messages.loading')}</div>
+        ) : error ? (
+          <div className="empty-state">{t(error)}</div>
+        ) : filtered.length === 0 ? (
           <div className="empty-state">{t('messages.noConversations')}</div>
         ) : (
           <div className="data-table-wrap">
@@ -58,52 +55,52 @@ export function ShopMessagesView({ queueItems, onOpenRequest }: ShopMessagesView
               <thead>
                 <tr>
                   <th>{t('form.vehicle')}</th>
-                  <th>{t('shopDetail.issueTitle')}</th>
+                  <th>{t('sidebar.messages')}</th>
                   <th>{t('shopInbox.statusCol')}</th>
                   <th>{t('shopInbox.dateCol')}</th>
                   <th />
                 </tr>
               </thead>
               <tbody>
-                {conversations.map((item) => (
+                {filtered.map((convo) => (
                   <tr
-                    key={item.repairRequestId}
-                    onClick={() => onOpenRequest(item.repairRequestId)}
+                    key={`${convo.repairRequestId}-${convo.shopId}`}
+                    onClick={() => onOpenRequest(convo.repairRequestId)}
                     tabIndex={0}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') onOpenRequest(item.repairRequestId)
+                      if (e.key === 'Enter' || e.key === ' ') onOpenRequest(convo.repairRequestId)
                     }}
                   >
                     <td>
                       <div className="u-flex u-items-center" style={{ gap: 10 }}>
                         <span className="vehicle-icon">
-                          {item.make.charAt(0)}
-                          {item.model.charAt(0)}
+                          {convo.carLabel.charAt(0)}
+                          {convo.carLabel.split(' ')[1]?.charAt(0) ?? ''}
                         </span>
                         <div>
-                          <div className="vehicle-name">
-                            {item.make} {item.model}
-                          </div>
-                          <div className="vehicle-desc">
-                            {t('shopInbox.kmAway', { distance: item.distanceKm.toFixed(1) })}
-                          </div>
+                          <div className="vehicle-name">{convo.carLabel}</div>
+                          {convo.issueTag ? <div className="vehicle-desc">{convo.issueTag}</div> : null}
                         </div>
                       </div>
                     </td>
-                    <td>{item.description.length > 80 ? `${item.description.slice(0, 80)}...` : item.description}</td>
+                    <td>
+                      {convo.lastMessagePreview.length > 80
+                        ? `${convo.lastMessagePreview.slice(0, 80)}...`
+                        : convo.lastMessagePreview}
+                    </td>
                     <td>
                       <span className="badge badge-amber">
                         <span className="badge-dot" />
                         {t('sidebar.messages')}
                       </span>
                     </td>
-                    <td>{formatDateTime(item.lastActivityAt, i18n.language)}</td>
+                    <td>{formatDateTime(convo.lastMessageAt, i18n.language)}</td>
                     <td>
                       <button
                         className="view-link"
                         onClick={(e) => {
                           e.stopPropagation()
-                          onOpenRequest(item.repairRequestId)
+                          onOpenRequest(convo.repairRequestId)
                         }}
                         type="button"
                       >
@@ -116,6 +113,14 @@ export function ShopMessagesView({ queueItems, onOpenRequest }: ShopMessagesView
             </table>
           </div>
         )}
+
+        {hasMore ? (
+          <div className="messages-list__load-more">
+            <button className="messages-list__load-more-btn" onClick={loadMore} disabled={loadingMore}>
+              {loadingMore ? t('messages.loading') : t('messages.loadMore')}
+            </button>
+          </div>
+        ) : null}
       </div>
     </section>
   )
